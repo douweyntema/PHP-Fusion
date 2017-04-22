@@ -4,7 +4,7 @@
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
-| Filename: classes/admin/post.php
+| Filename: classes/admin/mood.php
 | Author: Chan (Frederick MC Chan)
 +--------------------------------------------------------+
 | This program is released as free software under the
@@ -37,13 +37,12 @@ class ForumAdminMood extends ForumAdminInterface {
 
 
     public function viewMoodAdmin() {
-
-        global $aidlink;
+        $aidlink = fusion_get_aidlink();
         pageAccess('F');
-        add_breadcrumb(array(
+        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb([
                            'link' => INFUSIONS.'forum/admin/forums.php'.$aidlink.'&section=fmd',
                            'title' => self::$locale['forum_admin_004']
-                       ));
+                       ]);
 
         echo "<div class='well'>".self::$locale['forum_090']."</div>\n";
 
@@ -57,8 +56,7 @@ class ForumAdminMood extends ForumAdminInterface {
 
         $_GET['ref'] = isset($_GET['ref']) && in_array($_GET['ref'], $tab['id']) ? $_GET['ref'] : "mood_list";
 
-        echo opentab($tab, $_GET['ref'], "mood_admin", TRUE, "m-t-10", "ref");
-
+        echo opentab($tab, $_GET['ref'], "mood_admin", TRUE, "nav-tabs m-t-10", "ref", ['mood_id', 'action']);
         switch ($_GET['ref']) {
             case "mood_form" :
                 $this->displayMoodForm();
@@ -154,11 +152,10 @@ class ForumAdminMood extends ForumAdminInterface {
                 'options' => $groups,
                 'inline' => TRUE,
                 'type' => 'radio'
-            )).
-            form_button('save_mood', !empty($this->data['mood_id']) ? $locale['forum_106'] : $locale['forum_105'],
-                        $locale['save_changes'], array('class' => 'btn-primary m-r-10')).
-            form_button('cancel_mood', $locale['cancel'], $locale['cancel']).
-            closeform();
+            ));
+            echo form_button('save_mood', !empty($this->data['mood_id']) ? $locale['forum_106'] : $locale['forum_105'], $locale['save_changes'], array('class' => 'btn-success m-r-10', 'icon' => 'fa fa-hdd-o'));
+            echo form_button('cancel_mood', $locale['cancel'], $locale['cancel'], array('icon' => 'fa fa-times'));
+            echo closeform();
     }
 
     /**

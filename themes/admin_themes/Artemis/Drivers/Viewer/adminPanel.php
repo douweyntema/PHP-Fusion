@@ -17,7 +17,7 @@
 namespace Artemis\Viewer;
 
 use Artemis\Model\resource;
-use PHPFusion\Admin;
+use PHPFusion\Admins;
 
 class adminPanel extends resource {
 
@@ -63,6 +63,9 @@ class adminPanel extends resource {
                 </aside>
                 <div class="content">
                     <?php echo CONTENT; ?>
+                    <div class="copyright">
+                        <?php echo showcopyright('', TRUE) ?>
+                    </div>
                 </div>
                 <span class="main_content_overlay"></span>
             </div>
@@ -79,9 +82,9 @@ class adminPanel extends resource {
                 if (fusion_get_settings("rendertime_enabled")) : ?>
                     <li><?php echo showrendertime() ?></li>
                     <li><?php echo showMemoryUsage() ?></li>
-                    <li><?php $locale['copyright'].showdate("%Y", time())." - ".fusion_get_settings("sitename") ?></li>
+                    <li><?php fusion_get_locale('copyright').showdate("%Y", time())." - ".fusion_get_settings("sitename") ?></li>
                 <?php endif; ?>
-                <li class="pull-right"><strong>Artemis <?php echo $locale['render_engine'] ?> 3.1</strong></li>
+                <li class="pull-right"><strong>Artemis <?php echo fusion_get_locale('render_engine') ?> 3.2</strong></li>
             </ul>
         </footer>
         <?php
@@ -91,30 +94,37 @@ class adminPanel extends resource {
      * Javascript for Interface
      */
     private function do_interface_js() {
-
         add_to_jquery("
-$('#search_app').bind('keyup', function(e) {
-    var data = {
-        'appString' : $(this).val(),
-        'mode' : 'html',
-        'url' : '".$_SERVER['REQUEST_URI']."',
-    };
-    var sendData = $.param(data);
-    $.ajax({
-        url: '".THEMES."admin_themes/Artemis/acp_request.php".$this->get_aidlink()."',
-        dataType: 'html',
-        method : 'get',
-        type: 'json',
-        data: sendData,
-        success: function(e) {
-            $('.app_page_list').hide();
-            $('ul#app_search_result').html(e).show();
-        },
-        error : function(e) {
-            console.log('fail');
-        }
-    });
-});
+        menuToggle('".self::$locale['admin_collapse']."');
+        $('.menu-action').bind('click', function (e) {
+            menu_wrap.toggleClass('collapsed');
+            body_wrap.toggleClass('collapsed');
+            app_wrap.toggleClass('collapsed');
+            menuToggle('".self::$locale['admin_collapse']."');
+            e.preventDefault();
+        });
+        $('#search_app').bind('keyup', function(e) {
+            var data = {
+                'appString' : $(this).val(),
+                'mode' : 'html',
+                'url' : '".$_SERVER['REQUEST_URI']."',
+            };
+            var sendData = $.param(data);
+            $.ajax({
+                url: '".THEMES."admin_themes/Artemis/acp_request.php".$this->get_aidlink()."',
+                dataType: 'html',
+                method : 'get',
+                type: 'json',
+                data: sendData,
+                success: function(e) {
+                    $('.app_page_list').hide();
+                    $('ul#app_search_result').html(e).show();
+                },
+                error : function(e) {
+                    console.log('fail');
+                }
+            });
+        });
         ");
 
     }
@@ -123,13 +133,15 @@ $('#search_app').bind('keyup', function(e) {
      * Primary Sectional Menu
      */
     private function left_nav() {
-        global $aidlink;
-        $sections = parent::getAdminSections();
+        $aidlink = fusion_get_aidlink();
+        $locale = parent::get_locale();
 
-        $sections[] = "Collapse Menu";
+        $sections = Admins::getInstance()->getAdminSections();
+
+        $sections[] = $locale['admin_collapse'];
         $this->admin_section_icons[] = "<i class='fa fa-chevron-circle-left'></i>\n";
 
-        $pages = parent::getAdminPages();
+        $pages = Admins::getInstance()->getAdminPages();
         $section_count = count($sections);
         ?>
         <ul>
@@ -145,13 +157,11 @@ $('#search_app').bind('keyup', function(e) {
                 }
                 ?>
                 <li <?php echo($active ? " class=\"active\"" : "") ?>>
-                    <a class="pointer admin-menu-item<?php echo $is_menu_action ? " menu-action " : "" ?>"
-                       title="<?php echo $section_name ?>" <?php echo $href_src ?>>
-                        <?php echo $this->get_admin_section_icons($i)." <span class=\"m-l-10\">$section_name</span> ".($i > 0 ? "<span class='fa fa-caret-right'></span>" : '') ?>
+                    <a class="pointer admin-menu-item<?php echo $is_menu_action ? " menu-action " : "" ?>" title="<?php echo $section_name ?>" <?php echo $href_src ?>>
+                        <?php echo Admins::getInstance()->get_admin_section_icons($i)." <span class=\"m-l-10\">$section_name</span> ".($i > 0 ? "<span class='fa fa-caret-right'></span>" : '') ?>
                     </a>
-                    <a class="pointer admin-menu-icon<?php echo $is_menu_action ? " menu-action " : "" ?>"
-                       title="<?php echo $section_name ?>" <?php echo $href_src ?>>
-                        <?php echo $this->get_admin_section_icons($i) ?>
+                    <a class="pointer admin-menu-icon<?php echo $is_menu_action ? " menu-action " : "" ?>" title="<?php echo $section_name ?>" <?php echo $href_src ?>>
+                        <?php echo Admins::getInstance()->get_admin_section_icons($i) ?>
                     </a>
                 </li>
                 <?php
@@ -171,11 +181,13 @@ $('#search_app').bind('keyup', function(e) {
 
         $aidlink = parent::get_aidlink();
 
-        $sections = parent::getAdminSections();
+        $locale = parent::get_locale();
 
-        $pages = parent::getAdminPages();
+        $sections = Admins::getInstance()->getAdminSections();
 
-        $is_current_page = parent::getCurrentPage();
+        $pages = Admins::getInstance()->getAdminPages();
+
+        $is_current_page = parent::_currentPage();
 
         echo "<ul id=\"app_search_result\"  style=\"display:none;\"></ul>\n";
 
@@ -202,8 +214,7 @@ $('#search_app').bind('keyup', function(e) {
                         <li <?php echo $secondary_active ?>>
                             <a href="<?php echo $link ?>">
                                 <div class="app_icon">
-                                    <img class="img-responsive" alt="<?php echo $title ?>"
-                                         src="<?php echo get_image("ac_".$data['admin_rights']); ?>"/>
+                                    <img class="img-responsive" alt="<?php echo $title ?>" src="<?php echo get_image("ac_".$data['admin_rights']); ?>"/>
                                 </div>
                                 <div class="apps">
                                     <h4><?php echo $title ?></h4>
@@ -245,7 +256,9 @@ $('#search_app').bind('keyup', function(e) {
                 <li class="dropdown">
                     <a class="dropdown-toggle pointer" data-toggle="dropdown">
                         <?php echo display_avatar($userdata, "30px", "m-r-10", "", "img-rounded") ?>
-                        <?php echo $locale['welcome'].", <strong>".$userdata['user_name']."</strong> <span class='caret'></span>\n"; ?>
+                        <span class="hidden-xs hidden-sm hidden-md">
+                            <?php echo $locale['welcome'].", <strong>".$userdata['user_name']."</strong> <span class='caret'></span>\n";
+                        ?>
                     </a>
                     <ul class="dropdown-menu" role="menu">
                         <?php
@@ -262,15 +275,12 @@ $('#search_app').bind('keyup', function(e) {
                         ?>
                     </ul>
                 </li>
-                <li>
+                <li class="hidden-xs hidden-sm">
                     <a title="<?php echo $locale['settings'] ?>" href="<?php echo ADMIN."settings_main.php".$aidlink ?>">
                         <?php echo $locale['settings'] ?>
                     </a>
                 </li>
-
-
                 <?php
-
                 echo self::message_notification();
                 echo self::admin_language_switcher();
                 ?>
@@ -286,9 +296,49 @@ $('#search_app').bind('keyup', function(e) {
 
     private function message_notification() {
         $locale = self::get_locale();
+        $userdata = fusion_get_userdata();
 
-        $messages = self::get_messages();
-        $html = '<li class="dropdown">';
+        $messages = [];
+
+        $msg_count_sql = "message_to = '".$userdata['user_id']."' AND message_user='".$userdata['user_id']."' AND message_read='0' AND message_folder='0'";
+
+        $msg_search_sql = "
+                        SELECT message_id, message_subject,
+                        message_from 'sender_id', u.user_name 'sender_name', u.user_avatar 'sender_avatar', u.user_status 'sender_status',
+                        message_datestamp
+                        FROM ".DB_MESSAGES."
+                        INNER JOIN ".DB_USERS." u ON u.user_id=message_from
+                        WHERE message_to = '".$userdata['user_id']."' AND message_user='".$userdata['user_id']."' AND message_read='0' AND message_folder='0'
+                        GROUP BY message_id
+                        ";
+
+        if (dbcount("(message_id)", DB_MESSAGES, $msg_count_sql)) {
+
+            $msg_result = dbquery($msg_search_sql);
+
+            if (dbrows($msg_result) > 0) {
+
+                while ($data = dbarray($msg_result)) {
+
+                    $messages[] = array(
+                        "link" => BASEDIR."messages.php?folder=inbox&amp;msg_read=".$data['message_id'],
+                        "title" => $data['message_subject'],
+                        "sender" => array(
+                            "user_id" => $data['sender_id'],
+                            "user_name" => $data['sender_name'],
+                            "user_avatar" => $data['sender_avatar'],
+                            "user_status" => $data['sender_status'],
+                        ),
+                        "datestamp" => timer($data['message_datestamp']),
+                    );
+
+                }
+
+            }
+
+        }
+
+        $html = '<li class="dropdown hidden-xs hidden-sm">';
         if (!empty($messages)) {
             $html .= '
             <a class="dropdown-toggle" data-toggle="dropdown" title="'.$locale['message'].'" href="'.BASEDIR.'messages.php">
@@ -330,8 +380,7 @@ $('#search_app').bind('keyup', function(e) {
     private function display_admin_pages() {
 
         $aidlink = fusion_get_aidlink();
-        $sections = Admin::getInstance()->getAdminSections();
-
+        $sections = Admins::getInstance()->getAdminSections();
         echo "<nav>";
         echo "<ul>\n";
         if (!empty($sections)) {

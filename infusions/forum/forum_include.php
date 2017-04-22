@@ -2,9 +2,9 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
-| Filename: forum_include.php
+| Filename: forum/forum_include.php
 | Author: PHP-Fusion Development Team
 +--------------------------------------------------------+
 | This program is released as free software under the
@@ -18,12 +18,6 @@
 if (!defined("IN_FUSION")) {
     die("Access Denied");
 }
-
-/**
- * Developer tools for template implementations
- * I will keep it here, but these are not necessary
- * since you can use them as the return statements indicates.
- */
 
 function attach_exists($file) {
     return \PHPFusion\Forums\Functions::attach_exists($file);

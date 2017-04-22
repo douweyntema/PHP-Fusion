@@ -1,5 +1,20 @@
 <?php
-
+/*-------------------------------------------------------+
+| PHP-Fusion Content Management System
+| Copyright (C) PHP-Fusion Inc
+| https://www.php-fusion.co.uk/
++--------------------------------------------------------+
+| Filename: sqlhandler.inc.php
+| Author: PHP-Fusion Development Team
++--------------------------------------------------------+
+| This program is released as free software under the
+| Affero GPL license. You can redistribute it and/or
+| modify it under the terms of this license which you
+| can read by viewing the included agpl.txt or online
+| at www.gnu.org/licenses/agpl.html. Removal of this
+| copyright header is strictly prohibited without
+| written permission from the original author(s).
++--------------------------------------------------------*/
 class SqlHandler {
 
     /** Add column to a specific table */
@@ -147,17 +162,20 @@ class SqlHandler {
 // Hierarchy Type 1 - key to index method
 
 /**
- * Hierarchy Id to Category Output
+ * Hierarchy ID to Category Output
  * Returns cat-id relationships
- * @param      $db
- * @param      $id_col
- * @param      $cat_col
- * @param bool $filter
+ *
+ * @param        $db            - Table Name
+ * @param        $id_col        - ID column
+ * @param        $cat_col       - Category Column
+ * @param bool   $filter        - Conditions
+ * @param string $query_replace - Replace the entire query
+ *
  * @return array
  */
 function dbquery_tree($db, $id_col, $cat_col, $filter = FALSE, $query_replace = "") {
     $index = array();
-    $query = "SELECT $id_col, $cat_col FROM ".$db." $filter";
+    $query = "SELECT $id_col, $cat_col FROM ".$db." ".$filter;
     if (!empty($query_replace)) {
         $query = $query_replace;
     }
@@ -595,22 +613,6 @@ function tree_join_method_sql_deprecated($db, $id_col, $cat_col, $filter = FALSE
     return $result;
 }
 
-
-// Might move to Dynamics -- Used by form_select_tree(); only //
-/* Hierarchy Data - returns full data array -- used by select2 tree dropdown */
-function dbquery_tree_data($db, $id_col, $cat_col, $filter = FALSE, $filter_order = FALSE, $filter_show = FALSE) {
-    $data = array();
-    $index = array();
-    $filter_order = ($filter_order) ? "ORDER BY $filter_order" : '';
-    $query = dbquery("SELECT * FROM ".$db." $filter $filter_order $filter_show"); // mysql_query("SELECT id, parent_id, name FROM categories ORDER BY name");
-    while ($row = dbarray($query)) {
-        $id = $row[$id_col];
-        $data[$id] = $row;
-    }
-
-    return $data;
-}
-
 // need dbquery_tree_data to function
 function display_parent_nodes($data, $id_col, $cat_col, $id) {
     /*
@@ -636,13 +638,17 @@ function display_parent_nodes($data, $id_col, $cat_col, $id) {
  * @return array
  */
 function fieldgenerator($db) {
-    $cresult = dbquery("SHOW COLUMNS FROM $db");
-    $col_names = array();
-    while ($cdata = dbarray($cresult)) {
-        $col_names[] = $cdata['Field'];
+    static $col_names = array();
+
+    if (empty($col_names[$db])) {
+        $cresult = dbquery("SHOW COLUMNS FROM $db");
+        $col_names = array();
+        while ($cdata = dbarray($cresult)) {
+            $col_names[$db][] = $cdata['Field'];
+        }
     }
 
-    return (array)$col_names;
+    return (array)$col_names[$db];
 }
 
 /**
@@ -878,17 +884,20 @@ function db_exists($table, $updateCache = FALSE) {
  * @return bool
  */
 function column_exists($table, $column, $add_prefix = TRUE) {
+
+    static $table_config = array();
+
     if ($add_prefix === TRUE) {
         if (strpos($table, DB_PREFIX) === FALSE) {
             $table = DB_PREFIX.$table;
         }
     }
-    $sql = "SHOW COLUMNS FROM `$table` LIKE '$column'";
-    $result = dbquery($sql);
-    if (dbrows($result)) {
-        return TRUE;
+
+    if (empty($table_config[$table])) {
+        $table_config[$table] = array_flip(fieldgenerator($table));
     }
-    return FALSE;
+
+    return (isset($table_config[$table][$column]) ? TRUE : FALSE);
 }
 
 

@@ -1,7 +1,7 @@
 <?php
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
-| Copyright (C) 2002 - 2016 PHP-Fusion Inc.
+| Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Name: Septenary Theme
@@ -22,6 +22,7 @@
 +--------------------------------------------------------*/
 
 namespace PHPFusion;
+use PHPFusion\Rewrite\Router;
 
 /**
  * Class SeptenaryComponents
@@ -183,8 +184,7 @@ class SeptenaryComponents {
      * Septenary Header
      */
     public function displayHeader() {
-        global $aidlink;
-
+        $aidlink = fusion_get_aidlink();
         $userdata = fusion_get_userdata();
         $locale = self::$locale;
 
@@ -257,7 +257,7 @@ class SeptenaryComponents {
 
         $this->open_grid('section-2', 1);
         echo "<div class='header-nav'>\n";
-        echo showsublinks('')."\n";
+        echo showsublinks('', 'navbar-default', ['show_header' => TRUE])."\n";
         echo "</div>\n";
         $this->close_grid();
         echo "</div>\n";
@@ -303,7 +303,13 @@ class SeptenaryComponents {
 
         } else {
 
-            if ($settings['opening_page'] == FUSION_SELF) {
+            $file_path = str_replace(ltrim(fusion_get_settings('site_path'),'/'), '', preg_replace('/^\//', '', FUSION_REQUEST));
+            if ($settings['site_seo'] && defined('IN_PERMALINK')) {
+                require_once CLASSES.'PHPFusion/Rewrite/Router.inc';
+                $file_path = Router::getRouterInstance()->getCurrentURL();
+            }
+
+            if ($settings['opening_page'] == $file_path) {
                 echo "<div class='text-center logo'>\n";
                 if ($settings['sitebanner']) {
                     echo "<a href='".BASEDIR."'><img class='img-responsive' src='".BASEDIR.$settings['sitebanner']."' alt='".$settings['sitename']."' style='border: 0;' /></a>\n";
@@ -314,17 +320,17 @@ class SeptenaryComponents {
                 echo "<h2 class='text-center text-uppercase' style='letter-spacing:10px; font-weight:300; font-size:36px;'>".$settings['sitename']."</h2>\n";
                 //echo "<div class='text-center' style='font-size:19.5px; line-height:35px; font-weight:300; color:rgba(255,255,255,0.8'>".stripslashes($settings['siteintro'])."</div>\n";
                 $modules = array(
-                    DB_NEWS => db_exists(DB_NEWS),
-                    DB_PHOTO_ALBUMS => db_exists(DB_PHOTO_ALBUMS),
-                    DB_FORUMS => db_exists(DB_FORUMS),
-                    DB_DOWNLOADS => db_exists(DB_DOWNLOADS)
+                    DB_PREFIX.'news' => db_exists(DB_PREFIX.'news'),
+                    DB_PREFIX.'photos' => db_exists(DB_PREFIX.'photos'),
+                    DB_PREFIX.'forums' => db_exists(DB_PREFIX.'forums'),
+                    DB_PREFIX.'downloads' => db_exists(DB_PREFIX.'downloads')
                 );
                 $sum = array_sum($modules);
                 if ($sum) {
                     $size = 12 / $sum;
                     $sizeClasses = 'col-sm-'.$size.' col-md-'.$size.' col-lg-'.$size;
                     echo "<div class='section-2-row row'>\n";
-                    if ($modules[DB_NEWS]) {
+                    if ($modules[DB_PREFIX.'news']) {
                         echo "<div class='$sizeClasses section-2-tab text-center'>\n";
                         echo "<a href='".INFUSIONS."news/news.php'>\n";
                         echo "<i class='fa fa-newspaper-o fa-2x'></i>\n";
@@ -332,7 +338,7 @@ class SeptenaryComponents {
                         echo "</a>\n";
                         echo "</div>\n";
                     }
-                    if ($modules[DB_PHOTO_ALBUMS]) {
+                    if ($modules[DB_PREFIX.'photos']) {
                         echo "<div class='$sizeClasses section-2-tab text-center'>\n";
                         echo "<a href='".INFUSIONS."gallery/gallery.php'>\n";
                         echo "<i class='fa fa-camera-retro fa-2x'></i>\n";
@@ -340,7 +346,7 @@ class SeptenaryComponents {
                         echo "</a>\n";
                         echo "</div>\n";
                     }
-                    if ($modules[DB_FORUMS]) {
+                    if ($modules[DB_PREFIX.'forums']) {
                         echo "<div class='$sizeClasses section-2-tab text-center'>\n";
                         echo "<a href='".INFUSIONS."forum/index.php'>\n";
                         echo "<i class='fa fa-comments fa-2x'></i>\n";
@@ -348,7 +354,7 @@ class SeptenaryComponents {
                         echo "</a>\n";
                         echo "</div>\n";
                     }
-                    if ($modules[DB_DOWNLOADS]) {
+                    if ($modules[DB_PREFIX.'downloads']) {
                         echo "<div class='$sizeClasses section-2-tab text-center'>\n";
                         echo "<a href='".INFUSIONS."downloads/downloads.php'>\n";
                         echo "<i class='fa fa-download fa-2x'></i>\n";
@@ -393,13 +399,32 @@ class SeptenaryComponents {
         $settings = fusion_get_settings();
 
         $this->open_grid('footer', TRUE);
+
+        echo "<div class='row m-b-20'>\n";
+            echo "<div class='col-xs-12 col-sm-3 col-md-3 col-lg-3'>\n";
+                echo defined('USER1') && USER1 ? USER1 : '';
+            echo "</div>\n";
+
+            echo "<div class='col-xs-12 col-sm-3 col-md-3 col-lg-3'>\n";
+                echo defined('USER2') && USER2 ? USER2 : '';
+            echo "</div>\n";
+
+            echo "<div class='col-xs-12 col-sm-3 col-md-3 col-lg-3'>\n";
+                echo defined('USER3') && USER3 ? USER3 : '';
+            echo "</div>\n";
+
+            echo "<div class='col-xs-12 col-sm-3 col-md-3 col-lg-3'>\n";
+                echo defined('USER4') && USER4 ? USER4 : '';
+            echo "</div>\n";
+        echo "</div>\n";
+
         echo "<div class='footer-row row'>\n";
         echo "<div class='hidden-xs col-sm-3 col-md-3 col-lg-3'>\n";
         echo "<img style='width:80%;' alt='".$locale['sept_011']."' class='img-responsive' src='".THEME."images/htmlcss.jpg' />";
         echo "</div>\n";
         echo "<div class='col-xs-12 col-sm-9 col-md-9 col-lg-9 footer-right-col'>\n";
         echo "<div class='pull-right'>\n";
-        echo "<a href='#top'><i style='font-size:50px;' class='entypo mid-opacity up-circled'></i></a>\n";
+        echo "<a href='#top'><i style='font-size:50px;' class='fa fa-arrow-circle-o-up mid-opacity'></i></a>\n";
         echo "</div>\n";
         echo "<p class='text-left'>".stripslashes(strip_tags($settings['footer']))."</p>
 	    <p>".showcopyright()."</p>

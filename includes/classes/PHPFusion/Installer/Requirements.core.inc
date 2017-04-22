@@ -1,8 +1,25 @@
 <?php
+/*-------------------------------------------------------+
+| PHP-Fusion Content Management System
+| Copyright (C) PHP-Fusion Inc
+| https://www.php-fusion.co.uk/
++--------------------------------------------------------+
+| Filename: Requirments.core.inc
+| Author: PHP-Fusion Development Team
++--------------------------------------------------------+
+| This program is released as free software under the
+| Affero GPL license. You can redistribute it and/or
+| modify it under the terms of this license which you
+| can read by viewing the included agpl.txt or online
+| at www.gnu.org/licenses/agpl.html. Removal of this
+| copyright header is strictly prohibited without
+| written permission from the original author(s).
++--------------------------------------------------------*/
 namespace PHPFusion\Installer;
 
-class Requirements extends Install_Core {
+use PHPFusion\Database\DatabaseFactory;
 
+class Requirements extends Install_Core {
 
     /*
     * Get System Requirements for PHP-Fusion 9
@@ -13,7 +30,7 @@ class Requirements extends Install_Core {
         $software = $_SERVER['SERVER_SOFTWARE'];
 
         $requirements['webserver'] = array(
-            'title' => self::$locale['setup_0108'],
+            'title' => self::$locale['setup_0050'],
             'value' => $software,
         );
 
@@ -26,6 +43,7 @@ class Requirements extends Install_Core {
                 // Major version number
                 if ($matches[1] < 2) {
                     $requirements['apache_version'] = array(
+                        'title' => 'Apache',
                         'version' => $apache_version_string,
                         'description' => self::$locale['setup_0109'],
                         'severability' => -10
@@ -33,12 +51,14 @@ class Requirements extends Install_Core {
                 } elseif ($matches[1] == 2) {
                     if (!isset($matches[2])) {
                         $requirements['apache_version'] = array(
+                            'title' => 'Apache',
                             'version' => $apache_version_string,
                             'description' => self::$locale['setup_0120'],
                             'severability' => -10
                         );
                     } elseif ($matches[2] < 2) {
                         $requirements['apache_version'] = array(
+                            'title' => 'Apache',
                             'version' => $apache_version_string,
                             'description' => self::$locale['setup_0109'],
                             'severability' => -10
@@ -46,12 +66,14 @@ class Requirements extends Install_Core {
                     } elseif ($matches[2] == 2) {
                         if (!isset($matches[3])) {
                             $requirements['apache_version'] = array(
+                                'title' => 'Apache',
                                 'version' => $apache_version_string,
                                 'description' => self::$locale['setup_0110'],
                                 'severability' => -10
                             );
                         } elseif ($matches[3] < 16) {
                             $requirements['apache_version'] = array(
+                                'title' => 'Apache',
                                 'version' => $apache_version_string,
                                 'description' => self::$locale['setup_0109'],
                                 'severability' => -10
@@ -61,6 +83,7 @@ class Requirements extends Install_Core {
                 }
             } else {
                 $requirements['apache_version'] = array(
+                    'title' => 'Apache',
                     'version' => $apache_version_string,
                     'description' => self::$locale['setup_0110'],
                     'severability' => -10
@@ -72,12 +95,12 @@ class Requirements extends Install_Core {
         $phpversion = $phpversion_label = phpversion();
         if (function_exists('phpinfo')) {
             $requirements['php'] = array(
-                'title' => 'PHP',
+                'title' => self::$locale['setup_0051'],
                 'value' => $phpversion_label,
             );
         } else {
             $requirements['php'] = array(
-                'title' => 'PHP',
+                'title' => self::$locale['setup_0051'],
                 'value' => $phpversion_label,
                 'description' => self::$locale['setup_0112'],
                 'severability' => -5
@@ -85,13 +108,14 @@ class Requirements extends Install_Core {
         }
 
         if (version_compare($phpversion, '5.5.21') < 0) {
-            $requirements['php']['description'] = self::$locale['0113'];
+            $requirements['php']['title'] = 'PHP';
+            $requirements['php']['description'] = self::$locale['setup_0113'];
             $requirements['php']['severability'] = -10;
         }
 
         // Suggest to update to at least 5.5.21 or 5.6.5 for disabling multiple
         // statements.
-        $requirements['php_extensions']['title'] = 'PHP Extensions';
+        $requirements['php_extensions']['title'] = self::$locale['setup_0052'];
         $missing_extensions = array();
         $required_extensions = array(
             'date',
@@ -135,7 +159,7 @@ class Requirements extends Install_Core {
         } else {
             $requirements['php_opcache']['value'] = self::$locale['setup_0115'];
         }
-        $requirements['php_opcache']['title'] = self::$locale['setup_0117'];
+        $requirements['php_opcache']['title'] = self::$locale['setup_0053'];
 
         // Test for PDO (database).
         // Make sure PDO is available.
@@ -149,28 +173,28 @@ class Requirements extends Install_Core {
         } else {
             $requirements['database_extensions']['value'] = self::$locale['setup_0115'];
         }
-        $requirements['database_extensions']['title'] = self::$locale['setup_0119'];
+        $requirements['database_extensions']['title'] = self::$locale['setup_0054'];
 
         // Test PHP memory_limit
         $memory_limit = ini_get('memory_limit');
         $requirements['php_memory_limit'] = [
-            'title' => 'PHP memory limit',
+            'title' => self::$locale['setup_0055'],
             'value' => $memory_limit == -1 ? '-1 (Unlimited)' : $memory_limit,
         ];
         if (strpos($memory_limit, 'M')) {
             $memory_limit_value = intval(rtrim($memory_limit, 'M'));
         }
         if (!$memory_limit_value || $memory_limit_value < 64) {
-            $requirements['memory'] = [
+            $requirements['php_memory_limit'] = [
                 'description' => self::$locale['setup_0119a'],
                 'severability' => -5,
             ];
             if (php_ini_loaded_file() == get_cfg_var('cfg_file_path')) {
-                $requirements['value'] = self::$locale['setup_0119b'];
-                $requirements['severability'] = -5;
+                $requirements['php_memory_limit']['value'] = self::$locale['setup_0119b'];
+                $requirements['php_memory_limit']['severability'] = -5;
             } else {
-                $requirements['value'] = self::$locale['setup_0119c'];
-                $requirements['severability'] = -5;
+                $requirements['php_memory_limit']['value'] = self::$locale['setup_0119c'];
+                $requirements['php_memory_limit']['severability'] = -5;
             }
         }
 
@@ -194,7 +218,6 @@ class Requirements extends Install_Core {
         // Check system core files and folders
         $check_arr = array(
             "administration/db_backups" => FALSE,
-            "ftp_upload" => FALSE,
             "images" => FALSE,
             "images/imagelist.js" => FALSE,
             "images/avatars" => FALSE,
@@ -213,7 +236,7 @@ class Requirements extends Install_Core {
                 $requirements['files_check']['sub'][$key] = self::$locale['setup_0137'];
             }
         }
-        $requirements['files_check']['title'] = self::$locale['setup_0133'];
+        $requirements['files_check']['title'] = self::$locale['setup_0056'];
         $requirements['files_check']['description'] = self::$locale['setup_0134'];
         if (isset($requirements['files_check']['severability'])) {
             $requirements['files_check']['description'] = self::$locale['setup_0135'];
@@ -229,32 +252,43 @@ class Requirements extends Install_Core {
 
         $microtime = microtime(TRUE);
         $system = self::$connection;
-        $locale = self::$locale;
 
-        if (!file_exists(BASEDIR."config_temp.php")) {
-
-            if (file_exists(BASEDIR."_config.php") && function_exists("rename")) {
-                @rename(BASEDIR."_config.php", BASEDIR."config_temp.php");
-            } else {
-                touch(BASEDIR."config_temp.php");
-            }
-
+        if (!isset($system['db_prefix']) && empty($system['db_prefix']) && defined('DB_PREFIX')) {
+            $system['db_prefix'] = DB_PREFIX;
         }
 
-        if (!empty($system['db_host']) && !empty($system['db_user']) && !empty($system['db_name']) && !empty($system['db_pass'])) {
+        if (!isset($system['cookie_prefix']) && empty($system['cookie_prefix']) && defined('COOKIE_PREFIX')) {
+            $system['cookie_prefix'] = COOKIE_PREFIX;
+        }
+
+        if (!isset($system['secret_key']) && empty($system['secret_key']) && defined('SECRET_KEY')) {
+            $system['secret_key'] = SECRET_KEY;
+        }
+
+        if (!isset($system['secret_key_salt']) && empty($system['secret_key_salt']) && defined('SECRET_KEY_SALT')) {
+            $system['secret_key_salt'] = SECRET_KEY_SALT;
+        }
+
+        $locale = self::$locale;
+
+        if (!empty($system['db_host']) && !empty($system['db_user']) && !empty($system['db_name'])) {
+
             require_once INCLUDES."db_handlers/all_functions_include.php";
+
             $validation[1] = [
                 'result' => 1,
                 'description' => self::$locale['setup_0144'],
                 'elapsed' => microtime(TRUE) - $microtime
             ];
 
-            $connection_info = dbconnect($system['db_host'], $system['db_user'], $system['db_pass'], $system['db_name'], FALSE);
+            DatabaseFactory::setDefaultDriver(intval(isset(self::$connection['pdo_enabled']) && self::$connection['pdo_enabled']) === 1 ? DatabaseFactory::DRIVER_PDO_MYSQL : DatabaseFactory::DRIVER_MYSQLi);
+
+            // There will be a connection issue present.
+            $connection_info = $connection = dbconnect(self::$connection['db_host'], self::$connection['db_user'], self::$connection['db_pass'], self::$connection['db_name'], FALSE);
             $db_connect = $connection_info['connection_success'];
             $db_select = $connection_info['dbselection_success'];
 
             if ($db_connect) {
-
                 $validation[2] = [
                     'result' => 1,
                     'description' => self::$locale['setup_0138'],
@@ -268,8 +302,6 @@ class Requirements extends Install_Core {
                         'description' => self::$locale['setup_0139'],
                         'elapsed' => microtime(TRUE) - $microtime
                     ];
-
-
                     if (!check_table($system['db_prefix'])) {
                         $validation[4] = [
                             'result' => 1,
@@ -342,6 +374,7 @@ class Requirements extends Install_Core {
                     'description' => self::$locale['setup_1310'],
                     'elapsed' => microtime(TRUE) - $microtime
                 ];
+
             }
         } else {
             //Please make sure you have filled out all the MySQL connection fields
@@ -350,6 +383,7 @@ class Requirements extends Install_Core {
                 'description' => self::$locale['setup_1317'],
                 'elapsed' => microtime(TRUE) - $microtime
             ];
+
         }
 
         return $validation;
@@ -388,8 +422,6 @@ function write_config(array $system = array()) {
             $system['cookie_prefix'] = $system['cookie_prefix']."_";
         }
     }
-
-
     if (!empty($system['db_prefix'])) {
         $cookie_prefix_last = $system['db_prefix'][strlen($system['db_prefix']) - 1];
         if ($cookie_prefix_last != "_") {
@@ -414,34 +446,4 @@ function write_config(array $system = array()) {
     }
 
     return FALSE;
-}
-
-/**
- * A wrapper function for file_put_contents with cache invalidation
- *
- * If opcache is enabled on the server, this function will write the file
- * as the original file_put_contents and invalidate the cache of the file.
- *
- * It is needed when you create a file dynamically and want to include it
- * before the cache is invalidated. Redirection does not matter.
- *
- * @todo Find a better place and/or name for this function
- *
- * @param string          $file file path
- * @param string|string[] $data
- * @param int             $flags
- * @return int Number of written bytes
- */
-function write_file($file, $data, $flags = NULL) {
-    $bytes = NULL;
-    if ($flags === NULL) {
-        $bytes = \file_put_contents($file, $data);
-    } else {
-        $bytes = \file_put_contents($file, $data, $flags);
-    }
-    if (function_exists('opcache_invalidate')) {
-        \opcache_invalidate($file, TRUE);
-    }
-
-    return $bytes;
 }

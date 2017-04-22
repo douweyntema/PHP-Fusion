@@ -1,10 +1,9 @@
 <?php
-
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
-+--------------------------------------------------------*
++--------------------------------------------------------+
 | Filename: Featurebox/featurebox.php
 | Author: Frederick MC Chan (Chan)
 +--------------------------------------------------------+
@@ -79,7 +78,6 @@ class featureboxWidget extends \PHPFusion\Page\PageModel implements \PHPFusion\P
                 <!--//Icon-->
             </div>
             <h3><?php echo $boxData['box_title'] ?></h3>
-
             <p><?php echo nl2br($boxData['box_description']) ?></p>
             <?php echo $box_link ?>
         </div>

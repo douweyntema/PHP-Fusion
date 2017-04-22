@@ -18,9 +18,9 @@
 require_once "../maincore.php";
 pageAccess('BB');
 require_once THEMES."templates/admin_header.php";
-include LOCALE.LOCALESET."admin/bbcodes.php";
+$locale = fusion_get_locale('', LOCALE.LOCALESET."admin/bbcodes.php");
 
-add_breadcrumb(array('link' => ADMIN.'bbcodes.php'.$aidlink, 'title' => $locale['400']));
+\PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link'=> ADMIN.'bbcodes.php'.fusion_get_aidlink(), "title"=> $locale['400']]);
 
 if (!isset($_GET['page']) || !isnum($_GET['page'])) {
     $_GET['page'] = 1;
@@ -49,7 +49,7 @@ if ($_GET['page'] == 1) {
         $result = dbquery("UPDATE ".DB_BBCODES." SET bbcode_order=bbcode_order-1 WHERE bbcode_id='".$data['bbcode_id']."'");
         $result = dbquery("UPDATE ".DB_BBCODES." SET bbcode_order=bbcode_order+1 WHERE bbcode_id='".$_GET['bbcode_id']."'");
         redirect(FUSION_SELF.$aidlink);
-    } elseif (isset($_GET['enable']) && preg_match("/^!?([a-z0-9_-]){2,50}$/i",
+    } elseif (isset($_GET['enable']) && preg_match("/^!?([a-z0-9_-]){1,50}$/i",
                                                    $_GET['enable']) && file_exists(INCLUDES."bbcodes/".$_GET['enable']."_bbcode_include_var.php") && file_exists(INCLUDES."bbcodes/".$_GET['enable']."_bbcode_include.php")
     ) {
         if (substr($_GET['enable'], 0, 1) != '!') {
@@ -130,17 +130,15 @@ if ($_GET['page'] == 1) {
             $lp++;
             $enabled_bbcodes[] = $data['bbcode_name'];
             if (file_exists(INCLUDES."bbcodes/images/".$data['bbcode_name'].".png")) {
-                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$data['bbcode_name'].".png' alt='".$data['bbcode_name']."' style='border:1px solid black' />\n";
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$data['bbcode_name'].".png' alt='".$data['bbcode_name']."' style='border:1px solid black;' />\n";
+            } else if (file_exists(INCLUDES."bbcodes/images/".$data['bbcode_name'].".gif")) {
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$data['bbcode_name'].".gif' alt='".$data['bbcode_name']."' style='border:1px solid black;' />\n";
+            } else if (file_exists(INCLUDES."bbcodes/images/".$data['bbcode_name'].".jpg")) {
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$data['bbcode_name'].".jpg' alt='".$data['bbcode_name']."' style='border:1px solid black;' />\n";
+            } else if (file_exists(INCLUDES."bbcodes/images/".$data['bbcode_name'].".svg")) {
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$data['bbcode_name'].".svg' alt='".$data['bbcode_name']."' style='border:1px solid black; width: 24px; height: 24px;' />\n";
             } else {
-                if (file_exists(INCLUDES."bbcodes/images/".$data['bbcode_name'].".gif")) {
-                    $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$data['bbcode_name'].".gif' alt='".$data['bbcode_name']."' style='border:1px solid black' />\n";
-                } else {
-                    if (file_exists(INCLUDES."bbcodes/images/".$data['bbcode_name'].".jpg")) {
-                        $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$data['bbcode_name'].".jpg' alt='".$data['bbcode_name']."' style='border:1px solid black' />\n";
-                    } else {
-                        $bbcode_image = "-";
-                    }
-                }
+                $bbcode_image = "-";
             }
             $cls = ($lp % 2 == 0 ? "tbl2" : "tbl1");
             echo "<tr>\n";
@@ -179,21 +177,19 @@ if ($_GET['page'] == 1) {
         echo "</tr>\n</thead>\n<tbody>\n";
         $xx = 0;
         foreach ($available_bbcodes as $available_bbcode) {
-            $__BBCODE__ = "";
+            $__BBCODE__ = array();
             if (!in_array($available_bbcode, $enabled_bbcodes)) {
-                if (file_exists(INCLUDES."bbcodes/images/".$available_bbcode.".png")) {
-                    $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$available_bbcode.".png' alt='".$available_bbcode."' style='border:1px solid black' />\n";
-                } else {
-                    if (file_exists(INCLUDES."bbcodes/images/".$available_bbcode.".gif")) {
-                        $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$available_bbcode.".gif' alt='".$available_bbcode."' style='border:1px solid black' />\n";
-                    } else {
-                        if (file_exists(INCLUDES."bbcodes/images/".$available_bbcode.".jpg")) {
-                            $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$available_bbcode.".jpg' alt='".$available_bbcode."' style='border:1px solid black' />\n";
-                        } else {
-                            $bbcode_image = "-";
-                        }
-                    }
-                }
+            if (file_exists(INCLUDES."bbcodes/images/".$available_bbcode.".png")) {
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$available_bbcode.".png' alt='".$available_bbcode."' style='border:1px solid black;' />\n";
+            } else if (file_exists(INCLUDES."bbcodes/images/".$available_bbcode.".gif")) {
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$available_bbcode.".gif' alt='".$available_bbcode."' style='border:1px solid black;' />\n";
+            } else if (file_exists(INCLUDES."bbcodes/images/".$available_bbcode.".jpg")) {
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$available_bbcode.".jpg' alt='".$available_bbcode."' style='border:1px solid black;' />\n";
+            } else if (file_exists(INCLUDES."bbcodes/images/".$available_bbcode.".svg")) {
+                $bbcode_image = "<img src='".INCLUDES."bbcodes/images/".$available_bbcode.".svg' alt='".$available_bbcode."' style='border:1px solid black; width: 24px; height: 24px;' />\n";
+            } else {
+                $bbcode_image = "-";
+            }
                 if (file_exists(LOCALE.LOCALESET."bbcodes/".$available_bbcode.".php")) {
                     include(LOCALE.LOCALESET."bbcodes/".$available_bbcode.".php");
                 } elseif (file_exists(LOCALE."English/bbcodes/".$available_bbcode.".php")) {
@@ -242,7 +238,7 @@ if ($_GET['page'] == 1) {
         include LOCALE.LOCALESET."comments.php";
         opentable($locale['401']);
         echo $navigation;
-        echo openform('input_form', 'post', FUSION_SELF.$aidlink."&amp;page=2", array('max_tokens' => 1));
+        echo openform('input_form', 'post', FUSION_SELF.$aidlink."&amp;page=2");
         echo "<table cellspacing='0' cellpadding='0' class='table table-responsive center'>\n<tr>\n";
         echo "<td class='tbl'>\n";
         echo form_textarea('test_message', $locale['418a'], $test_message, array('required' => 1, 'error_text' => $locale['418b'], 'bbcode' => 1));

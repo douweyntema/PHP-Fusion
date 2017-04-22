@@ -28,11 +28,11 @@ $inf_developer = "PHP Fusion Development Team";
 $inf_email = "info@php-fusion.co.uk";
 $inf_weburl = "https://www.php-fusion.co.uk";
 $inf_folder = "gallery";
-$inf_image = "gallery.png";
+$inf_image = "gallery.svg";
 
 // Multilanguage table for Administration
 $inf_mlt[] = array(
-    "title" => $locale['setup_3308'],
+    "title"  => $locale['setup_3308'],
     "rights" => "PG",
 );
 
@@ -77,11 +77,11 @@ $inf_newtable[] = DB_PHOTOS." (
 
 // Position these links under Content Administration
 $inf_adminpanel[] = array(
-    "image" => $inf_image,
-    "page" => 1,
+    "image"  => $inf_image,
+    "page"   => 1,
     "rights" => "PH",
-    "title" => $locale['setup_3308'],
-    "panel" => "gallery_admin.php"
+    "title"  => $locale['setup_3308'],
+    "panel"  => "gallery_admin.php"
 );
 
 // Gallery settings
@@ -102,6 +102,7 @@ $inf_insertdbrow[] = DB_SETTINGS_INF." (settings_name, settings_value, settings_
 $inf_insertdbrow[] = DB_SETTINGS_INF." (settings_name, settings_value, settings_inf) VALUES ('photo_watermark_save', '0', 'gallery')";
 $inf_insertdbrow[] = DB_SETTINGS_INF." (settings_name, settings_value, settings_inf) VALUES ('gallery_allow_submission', '1', 'gallery')";
 $inf_insertdbrow[] = DB_SETTINGS_INF." (settings_name, settings_value, settings_inf) VALUES ('gallery_extended_required', '1', 'gallery')";
+$inf_insertdbrow[] = DB_SETTINGS_INF." (settings_name, settings_value, settings_inf) VALUES ('gallery_file_types', '.pdf,.gif,.jpg,.png,.svg,.zip,.rar,.tar,.bz2,.7z', 'gallery')";
 
 // always find and loop ALL languages
 $enabled_languages = makefilelist(LOCALE, ".|..", TRUE, "folders");
@@ -109,16 +110,16 @@ $enabled_languages = makefilelist(LOCALE, ".|..", TRUE, "folders");
 if (!empty($enabled_languages)) {
     foreach ($enabled_languages as $language) {
         $locale = fusion_get_locale('', LOCALE.$language."/setup.php");
-        $mlt_insertdbrow[$language][] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_language) VALUES ('".$locale['setup_3308']."', 'infusions/gallery/gallery.php', '0', '2', '0', '2', '".$language."')";
-        $mlt_insertdbrow[$language][] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_language) VALUES ('".$locale['setup_3313']."', 'submit.php?stype=p', ".USER_LEVEL_MEMBER.", '1', '0', '15', '".$language."')";
+        $mlt_insertdbrow[$language][] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_status, link_language) VALUES ('".$locale['setup_3308']."', 'infusions/".$inf_folder."/gallery.php', '0', '2', '0', '2', '1', '".$language."')";
+        $mlt_insertdbrow[$language][] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_status, link_language) VALUES ('".$locale['setup_3313']."', 'submit.php?stype=p', ".USER_LEVEL_MEMBER.", '1', '0', '15', '1', '".$language."')";
 
-        $mlt_deldbrow[$language][] = DB_SITE_LINKS." WHERE link_url='infusions/gallery/gallery.php' AND link_language='".$language."'";
+        $mlt_deldbrow[$language][] = DB_SITE_LINKS." WHERE link_url='infusions/".$inf_folder."/gallery.php' AND link_language='".$language."'";
         $mlt_deldbrow[$language][] = DB_SITE_LINKS." WHERE link_url='submit.php?stype=p' AND link_language='".$language."'";
         $mlt_deldbrow[$language][] = DB_PHOTO_ALBUMS." WHERE album_language='".$language."'"; // bug again, will not be able to delete photos tied to it.
     }
 } else {
-    $inf_insertdbrow[] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_language) VALUES('".$locale['setup_3308']."', 'infusions/gallery/gallery.php', '0', '2', '0', '2', '".LANGUAGE."')";
-    $inf_insertdbrow[] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_language) VALUES ('".$locale['setup_3313']."', 'submit.php?stype=p', ".USER_LEVEL_MEMBER.", '1', '0', '15', '".$enabled_languages[$i]."')";
+    $inf_insertdbrow[] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_status, link_language) VALUES('".$locale['setup_3308']."', 'infusions/".$inf_folder."/gallery.php', '0', '2', '0', '2', '1', '".LANGUAGE."')";
+    $inf_insertdbrow[] = DB_SITE_LINKS." (link_name, link_url, link_visibility, link_position, link_window, link_order, link_status, link_language) VALUES ('".$locale['setup_3313']."', 'submit.php?stype=p', ".USER_LEVEL_MEMBER.", '1', '0', '15', '1', '".$enabled_languages[$i]."')";
 }
 
 // Defuse cleaning	
@@ -130,7 +131,7 @@ $inf_deldbrow[] = DB_RATINGS." WHERE rating_type='P'";
 $inf_deldbrow[] = DB_SUBMISSIONS." WHERE submit_type='P'";
 
 $inf_deldbrow[] = DB_ADMIN." WHERE admin_rights='PH'";
-$inf_deldbrow[] = DB_SITE_LINKS." WHERE link_url='infusions/gallery/gallery.php'";
+$inf_deldbrow[] = DB_SITE_LINKS." WHERE link_url='infusions/".$inf_folder."/gallery.php'";
 $inf_deldbrow[] = DB_SITE_LINKS." WHERE link_url='submit.php?stype=p'";
 $inf_deldbrow[] = DB_LANGUAGE_TABLES." WHERE mlt_rights='PG'";
 $inf_deldbrow[] = DB_SETTINGS_INF." WHERE settings_inf='gallery'";

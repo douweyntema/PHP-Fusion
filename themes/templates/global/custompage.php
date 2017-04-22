@@ -4,7 +4,7 @@
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
-| Filename: themes/templates/global/home.php
+| Filename: themes/templates/global/custompage.php
 | Author: PHP-Fusion Development Team
 +--------------------------------------------------------+
 | This program is released as free software under the
@@ -45,6 +45,7 @@ if (!function_exists("display_page_content")) {
             echo "</div>\n";
         } else {
             echo $info['body'][$info['rowstart']];
+            echo $info['pagenav'];
         }
     }
 }

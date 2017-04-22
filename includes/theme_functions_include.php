@@ -28,8 +28,7 @@ if (!defined("IN_FUSION")) {
  */
 function showrendertime($queries = TRUE) {
     global $mysql_queries_count;
-    $locale = array();
-    include LOCALE.LOCALESET."global.php";
+    $locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
     $db = DatabaseFactory::getConnection();
     if ($db) {
         $mysql_queries_count = $db->getGlobalQueryCount();
@@ -45,11 +44,38 @@ function showrendertime($queries = TRUE) {
         if (isset($_SESSION['performance'])) {
             $average_speed = substr(array_sum($_SESSION['performance']) / count($_SESSION['performance']), 0, 7);
             $previous_render = array_values(array_slice($_SESSION['performance'], -2, 1, TRUE));
-            $diff = $render_time - (!empty($previous_render) ? $previous_render[0] : 0);
+            $diff = (float)$render_time - (!empty($previous_render) ? (float)$previous_render[0] : 0);
         }
 
         $res = sprintf($locale['global_172'], $render_time)." | ".sprintf($locale['global_175'], $average_speed." ($diff)");
-        $res .= ($queries ? " | ".ucfirst($locale['global_173']).": $mysql_queries_count" : "");
+        $res .= ($queries ? " | ".ucfirst($locale['global_173']).": $mysql_queries_count" : '');
+
+        /*
+         * Turn this on if you want to see all the SQL.
+         * This debugging is for core engineers only. No need for translations.
+         */
+        $sql_log = FALSE;
+        if ($sql_log) {
+            $query_log = $db->getQueryLog();
+            $modal = openmodal('querylogsModal', 'SQL Run Time Analysis');
+            $modal_body = '';
+            $i = 0;
+            if (!empty($query_log)) {
+                foreach ($query_log as $connectionID => $sql) {
+                    $modal_body .= "<div class='spacer-xs'>\n";
+                    $modal_body .= "<h5>SQL#$i : ".$sql[0]." seconds</h5>\n\r";
+                    $modal_body .= "[code]".trim($sql[1]).trim($sql[2])."[/code]\n\r";
+                    $modal_body .= "<div>\n";
+                    $modal_body .= "<kbd>".$sql[3][2]['file']."</kbd><span class='badge pull-right'>Line #".$sql[3][2]['line'].", ".$sql[3][2]['function']."</span>\n\r";
+                    $modal_body .= "</div>\n";
+                    $modal_body .= "</div>\n";
+                    $i++;
+                }
+            }
+            $modal .= parse_textarea($modal_body, FALSE, TRUE, FALSE);
+            $modal .= closemodal();
+            add_to_footer($modal);
+        }
 
         return $res;
     } else {
@@ -58,8 +84,7 @@ function showrendertime($queries = TRUE) {
 }
 
 function showMemoryUsage() {
-    $locale = array();
-    include LOCALE.LOCALESET."global.php";
+    $locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
     $memory_allocated = parsebytesize(memory_get_peak_usage(TRUE));
     $memory_used = parsebytesize(memory_get_peak_usage(FALSE));
 
@@ -76,12 +101,27 @@ function showcopyright($class = "", $nobreak = FALSE) {
 }
 
 function showcounter() {
-    global $locale, $settings;
+    $locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
+    $settings = fusion_get_settings();
     if ($settings['visitorcounter_enabled']) {
         return "<!--counter-->".number_format($settings['counter'])." ".($settings['counter'] == 1 ? $locale['global_170'] : $locale['global_171']);
     } else {
         return "";
     }
+}
+
+function showprivacypolicy() {
+    $html = '';
+
+    if (!empty(fusion_get_settings('privacy_policy'))) {
+        $html .= "<a href='".BASEDIR."print.php?type=P' id='privacy_policy'>".fusion_get_locale('global_176', LOCALE.LOCALESET."global.php")."</a>";
+        $modal = openmodal('privacy_policy', $locale = fusion_get_locale('global_176', LOCALE.LOCALESET."global.php"), ['button_id' => 'privacy_policy']);
+        $modal .= parse_textarea(fusion_get_settings('privacy_policy'));
+        $modal .= closemodal();
+        add_to_footer($modal);
+    }
+
+    return $html;
 }
 
 /**
@@ -92,15 +132,15 @@ function showcounter() {
  * @return string
  */
 if (!function_exists("alert")) {
-    function alert($title, $text = "", array $options = array()) {
+    function alert($title, array $options = array()) {
         $options += array(
-            "class" => !empty($options['class']) ? $options['class'] : "alert-info",
+            "class"   => !empty($options['class']) ? $options['class'] : 'alert-danger',
             "dismiss" => !empty($options['dismiss']) && $options['dismiss'] == TRUE ? TRUE : FALSE
         );
         if ($options['dismiss'] == TRUE) {
-            $html = "<div class='alert alert-dismissable ".$options['class']."'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button><strong>$title</strong>".($text ? " ".$text : "")."</div>";
+            $html = "<div class='alert alert-dismissable ".$options['class']."'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>$title</div>";
         } else {
-            $html = "<div class='alert ".$options['class']."'><strong>$title</strong>".($text ? " ".$text : "")."</div>";
+            $html = "<div class='alert ".$options['class']."'>$title</div>";
         }
         add_to_jquery("$('div.alert a').addClass('alert-link');");
 
@@ -176,7 +216,7 @@ if (!function_exists("openmodal") && !function_exists("closemodal") && !function
      * @return string
      */
     function openmodal($id, $title, $options = array()) {
-        global $locale;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $options += array(
             'class' => !empty($options['class']) ?: 'modal-lg',
             'button_id' => "",
@@ -190,12 +230,11 @@ if (!function_exists("openmodal") && !function_exists("closemodal") && !function
         }
 
         if ($options['static'] && !empty($modal_trigger)) {
-
-            PHPFusion\OutputHandler::addToJQuery("$('".$modal_trigger."').bind('click', function(e){ $('#".$id."-Modal').modal({backdrop: 'static', keyboard: false}).modal('show'); });");
+            PHPFusion\OutputHandler::addToJQuery("$('".$modal_trigger."').bind('click', function(e){ $('#".$id."-Modal').modal({backdrop: 'static', keyboard: false}).modal('show'); e.preventDefault(); });");
         } elseif ($options['static'] && empty($options['button_id'])) {
             PHPFusion\OutputHandler::addToJQuery("$('#".$id."-Modal').modal({	backdrop: 'static',	keyboard: false }).modal('show');");
         } elseif ($modal_trigger && empty($options['static'])) {
-            PHPFusion\OutputHandler::addToJQuery("$('".$modal_trigger."').bind('click', function(e){ $('#".$id."-Modal').modal('show'); });");
+            PHPFusion\OutputHandler::addToJQuery("$('".$modal_trigger."').bind('click', function(e){ $('#".$id."-Modal').modal('show'); e.preventDefault(); });");
         } else {
             PHPFusion\OutputHandler::addToJQuery("$('#".$id."-Modal').modal('show');");
         }
@@ -205,7 +244,7 @@ if (!function_exists("openmodal") && !function_exists("closemodal") && !function
         $html .= "<div class='modal-content'>\n";
         if ($title) {
             $html .= "<div class='modal-header'>";
-            $html .= (empty($options['static'])) ? "<button type='button' class='btn btn-sm pull-right btn-default' data-dismiss='modal'><i class='entypo cross'></i> ".$locale['close']."</button>\n" : '';
+            $html .= "<button type='button' class='btn pull-right btn-default' data-dismiss='modal'><i class='fa fa-times'></i> ".$locale['close']."</button>\n";
             $html .= "<h4 class='modal-title text-dark' id='$id-title'>$title</h4>\n";
             $html .= "</div>\n";
         }
@@ -251,7 +290,7 @@ if (!function_exists("progress_bar")) {
      * @param bool $disabled
      * @return string
      */
-    function progress_bar($num, $title = FALSE, $class = FALSE, $height = FALSE, $reverse = FALSE, $as_percent = TRUE, $disabled = FALSE) {
+    function progress_bar($num, $title = FALSE, $class = FALSE, $height = FALSE, $reverse = FALSE, $as_percent = TRUE, $disabled = FALSE, $hide_info = FALSE, $class_ = 'm-b-10') {
         $height = ($height) ? $height : '20px';
         if (!function_exists('bar_color')) {
             function bar_color($num, $reverse) {
@@ -311,8 +350,8 @@ if (!function_exists("progress_bar")) {
                 $chtml .= "</div>\n";
                 $i++;
             }
-            $html .= "<div class='text-right m-b-10'><span class='pull-left'>$cTitle</span><span class='clearfix'>$cNum </span></div>\n";
-            $html .= "<div class='progress m-b-10' style='height: ".$height."'>\n";
+            $html .= ($hide_info == FALSE ? "<div class='text-right m-b-10'><span class='pull-left'>$cTitle</span><span class='clearfix'>$cNum </span></div>\n" : "");
+            $html .= "<div class='progress ".$class_."' style='height: ".$height."'>\n";
             $html .= $chtml;
             $html .= "</div>\n";
             $html .= "</div>\n";
@@ -328,8 +367,8 @@ if (!function_exists("progress_bar")) {
             $auto_class = bar_color($int, $reverse);
             $class = (!$class) ? $auto_class : $class;
 
-            $html .= "<div class='text-right m-b-10'><span class='pull-left'>$title</span><span class='clearfix'>$num</span></div>\n";
-            $html .= "<div class='progress m-b-10' style='height: ".$height."'>\n";
+            $html .= ($hide_info === FALSE ? "<div class='text-right m-b-10'><span class='pull-left'>$title</span><span class='clearfix'>$num</span></div>\n" : "");
+            $html .= "<div class='progress ".$class_."' style='height: ".$height."'>\n";
             $html .= "<div class='progress-bar ".$class."' role='progressbar' aria-valuenow='$num' aria-valuemin='0' aria-valuemax='100' style='width: $int%'>\n";
             $html .= "</div></div>\n";
         }
@@ -340,7 +379,7 @@ if (!function_exists("progress_bar")) {
 
 if (!function_exists("check_panel_status")) {
     function check_panel_status($side) {
-        global $settings;
+        $settings = fusion_get_settings();
         $exclude_list = "";
         if ($side == "left") {
             if ($settings['exclude_left'] != "") {
@@ -366,7 +405,24 @@ if (!function_exists("check_panel_status")) {
             if ($settings['exclude_right'] != "") {
                 $exclude_list = explode("\r\n", $settings['exclude_right']);
             }
+        } elseif ($side == "user1") {
+            if ($settings['exclude_user1'] != "") {
+                $exclude_list = explode("\r\n", $settings['exclude_user1']);
+            }
+        } elseif ($side == "user2") {
+            if ($settings['exclude_user2'] != "") {
+                $exclude_list = explode("\r\n", $settings['exclude_user2']);
+            }
+        } elseif ($side == "user3") {
+            if ($settings['exclude_user3'] != "") {
+                $exclude_list = explode("\r\n", $settings['exclude_user3']);
+            }
+        } elseif ($side == "user4") {
+            if ($settings['exclude_user4'] != "") {
+                $exclude_list = explode("\r\n", $settings['exclude_user4']);
+            }
         }
+
         if (is_array($exclude_list)) {
             $script_url = explode("/", $_SERVER['PHP_SELF']);
             $url_count = count($script_url);
@@ -399,15 +455,8 @@ if (!function_exists("showbanners")) {
                 eval("?>".stripslashes(fusion_get_settings("sitebanner2"))."<?php ");
             }
         } else {
-            if ($display == "" && fusion_get_settings("sitebanner2")) {
-                eval("?><div style='float: right;'>".stripslashes(fusion_get_settings("sitebanner2"))."</div>\n<?php ");
-            }
             if (fusion_get_settings("sitebanner1")) {
-                eval("?>".stripslashes(fusion_get_settings("sitebanner1"))."\n<?php ");
-            } elseif (fusion_get_settings("sitebanner")) {
-                echo "<a href='".BASEDIR."'><img class='img-responsive' src='".BASEDIR.fusion_get_settings("sitebanner")."' alt='".fusion_get_settings("sitename")."' style='border: 0;' /></a>\n";
-            } else {
-                echo "<a href='".BASEDIR."'>".fusion_get_settings("sitename")."</a>\n";
+                eval("?>".stripslashes(fusion_get_settings("sitebanner1"))."<?php ");
             }
         }
         $output = ob_get_contents();
@@ -417,294 +466,33 @@ if (!function_exists("showbanners")) {
     }
 }
 
+if (!function_exists("showlogo")) {
+    function showlogo($class = 'logo') {
+        echo "<div class='".$class."'><a href='".BASEDIR.fusion_get_settings('opening_page')."' title='".fusion_get_settings('sitename')."'><img src='".BASEDIR.fusion_get_settings('sitebanner')."' alt='Logo'/></a></div>";
+    }
+}
+
 if (!function_exists("showsublinks")) {
 
     /**
      * Displays Site Links Navigation Bar
      * @param string $sep - Custom seperator text
      * @param string $class - Class
-     * @param array  $options -
+     * @param array $options
      *
-     * Default $options parameters:
-     * id - unique navbar id
-     * container - true for container mode
-     * navbar_class - switch between navbar-default, navbar-inverse or custom class
-     * item_class - the default li class
-     * separator - default li separator
-     * callback_data - replace default data callback
-     *
-     * @param int    $id - 0 for root , Sitelink_ID to show child only
+     * Notice: There is a more powerful method now that offers more powerful manipulation methods
+     * that non oo approach cannot ever achieve using cache and the new mutator method
+     * SiteLinks::setSubLinks($sep, $class, $options)->showsublinks(); for normal usage
      * @return string
      */
-
-    function showsublinks($sep = "", $class = "", array $options = array(), $id = 0) {
-
-        $locale = fusion_get_locale();
-
-        $default_options = array(
-            "id" => "",
-            "container" => FALSE,
-            "navbar_class" => "navbar-default",
-            "item_class" => $class,
-            "separator" => $sep,
-            "callback_data" => array(),
-            "links_per_page" => fusion_get_settings("links_per_page"),
-            "grouping" => fusion_get_settings("links_grouping"),
-            "show_banner" => FALSE,
-            "show_header" => FALSE,
-            "language_switcher" => FALSE,
-            "searchbar" => FALSE,
-        );
-
-        $options += $default_options;
-
-        if (empty($options['id'])) {
-            $options['id'] = md5(str_shuffle(str_replace(" ", "_", fusion_get_settings("sitename"))));
-        }
-
-        $pageInfo = pathinfo($_SERVER['REQUEST_URI']);
-        $start_page = $pageInfo['dirname'] !== "/" ? ltrim($pageInfo['dirname'], "/")."/" : "";
-        $site_path = ltrim(fusion_get_settings("site_path"), "/");
-        $start_page = str_replace($site_path, "", $start_page);
-        $start_page .= $pageInfo['basename'];
-
-        if (fusion_get_settings("site_seo") && defined('IN_PERMALINK') && !isset($_GET['aid'])) {
-            global $filepath;
-            $start_page = $filepath;
-        }
-
-        $res = &$res;
-
-        if (empty($data) && empty($options['callback_data'])) {
-            $data = \PHPFusion\SiteLinks::get_SiteLinksData(array('link_position' => array(2, 3)));
-            // Is Equivalent to:
-            //$data = dbquery_tree_full(DB_SITE_LINKS, "link_id", "link_cat", "WHERE link_position >= 2".(multilang_table("SL") ? " AND link_language='".LANGUAGE."'" : "")." AND ".groupaccess('link_visibility')." ORDER BY link_cat ASC, link_order ASC");
-        } else {
-            $data = $options['callback_data'];
-        }
-
-        /**
-         * Change hierarchy data when grouping is on
-         */
-        if ($options['grouping'] == TRUE) {
-            if (count($data[0]) > $options['links_per_page']) {
-                $more_index = 9 * 10000000;
-                $base_data = $data[0];
-                $data[$more_index] = array_slice($base_data, $options['links_per_page'], 9, TRUE);
-                $data[0] = array_slice($base_data, 0, $options['links_per_page'], TRUE);
-                $more[$more_index] = array(
-                    "link_id" => $more_index,
-                    "link_cat" => 0,
-                    "link_name" => $locale['global_700'],
-                    "link_url" => "#",
-                    "link_icon" => "",
-                    "link_visibility" => 0,
-                    "link_position" => 2,
-                    "link_window" => 0,
-                    "link_order" => $options['links_per_page'],
-                    "link_language" => LANGUAGE
-                );
-                $data[0] += $more;
-            }
-        }
-
-        $banner = fusion_get_settings("sitebanner") && $options['show_banner'] == TRUE ? "<img src='".BASEDIR.fusion_get_settings("sitebanner")."' alt='".fusion_get_settings("sitename")."'/>" : fusion_get_settings("sitename");
-
-        if (empty($id)) {
-            $res = "<div id='".$options['id']."' class='navbar ".$options['navbar_class']."' role='navigation'>\n";
-            $res .= $options['container'] ? "<div class='container'>\n" : "";
-            $res .= "<div class='navbar-header'>\n";
-            $res .= "<!---Menu Header Start--->\n";
-            $res .= "<button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#".$options['id']."_menu' aria-expanded='false'>\n";
-            $res .= "<span class='sr-only'>".$locale['global_017']."</span>\n";
-			$res .= "<span class='icon-bar top-bar'></span>\n";
-			$res .= "<span class='icon-bar middle-bar'></span>\n";
-			$res .= "<span class='icon-bar bottom-bar'></span>\n";
-      		$res .= "</button>\n";
-            if ($options['show_header']) {
-                if ($options['show_header'] === TRUE) {
-                    $res .= "<a class='navbar-brand ".fusion_get_settings('logoposition_xs')." ".fusion_get_settings('logoposition_sm')." ".fusion_get_settings('logoposition_md')." ".fusion_get_settings('logoposition_lg')."' href='".BASEDIR.fusion_get_settings('opening_page')."'>".$banner."</a>\n";
-                } else {
-                    $res .= $options['show_header'];
-                }
-            } else {
-                $res .= "<a class='navbar-brand visible-xs hidden-sm hidden-md hidden-lg' href='".BASEDIR.fusion_get_settings('opening_page')."'>".fusion_get_settings("sitename")."</a>\n";
-            }
-            $res .= "<!---Menu Header End--->\n";
-            $res .= "</div>\n";
-            $res .= "<div class='navbar-collapse collapse' id='".$options['id']."_menu'>\n";
-            $res .= "<ul ".(fusion_get_settings("bootstrap") ? "class='nav navbar-nav primary'" : "id='main-menu' class='primary sm sm-simple'").">\n";
-            $res .= "<!---Menu Item Start--->\n";
-        }
-
-        if (!empty($data)) {
-            $i = 0;
-
-            $default_link_data = array(
-                "link_id" => 0,
-                "link_name" => "",
-                "link_cat" => 0,
-                "link_url" => "",
-                "link_icon" => "",
-                "link_active" => FALSE,
-                "link_title" => FALSE, // true to add dropdown-header class to li.
-                "link_disabled" => FALSE, // true to disable link
-                "link_window" => FALSE,
-            );
-
-            foreach ($data[$id] as $link_id => $link_data) {
-                $link_data += $default_link_data;
-                $link_data['link_name'] = parsesmileys(parseubb($link_data['link_name']));
-                $li_class = $options['item_class'];
-                if ($link_data['link_disabled']) {
-                    $li_class = "disabled";
-                } else {
-                    if ($link_data['link_title'] == TRUE) {
-                        $li_class = "dropdown-header";
-                    }
-                }
-
-                // Attempt to calculate a relative link
-                $secondary_active = FALSE;
-
-                if ($start_page !== $link_data['link_url']) {
-                    $link_instance = \PHPFusion\BreadCrumbs::getInstance();
-                    $link_instance->showHome(FALSE);
-                    $reference = $link_instance->toArray();
-                    if (!empty($reference)) {
-                        foreach ($reference as $refData) {
-                            if (!empty($link_data['link_url']) && !empty($refData['link']) && $link_data['link_url'] !== "index.php") {
-                                if (stristr($refData['link'], str_replace("index.php", "", $link_data['link_url']))) {
-                                    $secondary_active = TRUE;
-                                }
-                                break; // match found
-                            }
-
-                        }
-                    }
-                }
-
-                if ($link_data['link_name'] != "---" && $link_data['link_name'] != "===") {
-
-                    $link_target = ($link_data['link_window'] == "1" ? " target='_blank'" : "");
-                    if ($i == 0 && $id > 0) {
-                        $li_class .= ($li_class ? " " : "")."first-link";
-                    }
-
-                    if ($start_page == $link_data['link_url'] || fusion_get_settings('site_path').$start_page == $link_data['link_url']
-                        || $secondary_active == TRUE
-                        || $start_page == fusion_get_settings("opening_page") && $i == 0 && $id === 0
-                    ) {
-                        $li_class .= ($li_class ? " " : "")."current-link active";
-                    }
-
-                    $itemlink = BASEDIR.$link_data['link_url'];
-
-                    if (preg_match("!^(ht|f)tp(s)?://!i", $link_data['link_url'])
-                        or (BASEDIR !== '' && stristr($link_data['link_url'], BASEDIR))
-                    ) {
-                        $itemlink = $link_data['link_url'];
-                    }
-                    $has_child = FALSE;
-                    $l_1 = "";
-                    $l_2 = "";
-                    $tab_index = "";
-
-                    if (isset($data[$link_id])) {
-                        $has_child = TRUE;
-                        $l_1 = "class='dropdown-toggle' data-toggle='dropdown' ";
-                        $l_1 .= (empty($id) && $has_child ? "data-submenu " : "");
-                        $l_2 = (empty($id) ? "<i class='caret'></i>" : "");
-                        $li_class .= !empty($id) ? " dropdown-submenu" : " dropdown";
-                        $tab_index .= !empty($id) ? "tabindex='0'" : "";
-                    }
-                    $res .= "<li".($li_class ? " class='".$li_class."'" : "").">".$sep."";
-                    $res .= "<a ".$l_1."href='".$itemlink."'".$link_target." $tab_index>";
-                    $res .= (!empty($link_data['link_icon']) ? "<i class='".$link_data['link_icon']."'></i>" : "");
-                    $res .= $link_data['link_name'].$l_2."</a>";
-
-                    if ($has_child) {
-                        $res .= "\n<ul".(fusion_get_settings("bootstrap") ? " class='dropdown-menu'" : "").">\n";
-                        if (!empty($link_data['link_url']) and $link_data['link_url'] !== "#") {
-                            $res .= "<li>".$options['separator']."";
-                            $res .= "<a href='".$itemlink."'".$link_target.">";
-                            $res .= (!empty($link_data['link_icon']) ? "<i class='".$link_data['link_icon']."'></i>" : "");
-                            $res .= $link_data['link_name']."</a>";
-                            $res .= "</li>\n";
-                        }
-                        $res .= showsublinks($sep, $class, $options, $link_data['link_id']);
-                        $res .= "</ul>\n";
-                    }
-                    $res .= "</li>\n";
-                } elseif ($link_data['link_cat'] > 0) {
-                    $res .= "<li class='divider'></li>\n";
-                }
-                $i++;
-            }
-        }
-
-        if (empty($id)) {
-            $res .= "<!---Menu Item End--->\n";
-            $res .= "</ul>\n";
-
-            if ($options['language_switcher'] == TRUE || $options['searchbar'] == TRUE) {
-                $res .= "<ul class='nav navbar-nav navbar-right'>\n";
-
-                if ($options['language_switcher'] == TRUE) {
-                    if (count(fusion_get_enabled_languages()) > 1) {
-                        $language_switch = fusion_get_language_switch();
-                        $current_language = $language_switch[LANGUAGE];
-                        $language_opts = "<li class='dropdown'>";
-                        $language_opts .= "<a class='dropdown-toggle pointer' data-toggle='dropdown' title='".translate_lang_names(LANGUAGE)."'><img src='".$current_language['language_icon_s']."'/> <span class='caret'></span></a>";
-                        $language_opts .= "<ul class='dropdown-menu' role='menu'>\n";
-                        if (!empty($language_switch)) {
-                            foreach ($language_switch as $folder => $langData) {
-                                $language_opts .= "<li class='text-left'><a href='".$langData['language_link']."'>";
-                                $language_opts .= "<img alt='".$langData['language_name']."' class='m-r-5' src='".$langData['language_icon_s']."'/>";
-                                $language_opts .= $langData['language_name'];
-                                $language_opts .= "</a></li>\n";
-                            }
-                        }
-                        $language_opts .= "</ul>\n";
-                        $language_opts .= "</li>\n";
-                        $res .= $language_opts;
-                    }
-                }
-
-                if ($options['searchbar'] == TRUE) {
-                    $searchbar = "<li class='dropdown'>";
-                    $searchbar .= "<a class='dropdown-toggle pointer' data-toggle='dropdown' title='".fusion_get_locale('search')."'><i class='fa fa-search fa-fw'></i></a>";
-                    $searchbar .= "<ul class='dropdown-menu p-l-15 p-r-15 p-t-15' role='menu' style='min-width: 300px;'>\n";
-                    $searchbar .= "<li class='text-left'>";
-                    $searchbar .= openform('searchform', 'post', BASEDIR.'search.php?stype=all',
-                                           array(
-                                               'class' => 'm-b-10',
-                                               'remote_url' => fusion_get_settings('site_path')."search.php"
-                                           )
-                    );
-                    $searchbar .= form_text('stext', '', '',
-                                            array(
-                                                'placeholder' => $locale['search'],
-                                                'append_button' => TRUE,
-                                                'append_type' => "submit",
-                                                "append_form_value" => $locale['search'],
-                                                "append_value" => "<i class='fa fa-search'></i> ".$locale['search'],
-                                                "append_button_name" => "search",
-                                                'class' => 'no-border m-0'
-                                            )
-                    );
-                    $searchbar .= closeform();
-                    $searchbar .= "</li>\n";
-                    $res .= $searchbar;
-                }
-                $res .= "</ul>\n";
-            }
-            $res .= $options['container'] ? "</div>\n" : "";
-            $res .= "</div>\n</div>\n";
-        }
-
-        return $res;
+    function showsublinks($sep = "", $class = "navbar-default", array $options = array()) {
+        $options += [
+            'seperator' => $sep,
+            'navbar_class' => $class,
+        ];
+        return \PHPFusion\SiteLinks::setSubLinks($options)->showSubLinks();
     }
+
 }
 
 if (!function_exists("showsubdate")) {
@@ -717,7 +505,7 @@ if (!function_exists("showsubdate")) {
 
 if (!function_exists("newsposter")) {
     function newsposter($info, $sep = "", $class = "") {
-        global $locale;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $res = "";
         $link_class = $class ? " class='$class' " : "";
         $res = THEME_BULLET." <span ".$link_class.">".profile_link($info['user_id'], $info['user_name'], $info['user_status'])."</span> ";
@@ -730,16 +518,16 @@ if (!function_exists("newsposter")) {
 
 if (!function_exists("newsopts")) {
     function newsopts($info, $sep, $class = "") {
-        global $locale, $settings;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $res = "";
         $link_class = $class ? " class='$class' " : "";
         if (!isset($_GET['readmore']) && $info['news_ext'] == "y") {
             $res = "<a href='".INFUSIONS."news/news.php?readmore=".$info['news_id']."'".$link_class.">".$locale['global_072']."</a> ".$sep." ";
         }
-        if ($info['news_allow_comments'] && $settings['comments_enabled'] == "1") {
+        if ($info['news_allow_comments'] && fusion_get_settings('comments_enabled') == "1") {
             $res .= "<a href='".INFUSIONS."news/news.php?readmore=".$info['news_id']."#comments'".$link_class.">".$info['news_comments'].($info['news_comments'] == 1 ? $locale['global_073b'] : $locale['global_073'])."</a> ".$sep." ";
         }
-        if ($info['news_ext'] == "y" || ($info['news_allow_comments'] && $settings['comments_enabled'] == "1")) {
+        if ($info['news_ext'] == "y" || ($info['news_allow_comments'] && fusion_get_settings('comments_enabled') == "1")) {
             $res .= $info['news_reads'].$locale['global_074']."\n ".$sep;
         }
         $res .= "<a href='print.php?type=N&amp;item_id=".$info['news_id']."'><img src='".get_image("printer")."' alt='".$locale['global_075']."' style='vertical-align:middle;border:0;' /></a>\n";
@@ -750,7 +538,7 @@ if (!function_exists("newsopts")) {
 
 if (!function_exists("newscat")) {
     function newscat($info, $sep = "", $class = "") {
-        global $locale;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $res = "";
         $link_class = $class ? " class='$class' " : "";
         $res .= $locale['global_079'];
@@ -766,12 +554,12 @@ if (!function_exists("newscat")) {
 
 if (!function_exists("articleposter")) {
     function articleposter($info, $sep = "", $class = "") {
-        global $locale, $settings;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $res = "";
         $link_class = $class ? " class='$class' " : "";
         $res = THEME_BULLET." ".$locale['global_070']."<span ".$link_class.">".profile_link($info['user_id'], $info['user_name'], $info['user_status'])."</span>\n";
         $res .= $locale['global_071'].showdate("newsdate", $info['article_date']);
-        $res .= ($info['article_allow_comments'] && $settings['comments_enabled'] == "1" ? $sep."\n" : "\n");
+        $res .= ($info['article_allow_comments'] && fusion_get_settings('comments_enabled') == "1" ? $sep."\n" : "\n");
 
         return "<!--article_poster-->".$res;
     }
@@ -779,9 +567,9 @@ if (!function_exists("articleposter")) {
 
 if (!function_exists("articleopts")) {
     function articleopts($info, $sep) {
-        global $locale, $settings;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $res = "";
-        if ($info['article_allow_comments'] && $settings['comments_enabled'] == "1") {
+        if ($info['article_allow_comments'] && fusion_get_settings('comments_enabled') == "1") {
             $res = "<a href='articles.php?article_id=".$info['article_id']."#comments'>".$info['article_comments'].($info['article_comments'] == 1 ? $locale['global_073b'] : $locale['global_073'])."</a> ".$sep."\n";
         }
         $res .= $info['article_reads'].$locale['global_074']." ".$sep."\n";
@@ -793,7 +581,7 @@ if (!function_exists("articleopts")) {
 
 if (!function_exists("articlecat")) {
     function articlecat($info, $sep = "", $class = "") {
-        global $locale;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $res = "";
         $link_class = $class ? " class='$class' " : "";
         $res .= $locale['global_079'];
@@ -809,15 +597,15 @@ if (!function_exists("articlecat")) {
 
 if (!function_exists("itemoptions")) {
     function itemoptions($item_type, $item_id) {
-        global $locale, $aidlink;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $res = "";
         if ($item_type == "N") {
             if (iADMIN && checkrights($item_type)) {
-                $res .= "<!--article_news_opts--> &middot; <a href='".INFUSIONS."news/news_admin.php".$aidlink."&amp;action=edit&amp;news_id=".$item_id."'><img src='".get_image("edit")."' alt='".$locale['global_076']."' title='".$locale['global_076']."' style='vertical-align:middle;border:0;' /></a>\n";
+                $res .= "<!--article_news_opts--> &middot; <a href='".INFUSIONS."news/news_admin.php".fusion_get_aidlink()."&amp;action=edit&amp;news_id=".$item_id."'><img src='".get_image("edit")."' alt='".$locale['global_076']."' title='".$locale['global_076']."' style='vertical-align:middle;border:0;' /></a>\n";
             }
         } elseif ($item_type == "A") {
             if (iADMIN && checkrights($item_type)) {
-                $res .= "<!--article_admin_opts--> &middot; <a href='".INFUSIONS."articles/articles_admin.php".$aidlink."&amp;action=edit&amp;article_id=".$item_id."'><img src='".get_image("edit")."' alt='".$locale['global_076']."' title='".$locale['global_076']."' style='vertical-align:middle;border:0;' /></a>\n";
+                $res .= "<!--article_admin_opts--> &middot; <a href='".INFUSIONS."articles/articles_admin.php".fusion_get_aidlink()."&amp;action=edit&amp;article_id=".$item_id."'><img src='".get_image("edit")."' alt='".$locale['global_076']."' title='".$locale['global_076']."' style='vertical-align:middle;border:0;' /></a>\n";
             }
         }
 
@@ -900,28 +688,38 @@ if (!function_exists('display_avatar')) {
         if (!$userdata['user_id']) {
             $userdata['user_id'] = 1;
         }
+        $link = fusion_get_settings('hide_userprofiles') == TRUE ? (iMEMBER ? $link : FALSE) : $link;
         $class = ($class) ? "class='$class'" : '';
         // Need a full path - or else Jquery script cannot use this function.
-        $default_avatar = fusion_get_settings('site_path')."images/avatars/no-avatar.jpg";
-        $user_avatar = fusion_get_settings('site_path')."images/avatars/".$userdata['user_avatar'];
+        //$default_avatar = fusion_get_settings('site_path')."images/avatars/no-avatar.jpg";
+        $default_avatar = fusion_get_settings('siteurl')."images/avatars/no-avatar.jpg";
+        //$default_avatar = IMAGES.'avatars/no-avatar.jpg';
+        $user_avatar = fusion_get_settings('siteurl')."images/avatars/".$userdata['user_avatar'];
+        //$user_avatar = IMAGES.'avatars/'.$userdata['user_avatar'];
+        //$user_avatar = fusion_get_settings('site_path')."images/avatars/".$userdata['user_avatar'];
         $hasAvatar = $userdata['user_avatar'] && file_exists(IMAGES."avatars/".$userdata['user_avatar']) && $userdata['user_status'] != '5' && $userdata['user_status'] != '6';
-        $imgTpl = "<img class='img-responsive $img_class %s' alt='".$userdata['user_name']."' data-pin-nopin='true' style='display:inline; max-width:$size; max-height:$size;' src='%s'>";
-        $img = sprintf($imgTpl, $hasAvatar ? 'm-r-10' : 'm-r-10',
-                       $hasAvatar ? $user_avatar : $default_avatar);
+        $imgTpl = "<img class='img-responsive $img_class' alt='".$userdata['user_name']."' data-pin-nopin='true' style='display:inline; width:$size; max-height:$size;' src='%s'>";
+        $img = sprintf($imgTpl, $hasAvatar ? $user_avatar : $default_avatar);
         return $link ? sprintf("<a $class title='".$userdata['user_name']."' href='".BASEDIR."profile.php?lookup=".$userdata['user_id']."'>%s</a>", $img) : $img;
     }
 }
 
 if (!function_exists('colorbox')) {
-    function colorbox($img_path, $img_title) {
+    function colorbox($img_path, $img_title, $responsive = TRUE, $class = '') {
         if (!defined('COLORBOX')) {
             define('COLORBOX', TRUE);
             add_to_head("<link rel='stylesheet' href='".INCLUDES."jquery/colorbox/colorbox.css' type='text/css' media='screen' />");
             add_to_head("<script type='text/javascript' src='".INCLUDES."jquery/colorbox/jquery.colorbox.js'></script>");
             add_to_jquery("$('a[rel^=\"colorbox\"]').colorbox({ current: '',width:'80%',height:'80%'});");
         }
+        $class = ($class ? " $class" : '');
+        if ($responsive) {
+            $class = " class='img-responsive $class";
+        } else {
+            $class = (!empty($class) ? " class='$class'" : '');
+        }
 
-        return "<a target='_blank' href='$img_path' title='$img_title' rel='colorbox'><img src='$img_path' class='img-responsive' alt='$img_title'/></a>";
+        return "<a target='_blank' href='$img_path' title='$img_title' rel='colorbox'><img src='$img_path'".$class."alt='$img_title'/></a>";
     }
 }
 
@@ -936,10 +734,9 @@ if (!function_exists('colorbox')) {
  */
 if (!function_exists("thumbnail")) {
     function thumbnail($src, $size, $url = FALSE, $colorbox = FALSE, $responsive = TRUE, $class = "m-2") {
-        global $locale;
         $_offset_w = 0;
         $_offset_h = 0;
-        if (!$responsive) {
+        if (!$responsive && $src) {
             // get the size of the image and centrally aligned it
             $image_info = @getimagesize($src);
             $width = $image_info[0];
@@ -987,7 +784,7 @@ if (!function_exists("lorem_ipsum")) {
 
 if (!function_exists("timer")) {
     function timer($updated = FALSE) {
-        global $locale;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         if (!$updated) {
             $updated = time();
         }
@@ -1039,7 +836,7 @@ if (!function_exists("days_current_month")) {
 
 if (!function_exists("countdown")) {
     function countdown($time) {
-        global $locale;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $updated = stripinput($time);
         $second = 1;
         $minute = $second * 60;
@@ -1137,119 +934,133 @@ if (!function_exists("tab_active")
     && !function_exists("closetabbody")
     && !function_exists("closetab")
 ) {
-    /**
-     * Current Tab Active Selector
-     * @param      $array - multidimension array consisting of keys 'title', 'id', 'icon'
-     * @param      $default_active - 0 if link_mode is false, $_GET if link_mode is true
-     * @param bool $getname - set getname and turn tabs into link that listens to getname
-     * @return string
-     * @todo: options base
-     */
 
-    function tab_active($array, $default_active, $getname = FALSE) {
-        if (!empty($getname)) {
-            $section = isset($_GET[$getname]) && $_GET[$getname] ? $_GET[$getname] : $default_active;
-            $count = count($array['title']);
-            if ($count > 0) {
-                for ($i = 0; $i <= $count; $i++) {
-                    $id = $array['id'][$i];
-                    if ($section == $id) {
-                        return $id;
+    class FusionTabs {
+
+        private $id = '';
+        private $remember = FALSE;
+        private $cookie_prefix = 'tab_js';
+        private $cookie_name = '';
+        private $tab_info = [];
+        private $link_mode = FALSE;
+
+
+        public static function tab_active($array, $default_active, $getname = FALSE) {
+            if (!empty($getname)) {
+                $section = isset($_GET[$getname]) && $_GET[$getname] ? $_GET[$getname] : $default_active;
+                $count = count($array['title']);
+                if ($count > 0) {
+                    for ($i = 0; $i < $count; $i++) {
+                        $id = $array['id'][$i];
+                        if ($section == $id) {
+                            return $id;
+                        }
+                    }
+                } else {
+                    return $default_active;
+                }
+            } else {
+                $id = $array['id'][$default_active];
+                return $id;;
+            }
+        }
+
+        public function set_remember($value) {
+            $this->remember = $value;
+        }
+
+        public function opentab($tab_title, $link_active_arrkey, $id, $link = FALSE, $class = FALSE, $getname = 'section', array $cleanup_GET = []) {
+            $this->id = $id;
+            $this->cookie_name = $this->cookie_prefix.'-'.$id;
+            $this->tab_info = $tab_title;
+            $this->link_mode = $link;
+
+            $getArray = array($getname);
+            if (!empty($cleanup_GET)) {
+                $getArray = array_merge_recursive($cleanup_GET, $getArray);
+            }
+            if (empty($link) && $this->remember) {
+                if (isset($_COOKIE[$this->cookie_name])) {
+                    $link_active_arrkey = str_replace('tab-', '', $_COOKIE[$this->cookie_name]);
+                }
+            }
+            $html = "<div class='nav-wrapper'>\n";
+            $html .= "<ul id='$id' class='nav ".($class ? $class : 'nav-tabs')."'>\n";
+            foreach ($tab_title['title'] as $arr => $v) {
+                $v_title = str_replace("-", " ", $v);
+                $tab_id = $tab_title['id'][$arr];
+                $icon = (isset($tab_title['icon'][$arr])) ? $tab_title['icon'][$arr] : "";
+                $link_url = '#';
+                if ($link) {
+                    $link_url = $link.(stristr($link, '?') ? '&' : '?').$getname."=".$tab_id; // keep all request except GET array
+                    if ($link === TRUE) {
+                        $link_url = clean_request($getname.'='.$tab_id, $getArray, FALSE);
+                    }
+                    $html .= ($link_active_arrkey == $tab_id) ? "<li class='active'>\n" : "<li>\n";
+                } else {
+                    $html .= ($link_active_arrkey == "".$tab_id) ? "<li class='active'>\n" : "<li>\n";
+                }
+                $html .= "<a class='pointer' ".(!$link ? "id='tab-".$tab_id."' data-toggle='tab' data-target='#".$tab_id."'" : "href='$link_url'")." role='tab'>\n".($icon ? "<i class='".$icon."'></i>" : '')." ".$v_title." </a>\n";
+                $html .= "</li>\n";
+            }
+            $html .= "</ul>\n";
+            $html .= "<div id='tab-content-$id' class='tab-content'>\n";
+            if (empty($link) && $this->remember) {
+                \PHPFusion\OutputHandler::addToJQuery("
+                $('#".$id." > li').on('click', function() {
+                    var cookieName = '".$this->cookie_name."';
+                    var cookieValue = $(this).find(\"a[role='tab']\").attr('id');
+                    Cookies.set(cookieName, cookieValue);
+                });
+                var cookieName = 'tab_js-".$id."';
+                if (Cookies.get(cookieName)) {
+                    $('#".$id."').find('#'+Cookies.get(cookieName)).click();
+                }
+                ");
+            }
+
+            return (string)$html;
+        }
+
+        /*
+         * Deprecated $tab_title.
+         * Deprecated $link
+         *
+         * Commit title:
+         * Using globals without adding parameter to pass $id set on previous opentabs() to next opentabbody()
+         */
+        public function opentabbody($id, $link_active_arrkey = FALSE, $key = FALSE) {
+            $key = $key ? $key : 'section';
+            if (isset($_GET[$key]) && $this->link_mode) {
+                if ($link_active_arrkey == $id) {
+                    $status = 'in active';
+                } else {
+                    $status = '';
+                }
+            } else {
+                if (!$this->link_mode) {
+                    if ($this->remember) {
+                        if (isset($_COOKIE[$this->cookie_name])) {
+                            $link_active_arrkey = str_replace('tab-', '', $_COOKIE[$this->cookie_name]);
+                        }
                     }
                 }
-            } else {
-                return $default_active;
+                $status = ($link_active_arrkey == $id ? " in active" : '');
+
             }
-        } else {
-            $id = $array['id'][$default_active];
-            $title = $array['title'][$default_active];
-            $v_link = str_replace(" ", "-", $title);
-            $v_link = str_replace("/", "-", $v_link);
-            $v_link = ""; // test without link convertor
-
-            return "".$id."$v_link";
-        }
-    }
-
-    function opentab($tab_title, $link_active_arrkey, $id, $link = FALSE, $class = FALSE, $getname = "section", $request_addition = array()) {
-
-        $getArray = array($getname);
-        if (!empty($request_addition)) {
-            $getArray = array_merge_recursive($request_addition, $getArray);
+            return "<div class='tab-pane fade".$status."' id='".$id."'>\n";
         }
 
-        $html = "<div class='nav-wrapper $class'>\n";
-        $html .= "<ul class='nav nav-tabs' ".($id ? "id='".$id."'" : "")." >\n";
-        foreach ($tab_title['title'] as $arr => $v) {
-
-            $v_title = str_replace("-", " ", $v);
-            $tab_id = $tab_title['id'][$arr];
-            $icon = (isset($tab_title['icon'][$arr])) ? $tab_title['icon'][$arr] : "";
-            $link_url = $link ? clean_request($getname.'='.$tab_id, $getArray, FALSE) : '#';
-
-            if ($link) {
-                $html .= ($link_active_arrkey == $tab_id) ? "<li class='active'>\n" : "<li>\n";
-            } else {
-                $html .= ($link_active_arrkey == "".$tab_id) ? "<li class='active'>\n" : "<li>\n";
-            }
-            $html .= "<a class='pointer' ".(!$link ? "id='tab-".$tab_id."' data-toggle='tab' data-target='#".$tab_id."'" : "href='$link_url'").">\n".($icon ? "<i class='".$icon."'></i>" : '')." ".$v_title." </a>\n";
-            $html .= "</li>\n";
-        }
-        $html .= "</ul>\n";
-        $html .= "<div id='tab-content-$id' class='tab-content'>\n";
-
-        return (string)$html;
-    }
-
-    function opentabbody($tab_title, $id, $link_active_arrkey = FALSE, $link = FALSE, $key = FALSE) {
-        $key = $key ? $key : 'section';
-        // get
-        if (isset($_GET[$key]) && $link == 1) {
-            $link = '';
-            if ($link_active_arrkey == $id) {
-                $status = 'in active';
-            } else {
-                $status = '';
-            }
-        } else {
-            if (!$link) {
-                if (is_array($tab_title)) {
-                    $title = $tab_title['title'];
-                    $link = str_replace(" ", "-", $title);
-                    $link = str_replace("/", "-", $link);
-                } else {
-                    $link = str_replace(" ", "-", $tab_title);
-                    $link = str_replace("/", "-", $link);
-                }
-            } else {
-                $link = '';
-            }
-            //if ($link_active_arrkey == "".$id."$link") {
-            if ($link_active_arrkey == $id) { // test without link convertor
-                $status = "in active";
-            } else {
-                $status = "";
-            }
-        }
-        $link = ""; // test without link convertor
-
-        return "<div class='tab-pane fade ".$status."' id='".$id."$link'>\n";
-    }
-
-    function closetabbody() {
-        return "</div>\n";
-    }
-
-    function closetab(array $options = array()) {
-        $default_options = array(
-            "tab_nav" => FALSE,
-        );
-        $options += $default_options;
-
-        if ($options['tab_nav'] == TRUE) {
-            $nextBtn = "<a class='btn btn-warning btnNext pull-right' >Next</a>";
-            $prevBtn = "<a class='btn btn-warning btnPrevious m-r-10'>Previous</a>";
-            add_to_jquery("
+        public function closetab(array $options = array()) {
+            $locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
+            $default_options = array(
+                "tab_nav" => FALSE,
+            );
+            $options += $default_options;
+            if ($options['tab_nav'] == TRUE) {
+                $nextBtn = "<a class='btn btn-warning btnNext pull-right' >".$locale['next']."</a>";
+                $prevBtn = "<a class='btn btn-warning btnPrevious m-r-10'>".$locale['previous']."</a>";
+                add_to_jquery("
 				$('.btnNext').click(function(){
 				  $('.nav-tabs > .active').next('li').find('a').trigger('click');
 				});
@@ -1257,17 +1068,99 @@ if (!function_exists("tab_active")
 				  $('.nav-tabs > .active').prev('li').find('a').trigger('click');
 				});
 			");
-            echo "<div class='clearfix'>\n".$prevBtn.$nextBtn."</div>\n";
+                echo "<div class='clearfix'>\n".$prevBtn.$nextBtn."</div>\n";
+            }
+
+            return "</div>\n</div>\n";
         }
 
-        return "</div>\n</div>\n";
+        public function closetabbody() {
+            return "</div>\n";
+        }
+    }
+
+    $fusion_tabs = new FusionTabs();
+
+    /**
+     * Current Tab Active Selector
+     *
+     * @param      $array          - multidimension array consisting of keys 'title', 'id', 'icon'
+     * @param      $default_active - 0 if link_mode is false, $_GET if link_mode is true
+     * @param bool $getname        - set getname and turn tabs into link that listens to getname
+     *
+     * @return string
+     * @todo: options base
+     */
+    function tab_active($array, $default_active, $getname = FALSE) {
+        return \FusionTabs::tab_active($array, $default_active, $getname);
+    }
+
+    /**
+     * Render Tab Links
+     *
+     * @param               $tab_title          entire array consisting of ['title'], ['id'], ['icon']
+     * @param               $link_active_arrkey tab_active() function or the $_GET request to match the $tab_title['id']
+     * @param               $id                 unique ID
+     * @param bool|FALSE    $link               default false for jquery, true for php (will reload page)
+     * @param bool|FALSE    $class              the class for the nav
+     * @param string        $getname            the get request
+     * @param array         $cleanup_GET        the request key that needs to be deleted
+     * @param bool|FALSE    $remember           set to true to automatically remember tab using cookie.
+     *                                          Example:
+     *                                          $tab_title['title'][] = "Tab 1";
+     *                                          $tab_title['id'][] = "tab1";
+     *
+     * $tab_title['title'][] = "Tab 2";
+     * $tab_title['id'][] = "tab2";
+     *
+     * $tab_active = tab_active($tab_title, 0);
+     *
+     * Jquery:
+     * echo opentab($tab_title, $tab_active, 'myTab', FALSE, 'nav-pills', 'ref', ['action', 'subaction']);
+     *
+     * PHP:
+     * echo opentab($tab_title, $_GET['ref'], 'myTab', TRUE, 'nav-pills', 'ref', ['action', 'subaction']);
+     *
+     * @return string
+     */
+    function opentab($tab_title, $link_active_arrkey, $id, $link = FALSE, $class = FALSE, $getname = "section", array $cleanup_GET = [], $remember = FALSE) {
+        global $fusion_tabs;
+
+        return $fusion_tabs->opentab($tab_title, $link_active_arrkey, $id, $link, $class, $getname, $cleanup_GET, $remember);
+    }
+
+    /**
+     * @param      $tab_title               deprecated, however this function is replaceable, and the params are accessible.
+     * @param      $tab_id
+     * @param bool $link_active_arrkey
+     * @param bool $link                    deprecated, however this function is replaceable, and the params are accessible.
+     * @param bool $key
+     *
+     * @return mixed
+     */
+    function opentabbody($tab_title, $tab_id, $link_active_arrkey = FALSE, $link = FALSE, $key = FALSE) {
+        global $fusion_tabs;
+
+        return $fusion_tabs->opentabbody($tab_id, $link_active_arrkey, $key);
+    }
+
+    function closetabbody() {
+        global $fusion_tabs;
+
+        return $fusion_tabs->closetabbody();
+    }
+
+    function closetab(array $options = array()) {
+        global $fusion_tabs;
+
+        return $fusion_tabs->closetab($options);
     }
 }
 
 if (!function_exists("display_ratings")) {
     /* Standard ratings display */
     function display_ratings($total_sum, $total_votes, $link = FALSE, $class = FALSE, $mode = '1') {
-        global $locale;
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
         $start_link = $link ? "<a class='comments-item ".$class."' href='".$link."'>" : '';
         $end_link = $link ? "</a>\n" : '';
         $average = $total_votes > 0 ? number_format($total_sum / $total_votes, 2) : 0;
@@ -1285,15 +1178,17 @@ if (!function_exists("display_ratings")) {
 if (!function_exists("display_comments")) {
     /* Standard comment display */
     function display_comments($news_comments, $link = FALSE, $class = FALSE, $mode = '1') {
-        global $locale;
-        $start_link = $link ? "<a class='comments-item ".$class."' href='".$link."'>" : '';
+    	$locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
+        $start_link = $link ? "<a class='comments-item ".$class."' href='".$link."' {%title%} >" : '';
         $end_link = $link ? "</a>\n" : '';
         $str = $mode == 1 ? format_word($news_comments, $locale['fmt_comment']) : $news_comments;
         if ($news_comments > 0) {
-            return $start_link."<i title='".$locale['global_073']."' class='entypo icomment high-opacity m-l-0'></i>".$str.$end_link;
+            $start_link = strtr($start_link, ['{%title%}' => "title='".$locale['global_073']."'"]);
         } else {
-            return $start_link."<i title='".sprintf($locale['global_089'], $locale['global_077'])."' class='entypo icomment high-opacity m-l-0'></i> ".$str.$end_link;
+            $start_link = strtr($start_link, ['{%title%}' => "title='".sprintf($locale['global_089'], $locale['global_077'])."'"]);
         }
+
+        return $start_link.$str.$end_link;
     }
 }
 

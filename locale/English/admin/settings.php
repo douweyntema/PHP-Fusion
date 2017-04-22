@@ -28,6 +28,7 @@ $locale['417'] = "Site locale:";
 $locale['418'] = "Site theme:";
 $locale['418a'] = "Site Admin Theme:";
 $locale['419'] = "Default search location:";
+$locale['419a'] = "Entire Site";
 $locale['420'] = "Exclude Left Panels:";
 $locale['421'] = "Exclude Upper Panels:";
 $locale['422'] = "Exclude Lower Panels:";
@@ -53,6 +54,10 @@ $locale['439'] = "Normalize Friendly URLs:";
 $locale['440'] = "Enable SEO Debug Mode:";
 $locale['441'] = "Enable Entypo";
 $locale['442'] = "Enable Font-Awesome";
+$locale['443a'] = "Exclude User 1 Panels";
+$locale['443b'] = "Exclude User 2 Panels";
+$locale['443c'] = "Exclude User 3 Panels";
+$locale['443d'] = "Exclude User 4 Panels";
 
 // Time & Date Settings
 $locale['450'] = "Time and Date";
@@ -71,6 +76,7 @@ $locale['462'] = "Server offset";
 $locale['463'] = "Set this so server time is GMT 0";
 $locale['464'] = "Default timezone";
 $locale['465'] = "First day of week";
+$locale['466'] = "Default for New Users";
 
 // Registration Settings
 $locale['550'] = "Registration";
@@ -107,7 +113,7 @@ $locale['659'] = "Bad words filter enabled?";
 $locale['660'] = "Flood interval (seconds):";
 $locale['661'] = "Leave empty for immediate upload/download of backups.";
 $locale['662'] = "TinyMCE Editor";
-$locale['663'] = "For Article, Blog and News Administration only.";
+$locale['663'] = "For Articles, Blogs and News Administration only.";
 $locale['664'] = "SMTP Host";
 $locale['665'] = "Leave empty if sendmail is enabled.";
 $locale['666'] = "SMTP Username";
@@ -162,7 +168,7 @@ $locale['694'] = "Allow PHP Execution";
 $locale['695'] = "WARNING! Allowing PHP execution will open the system to SQL vulnerabilities.";
 $locale['696'] = "Please enter your public and private reCAPTCHA key!";
 
-$locale['913'] = "Comments per page";
+$locale['913'] = "Base Comments per Page";
 
 $locale['955'] = "Original";
 $locale['956'] = "Square";
@@ -228,6 +234,8 @@ $locale['1013'] = "Delete Users";
 $locale['1014'] = "Users can log in on different devices simultaneously?";
 $locale['1014a'] = "Disable for better security";
 
+$locale['1020'] = array(1 => 'Bytes (bytes)', 1000 => 'KB (Kilobytes)', 1000000 => 'MB (Megabytes)');
+
 // Social integration
 $locale['1030'] = "Create OpenGraph meta tags for Social networks";
 $locale['1031'] = "Allow index URLs in BB Codes";
@@ -291,5 +299,4 @@ $locale['time_settings'] = "Time Date Settings";
 $locale['user_settings'] = "User Management Settings";
 $locale['theme_settings'] = "Theme Settings";
 
-$locale['securimage2'] = "Secure Image v.2";
 $locale['securimage3'] = "Secure Image v.3";

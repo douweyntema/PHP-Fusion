@@ -2,7 +2,7 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: photo_functions_include
 | Author: PHP-Fusion Development Team
@@ -20,7 +20,7 @@ if (!defined("IN_FUSION")) {
 }
 
 function createthumbnail($filetype, $origfile, $thumbfile, $new_w, $new_h) {
-    global $settings;
+    $settings = fusion_get_settings();
     $origimage = '';
     if ($filetype == 1) {
         $origimage = imagecreatefromgif($origfile);
@@ -64,7 +64,7 @@ function createthumbnail($filetype, $origfile, $thumbfile, $new_w, $new_h) {
 }
 
 function createsquarethumbnail($filetype, $origfile, $thumbfile, $new_size) {
-    global $settings;
+    $settings = fusion_get_settings();
     $origimage = '';
     if ($filetype == 1) {
         $origimage = imagecreatefromgif($origfile);
@@ -202,7 +202,7 @@ function copy_file($source, $destination) {
         $process = curl_init($url);
         curl_setopt($process, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($process, CURLOPT_HEADER, 0);
-        curl_setopt($process, CURLOPT_USERAGENT, $useragent);
+        curl_setopt($process, CURLOPT_USERAGENT, $user_agent);
         curl_setopt($process, CURLOPT_TIMEOUT, 30);
         curl_setopt($process, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($process, CURLOPT_FOLLOWLOCATION, 1);

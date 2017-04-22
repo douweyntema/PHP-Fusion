@@ -3,7 +3,7 @@
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
-+--------------------------------------------------------*
++--------------------------------------------------------+
 | Filename: includes/autoloader.php
 | Author: Takács Ákos (Rimelek)
 +--------------------------------------------------------+
@@ -18,14 +18,10 @@
 /*
  * Loads classes from ClassName.php
  */
-if (!defined("IN_FUSION")) {
-    define("IN_FUSION", TRUE);
-}
-
 spl_autoload_register(function ($className) {
     $baseDir = __DIR__.'/classes/';
     $path = str_replace('\\', DIRECTORY_SEPARATOR, $className);
-    $fullPath = $baseDir.$path.'.php';
+    $fullPath = $baseDir.$path.'.inc';
     if (is_file($fullPath)) {
         require_once $fullPath;
     }
@@ -45,7 +41,7 @@ spl_autoload_register(function ($className) {
         return;
     }
     $baseDir = __DIR__.'/classes/';
-    $fullPath = $baseDir.$className.'.class.php';
+    $fullPath = $baseDir.$className.'.class.inc';
     if (is_file($fullPath)) {
         require $fullPath;
     }
@@ -99,9 +95,9 @@ if (!defined('BASEDIR')) {
 
 require_once __DIR__.'/core_functions_include.php';
 require_once __DIR__.'/core_constants_include.php';
-require_once __DIR__."/notify/notify.inc.php";
 require_once __DIR__."/sqlhandler.inc.php";
 require_once __DIR__."/translate_include.php";
 require_once __DIR__."/output_handling_include.php";
+require_once __DIR__."/notify.inc";
 //require_once __DIR__.'/theme_functions_include.php';
 //require_once __DIR__.'/db_handlers/all_functions_include.php';

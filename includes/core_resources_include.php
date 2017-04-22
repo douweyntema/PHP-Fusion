@@ -3,7 +3,7 @@
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
-+--------------------------------------------------------*
++--------------------------------------------------------+
 | Filename: includes/core_functions_include.php
 | Author: PHP-Fusion Development Team
 +--------------------------------------------------------+
@@ -38,7 +38,7 @@ require_once __DIR__.'/multisite_include.php';
  *      "options" => array($locale['disable'], $locale['enable']),
  *        "inline"=>true)); into administration/security_settings.php
  */
-DatabaseFactory::setDefaultDriver(intval($pdo_enabled) === 1 ? DatabaseFactory::DRIVER_PDO_MYSQL : DatabaseFactory::DRIVER_MYSQL);
+DatabaseFactory::setDefaultDriver(intval($pdo_enabled) === 1 ? DatabaseFactory::DRIVER_PDO_MYSQL : DatabaseFactory::DRIVER_MYSQLi);
 DatabaseFactory::registerConfiguration(DatabaseFactory::getDefaultConnectionID(), array(
     'host' => $db_host,
     'user' => $db_user,
@@ -51,7 +51,6 @@ require_once DB_HANDLERS."all_functions_include.php";
 require_once __DIR__."/system_images.php";
 require_once __DIR__."/output_handling_include.php";
 require_once __DIR__."/translate_include.php";
-//require_once __DIR__."/notify/notify.inc.php";
 require_once __DIR__."/sqlhandler.inc.php";
 require_once __DIR__."/defender.inc";
 require_once __DIR__."/dynamics.inc";

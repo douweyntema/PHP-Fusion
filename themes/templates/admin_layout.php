@@ -2,7 +2,7 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: admin_layout.php
 | Author: Takács Ákos (Rimelek)
@@ -17,6 +17,8 @@
 +--------------------------------------------------------*/
 $locale = fusion_get_locale('', LOCALE.LOCALESET."global.php");
 $locale += fusion_get_locale('', LOCALE.LOCALESET."admin/main.php");
+$settings = fusion_get_settings();
+\PHPFusion\Admins::getInstance()->setAdmin();
 header("Content-Type: text/html; charset=".$locale['charset']."");
 echo "<!DOCTYPE html>";
 echo "<html lang='".fusion_get_locale('xml_lang')."'>";
@@ -24,8 +26,6 @@ echo "<head>";
 echo "<title>".$settings['sitename']."</title>";
 echo "<meta charset='".$locale['charset']."' />";
 echo "<meta http-equiv='X-UA-Compatible' content='IE=edge' />";
-echo "<meta http-equiv='Cache-control' content='no-cache' />";
-echo "<meta http-equiv='expires' content='".gmdate('D, d M Y H:i:s \G\M\T', time() + (60 * 60))."'/>";
 echo "<meta name='robots' content='none' />";
 echo "<meta name='googlebot' content='noarchive' />";
 if ($settings['bootstrap']) {
@@ -47,22 +47,34 @@ if ($settings['fontawesome']) {
     echo "<link rel='stylesheet' href='".INCLUDES."fonts/font-awesome/css/font-awesome.min.css' type='text/css' />\n";
 }
 // Default CSS styling which applies to all themes but can be overriden
-echo "<link href='".THEMES."templates/default.css' rel='stylesheet' type='text/css' media='screen' /\n>";
+echo "<link href='".THEMES."templates/default.min.css' rel='stylesheet' type='text/css' media='screen' />\n";
 // Admin Panel Theme CSS
-echo "<link href='".THEMES."admin_themes/".$settings['admin_theme']."/acp_styles.css' rel='stylesheet' type='text/css' media='screen' />\n";
+if (!defined('NO_DEFAULT_CSS')) {
+    echo "<link href='".THEMES."admin_themes/".$settings['admin_theme']."/acp_styles.css' rel='stylesheet' type='text/css' media='screen' />\n";
+}
 // jQuery related includes
-echo "<script type='text/javascript' src='".INCLUDES."jquery/jquery.js'></script>\n";
-echo "<script type='text/javascript' src='".INCLUDES."jscripts/jscript.min.js'></script>\n";
+if (!file_exists(INCLUDES.'jquery/jquery.min.js')) {
+    echo "<script type='text/javascript' src='https://code.jquery.com/jquery-2.2.4.min.js'></script>\n";
+}
+echo "<script type='text/javascript' src='".fusion_get_settings('siteurl')."includes/jquery/jquery.min.js'><\/script>\n";
+
+echo "<script type='text/javascript' src='".INCLUDES."jscripts/jscript.js'></script>\n";
 echo render_favicons(IMAGES);
 if (function_exists("get_head_tags")) {
     echo get_head_tags();
 }
 echo "</head>";
 echo "<body>";
-
+if (iSUPERADMIN && file_exists(BASEDIR.'install.php')) {
+    //addNotice("danger", fusion_get_locale('global_198'));
+}
 // Check if the user is logged in
 if (!check_admin_pass('')) {
-    render_admin_login();
+    if (empty(fusion_get_userdata("user_admin_password"))) {
+        redirect(BASEDIR."edit_profile.php");
+    } else {
+        render_admin_login();
+    }
 } else {
     render_admin_panel();
 }
@@ -82,4 +94,5 @@ if (!empty($fusion_jquery_tags)) {
 		$(function() { $fusion_jquery_tags; });
 		</script>\n";
 }
-echo "</body>\n</html>\n";
+echo "</body>\n";
+echo "</html>";

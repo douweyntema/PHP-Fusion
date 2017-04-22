@@ -18,9 +18,9 @@
 require_once "../maincore.php";
 pageAccess('AD');
 require_once THEMES."templates/admin_header.php";
-include LOCALE.LOCALESET."admin/admins.php";
+$locale = fusion_get_locale('', LOCALE.LOCALESET."admin/admins.php");
 
-add_breadcrumb(array('link' => ADMIN.'administrators.php'.$aidlink, 'title' => $locale['420']));
+\PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link'=> ADMIN.'administrators.php'.fusion_get_aidlink(), "title"=> $locale['420']]);
 
 $message = '';
 if (isset($_GET['status'])) {
@@ -76,7 +76,7 @@ if (isset($_POST['add_admin']) && (isset($_POST['user_id']) && isnum($_POST['use
 
 if (isset($_GET['remove']) && isnum($_GET['remove']) && $_GET['remove'] != 1) {
     if (check_admin_pass(isset($_POST['admin_password']) ? stripinput($_POST['admin_password']) : "")) {
-        $result = dbquery("UPDATE ".DB_USERS." SET user_admin_password='', user_level='-101', user_rights='' WHERE user_id='".$_GET['remove']."' AND user_level<='-102'");
+        $result = dbquery("UPDATE ".DB_USERS." SET user_admin_password='', user_admin_salt='', user_level='-101', user_rights='' WHERE user_id='".$_GET['remove']."' AND user_level<='-102'");
         set_admin_pass(isset($_POST['admin_password']) ? stripinput($_POST['admin_password']) : "");
         redirect(FUSION_SELF.$aidlink."&status=del", TRUE);
     } else {
@@ -84,7 +84,7 @@ if (isset($_GET['remove']) && isnum($_GET['remove']) && $_GET['remove'] != 1) {
             echo "<div id='close-message'><div class='admin-message'>".$locale['global_182']."</div></div>\n";
         }
         opentable($locale['470']);
-        echo openform('remove', 'post', FUSION_SELF.$aidlink."&amp;remove=".$_GET['remove'], array('max_tokens' => 1));
+        echo openform('remove', 'post', FUSION_SELF.$aidlink."&amp;remove=".$_GET['remove']);
         echo form_text('admin_password', $locale['471'], '', array('type' => 'password', 'class' => 'pull-left'));
         echo form_button('confirm', $locale['472'], $locale['472'], array('class' => 'btn-primary m-r-10'));
         echo form_button('cancel', $locale['473'], $locale['473'], array('class' => 'btn-primary m-r-10'));
@@ -122,7 +122,7 @@ if (isset($_GET['edit']) && isnum($_GET['edit']) && $_GET['edit'] != 1) {
         $page = 1;
         $admin_page = array($locale['441'], $locale['442'], $locale['443'], $locale['449'], $locale['444']);
         $risky_rights = array("CP", "AD", "SB", "DB", "IP", "P", "S11", "S3", "ERRO");
-        echo openform('rightsform', 'post', FUSION_SELF.$aidlink."&amp;user_id=".$_GET['edit'], array('max_tokens' => 1));
+        echo openform('rightsform', 'post', FUSION_SELF.$aidlink."&amp;user_id=".$_GET['edit']);
         echo "<div class='alert alert-warning'><strong>".$locale['462']."</strong></div>\n";
         echo "<table cellpadding='0' cellspacing='1' class='tbl-border center table table-responsive'>\n";
         echo "<thead><tr>\n<th colspan='2' class='tbl2'><strong>".$admin_page['0']."</strong></th>\n</tr>\n</thead>\n<tbody>\n<tr>\n";
@@ -136,16 +136,15 @@ if (isset($_GET['edit']) && isnum($_GET['edit']) && $_GET['edit'] != 1) {
             if ($counter != 0 && ($counter % $columns == 0)) {
                 echo "</tr>\n<tr>\n";
             }
-            echo "<td width='50%' class='tbl1'><label title='".$data2['admin_rights']."'><input type='checkbox' name='rights[]' value='".$data2['admin_rights']."'".(in_array($data2['admin_rights'],
-                                                                                                                                                                              $risky_rights) ? " class='insecure'" : "").(in_array($data2['admin_rights'],
-                                                                                                                                                                                                                                   $user_rights) ? " checked='checked'" : "")." /> ".$data2['admin_title']."</label>".(in_array($data2['admin_rights'],
-                                                                                                                                                                                                                                                                                                                                $risky_rights) ? "<span style='color:red;font-weight:bold;margin-left:3px;'>*</span>" : "")."</td>\n";
+            echo "<td width='50%' class='tbl1'><label title='".$data2['admin_rights']."'>";
+                echo "<input type='checkbox' name='rights[]' value='".$data2['admin_rights']."'".(in_array($data2['admin_rights'], $risky_rights) ? " class='insecure'" : "").(in_array($data2['admin_rights'], $user_rights) ? " checked='checked'" : "")." /> ";
+                echo $data2['admin_title']."</label>".(in_array($data2['admin_rights'], $risky_rights) ? "<span style='color:red;font-weight:bold;margin-left:3px;'>*</span>" : "")."</td>\n";
             $counter++;
         }
         echo "</tr>\n";
         echo "</tbody>\n</table>\n";
         echo "<div style='text-align:center'><br />\n";
-        echo "<div class='btn-group'>\n";
+        echo "<div class='btn-group m-b-0 m-r-5'>\n";
         echo "<input type='button' class='btn btn-default' onclick=\"setChecked('rightsform','rights[]',1);\" value='".$locale['445']."' />\n";
         echo "<input type='button' class='btn btn-default' onclick=\"setCheckedSecure('rightsform','rights[]',1);\" value='".$locale['450']."' />\n";
         echo "<input type='button' class='btn btn-default' onclick=\"setChecked('rightsform','rights[]',0);\" value='".$locale['446']."' />\n";
@@ -159,24 +158,32 @@ if (isset($_GET['edit']) && isnum($_GET['edit']) && $_GET['edit'] != 1) {
         echo "</div>\n";
         echo closeform();
         closetable();
-        echo "<script type='text/javascript'>\n";
-        echo "/* <![CDATA[ */\n";
-        echo "function setChecked(frmName,chkName,val) {"."\n";
-        echo "dml=document.forms[frmName];"."\n"."len=dml.elements.length;"."\n"."for(i=0;i < len;i++) {"."\n";
-        echo "if(dml.elements[i].name == chkName) {"."\n"."dml.elements[i].checked = val;"."\n";
-        echo "}\n}\n}\n";
-        echo "function setCheckedSecure(frmName,chkName,val) {"."\n";
-        echo "setChecked(frmName,chkName,0);"."\n";
-        echo "dml=document.forms[frmName];"."\n"."len=dml.elements.length;"."\n"."for(i=0;i < len;i++) {"."\n";
-        echo "if(dml.elements[i].name == chkName && !dml.elements[i].classList.contains('insecure')) {"."\n"."dml.elements[i].checked = val;"."\n";
-        echo "}\n}\n}\n";
-        echo "/* ]]>*/\n";
-        echo "</script>\n";
+        echo "<script type='text/javascript'>".jsminify("
+            function setChecked(frmName, chkName, val) {
+                dml = document.forms[frmName];
+                len = dml.elements.length;
+                for (i=0;i < len;i++) {
+                    if (dml.elements[i].name == chkName) {
+                        dml.elements[i].checked = val;
+                    }
+                }
+            }").jsminify("
+            function setCheckedSecure(frmName, chkName, val) {
+                setChecked(frmName, chkName, 0);
+                dml = document.forms[frmName];
+                len = dml.elements.length;
+                for (i=0;i < len;i++) {
+                    if (dml.elements[i].name == chkName && !dml.elements[i].classList.contains('insecure')) {
+                        dml.elements[i].checked = val;
+                    }
+                }
+            }
+        ")."</script>";
     }
 } else {
     opentable($locale['410']);
     if (!isset($_POST['search_users']) || !isset($_POST['search_criteria'])) {
-        echo openform('searchform', 'post', FUSION_SELF.$aidlink, array('max_tokens' => 1));
+        echo openform('searchform', 'post', FUSION_SELF.$aidlink);
         echo "<table cellpadding='0' cellspacing='0' width='450' class='center table table-responsive'>\n";
         echo "<tr>\n<td align='center' class='tbl'><strong>".$locale['411']."</strong><br /><br />\n";
         echo form_text('search_criteria', '', '', array('width' => '300px'));
@@ -197,7 +204,7 @@ if (isset($_GET['edit']) && isnum($_GET['edit']) && $_GET['edit'] != 1) {
             $result = dbquery("SELECT user_id, user_name FROM ".DB_USERS." WHERE ".$mysql_search." AND user_level='-101' ORDER BY user_name");
         }
         if (isset($result) && dbrows($result)) {
-            echo openform('add_users_form', 'post', FUSION_SELF.$aidlink, array('max_tokens' => 1));
+            echo openform('add_users_form', 'post', FUSION_SELF.$aidlink);
             echo "<table cellpadding='0' cellspacing='1' class='tbl-border center table table-responsive'>\n";
             $i = 0;
             $users = "";
@@ -273,4 +280,3 @@ if (isset($_GET['edit']) && isnum($_GET['edit']) && $_GET['edit'] != 1) {
 }
 
 require_once THEMES."templates/footer.php";
-

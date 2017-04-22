@@ -1,8 +1,8 @@
 <?php
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
-| Copyright (C) 2002 - 2014 PHP-Fusion Inc.
-| http://www.php-fusion.co.uk/
+| Copyright (C) PHP-Fusion Inc
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: user_blacklist_include.php
 | Author: Chan (Frederick MC Chan)
@@ -78,7 +78,7 @@ if ($profile_method == "input") {
     $userdata = $this->userData;
     $userdata_blacklist = isset($userdata) && array_key_exists('user_blacklist', $userdata) ? explode('.', $userdata['user_blacklist']) : array();
     if (count($userdata_blacklist) && isset($_POST['user_blacklist']) && isnum($_POST['user_blacklist']) && !in_array($_POST['user_blacklist'],
-                                                                                                                      $userdata_blacklist)
+            $userdata_blacklist)
     ) {
         $userdata_blacklist[] = $_POST['user_blacklist'];
         $userdata_blacklist = implode('.', $userdata_blacklist);

@@ -116,7 +116,7 @@ if ((isset($_GET['action']) && $_GET['action'] == "delete") && (isset($_GET['cat
     $tab_title['icon'][] = "";
     $tab_active = tab_active($tab_title, isset($_GET['cat_view']) ? 1 : 0);
 
-    echo opentab($tab_title, $tab_active, 'dcategory', FALSE, "m-t-20");
+    echo opentab($tab_title, $tab_active, 'dcategory', FALSE, "nav-tabs");
     echo opentabbody($tab_title['title'][0], $tab_title['id'][0], $tab_active);
     echo openform('addcat', 'post', FUSION_REQUEST, array('class' => 'm-t-20'));
     echo "<div class='row'>\n";
@@ -131,11 +131,10 @@ if ((isset($_GET['action']) && $_GET['action'] == "delete") && (isset($_GET['cat
         'resize' => 0,
         'autosize' => TRUE,
     ));
-    echo "<div class='clearfix'>\n";
     echo form_select('download_cat_sort_by', $locale['download_0302'], $data['download_cat_sort_by'], array(
         'options' => array(
             '1' => $locale['download_0303'],
-            '2' => $locale['download_0304'],
+            '2' => $locale['download_0200'],
             '3' => $locale['download_0305']
         ),
         'class' => 'pull-left m-r-10',
@@ -143,10 +142,8 @@ if ((isset($_GET['action']) && $_GET['action'] == "delete") && (isset($_GET['cat
     ));
     echo form_select('download_cat_sort_order', '', $data['download_cat_sort_order'], array(
         'options' => array('ASC' => $locale['download_0306'], 'DESC' => $locale['download_0307']),
-        'class' => 'pull-left',
         'width' => '200px'
     ));
-    echo "</div>\n";
     closeside();
     echo "</div>\n<div class='col-xs-12 col-sm-4'>\n";
     openside('');
@@ -166,17 +163,14 @@ if ((isset($_GET['action']) && $_GET['action'] == "delete") && (isset($_GET['cat
     }
     closeside();
     echo "</div>\n</div>\n";
-    echo form_button('save_cat', $locale['download_0309'], $locale['download_0309'], array(
-        'class' => 'btn-success btn-sm m-t-10',
-        'icon' => 'fa fa-check-square-o'
-    ));
+    echo form_button('save_cat', $locale['download_0309'], $locale['download_0309'], array('class' => 'btn-success', 'icon' => 'fa fa-hdd-o'));
     echo closeform();
     echo closetabbody();
     echo opentabbody($tab_title['title'][1], $tab_title['id'][1], $tab_active);
     $row_num = 0;
     showcatlist();
     if ($row_num == 0) {
-        echo "<div class='well text-center'>".$locale['download_0313']."</div>\n";
+        echo "<div class='well text-center'>".$locale['download_0251']."</div>\n";
     }
     echo closetabbody();
     echo closetab();
@@ -187,7 +181,9 @@ if ((isset($_GET['action']) && $_GET['action'] == "delete") && (isset($_GET['cat
  * @param int $level
  */
 function showcatlist($parent = 0, $level = 0) {
-    global $locale, $aidlink, $row_num;
+    global $row_num;
+    $locale = fusion_get_locale();
+    $aidlink = fusion_get_aidlink();
     $result = dbquery("
 	SELECT d.download_cat_id, d.download_cat_name, d.download_cat_description,
 	count(dl.download_id) 'download_count',
@@ -200,18 +196,17 @@ function showcatlist($parent = 0, $level = 0) {
 	ORDER BY d.download_cat_name
 	");
     if (dbrows($result) != 0) {
+        echo "<div class='row'>";
         while ($data = dbarray($result)) {
-            echo "<div class='list-group-item clearfix'>\n";
+            echo "<div class='col-xs-12 col-sm-6'>";
+            echo "<div class='well clearfix'>\n";
             echo "<div class='btn-group pull-right m-t-5'>\n";
             echo "<a class='btn btn-sm btn-default' href='".clean_request("action=edit&cat_id=".$data['download_cat_id'], array(
                     "section",
                     "aid"
                 ), TRUE)."'>".$locale['edit']."</a>";
             echo "<a class='btn btn-sm btn-danger ".($data['download_count'] || $data['child_categories'] ? "disabled" : "")."' href='".clean_request("action=delete&cat_id=".$data['download_cat_id'],
-                                                                                                                                                      array(
-                                                                                                                                                          "section",
-                                                                                                                                                          "aid"
-                                                                                                                                                      ),
+                                                                                                                                                      array("section", "aid"),
                                                                                                                                                       TRUE)."' onclick=\"return confirm('".$locale['download_0350']."');\"><i class='fa fa-trash fa-fw'></i> ".$locale['delete']."</a>\n";
             echo "</div>\n";
             echo "<div class='overflow-hide p-r-10'>\n";
@@ -222,9 +217,10 @@ function showcatlist($parent = 0, $level = 0) {
             }
             echo "</div>\n";
             echo "</div>\n";
+            echo "</div>";
             $row_num++;
             showcatlist($data['download_cat_id'], $level + 1);
         }
+        echo "</div>";
     }
 }
-

@@ -21,21 +21,7 @@ class adminApps {
 
     private $result = array();
 
-
     public function display_apps_result() {
-
-        global $aidlink;
-
-        // need the url
-        $uri = pathinfo($_GET['url']);
-
-        $count = substr($_GET['url'], -1) == "/" ? substr_count($uri['dirname'], "/") : substr_count($uri['dirname'], "/") - 1;
-
-        $prefix_ = str_repeat("../", $count);
-
-        $infusions_count = substr($_GET['url'], -1) == "/" ? substr_count($uri['dirname'], "/") : substr_count($uri['dirname'], "/") - 2;
-
-        $infusions_prefix_ = str_repeat("../", $infusions_count);
 
         if (($this->result['status'] == 200 && !empty($this->result['data'])) && isset($_GET['mode'])) {
 
@@ -45,20 +31,26 @@ class adminApps {
 
             } elseif ($_GET['mode'] == "html") {
 
+                $locale = fusion_get_locale();
+
                 foreach ($this->result['data'] as $data) {
 
                     $title = $data['admin_title'];
 
                     if (stristr($data['admin_link'], '/infusions/')) {
-                        $link = $infusions_prefix_.$data['admin_link'];
+                        $link = fusion_get_settings('siteurl').'infusions/'.$data['admin_link'];
                     } else {
-                        $link = $prefix_."administration/".$data['admin_link'];
+                        $link = fusion_get_settings('siteurl').'administration/'.$data['admin_link'];
                     }
-                    $link = $link.$aidlink;
 
-                    $app_icon_url = str_replace('../', '', get_image("ac_".$data['admin_rights']));
+                    $link = $link.fusion_get_aidlink();
 
-                    $app_icon_url = $prefix_.$app_icon_url;
+                    $app_icon_url = strtr(
+                        get_image("ac_".$data['admin_rights']), [
+                            INFUSIONS => fusion_get_settings('siteurl').'infusions/',
+                            ADMIN => fusion_get_settings('siteurl').'administration/'
+                        ]
+                    );
 
                     if ($data['admin_page'] !== 5) {
                         $title = isset($locale[$data['admin_rights']]) ? $locale[$data['admin_rights']] : $title;
@@ -82,36 +74,39 @@ class adminApps {
 
             } else {
 
-                echo "<li class=\"app_search_error\"><span>API Error - Mode is not of a valid type</span></li>";
+            echo "<li class=\"app_search_error\"><span>API Error - Mode is not of a valid type</span></li>";
 
-            }
-
-        } else {
-
-            if (!isset($_GET['mode'])) {
-                echo "<li class=\"app_search_error\"><span>API Error - Please specify a mode of return</span></li>";
-
-            } else {
-
-                if ($_GET['mode'] == "html") {
-
-                    echo "<li class=\"app_search_error\"><span>".$this->result['message']."</span></li>\n";
-
-                } elseif ($_GET['mode'] == "json") {
-
-                    echo json_encode($this->result);
-
-                }
-            }
         }
-    }
 
-    /**
-     * @param array $result
-     */
-    public function setResult($result) {
-        $this->result = $result;
+    } else {
+
+if (!isset($_GET['mode'])) {
+echo "<li class=\"app_search_error\"><span>API Error - Please specify a mode of return</span></li>";
+
+}
+
+else {
+
+    if ($_GET['mode'] == "html") {
+
+        echo "<li class=\"app_search_error\"><span>".$this->result['message']."</span></li>\n";
+
+    } elseif ($_GET['mode'] == "json") {
+
+        echo json_encode($this->result);
+
     }
+}
+}
+}
+
+/**
+ * @param array $result
+ */
+public
+function setResult($result) {
+    $this->result = $result;
+}
 
 
 }

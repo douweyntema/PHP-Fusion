@@ -16,7 +16,6 @@
 | copyright header is strictly prohibited without
 | written permission from the original author(s).
 +--------------------------------------------------------*/
-
 /**
  * Show home modules info
  */
@@ -27,15 +26,15 @@ if (!function_exists('display_home')) {
             opentable($content['blockTitle']);
             if ($colwidth) {
                 $classes = "col-xs-".$colwidth." col-sm-".$colwidth." col-md-".$colwidth." col-lg-".$colwidth." content";
-                echo "<div class='row'>\n";
+                echo "<div class='row'>";
                 foreach ($content['data'] as $data) {
-                    echo "<div class='".$classes." clearfix'>\n";
-                    echo "<h3><a href='".$data['url']."'>".$data['title']."</a></h3>\n";
-                    echo "<div class='small m-b-10'>".$data['meta']."</div>\n";
-                    echo "<div class='overflow-hide'>".fusion_first_words($data['content'], 100)."</div>\n";
-                    echo "</div>\n";
+                    echo "<div class='".$classes." clearfix'>";
+                    echo "<h4><a href='".$data['url']."'>".$data['title']."</a></h4>";
+                    echo "<div class='small m-b-10'>".$data['meta']."</div>";
+                    echo "<div class='overflow-hide'>".nl2br(trim_text(strip_tags($data['content']), 250))."</div>";
+                    echo "</div>";
                 }
-                echo "</div>\n";
+                echo "</div>";
             } else {
                 echo $content['norecord'];
             }

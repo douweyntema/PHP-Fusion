@@ -2,7 +2,7 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: templates/blog.php
 | Author: Frederick MC Chan (Chan)
@@ -22,9 +22,8 @@ if (!defined("IN_FUSION")) {
 if (!function_exists('render_main_blog')) {
     function render_main_blog($info) {
         add_to_head("<link rel='stylesheet' href='".INFUSIONS."blog/templates/css/blog.css' type='text/css'>");
+        echo "<div class='blog spacer-sm'>\n";
         echo render_breadcrumbs();
-        echo "<div class='row'>\n";
-        echo "<div class='col-xs-12 col-sm-9 overflow-hide'>\n";
         if (isset($_GET['readmore']) && !empty($info['blog_item'])) {
             echo "<!--blog_pre_readmore-->";
             echo display_blog_item($info); // change this integration
@@ -32,23 +31,32 @@ if (!function_exists('render_main_blog')) {
         } else {
             echo display_blog_index($info);
         }
-        echo "</div><div class='col-xs-12 col-sm-3'>\n";
-        echo "<!--pre_blog_cat_idx-->";
-        echo display_blog_menu($info);
-        echo "<!--sub_blog_cat_idx-->";
         echo "</div>\n";
-        echo "</div>\n";
+
+        // push the blog menu to the right panel
+        if (!empty($info['blog_filter'])) {
+            $pages = "<ul class='block spacer-sm'>\n";
+            foreach ($info['blog_filter'] as $filter_key => $filter) {
+                $pages .= "<li ".(isset($_GET['type']) && $_GET['type'] == $filter_key ? "class='active strong'" : '')." ><a href='".$filter['link']."'>".$filter['title']."</a></li>\n";
+            }
+            $pages .= "</ul>\n";
+            \PHPFusion\Panels::addPanel('blog_menu_panel', $pages, \PHPFusion\Panels::PANEL_RIGHT, iGUEST, 0);
+        }
+
+        \PHPFusion\Panels::addPanel('blog_menu_panel', display_blog_menu($info), \PHPFusion\Panels::PANEL_RIGHT, iGUEST, 9);
     }
 }
 
 if (!function_exists('display_blog_item')) {
     function display_blog_item($info) {
-        global $locale, $blog_settings;
+        global $blog_settings;
+
+        $locale = fusion_get_locale();
 
         add_to_head("<link rel='stylesheet' href='".INFUSIONS."blog/templates/css/blog.css' type='text/css'>");
         add_to_head("<link rel='stylesheet' href='".INCLUDES."jquery/colorbox/colorbox.css' type='text/css' media='screen' />");
         add_to_head("<script type='text/javascript' src='".INCLUDES."jquery/colorbox/jquery.colorbox.js'></script>");
-        add_to_footer('<script type="text/javascript">
+        add_to_footer('<script type="text/javascript">'.jsminify('
 			$(document).ready(function() {
 				$(".blog-image-overlay").colorbox({
 					transition: "elasic",
@@ -70,18 +78,18 @@ if (!function_exists('display_blog_item')) {
 					}
 			   });
 			});
-			</script>');
+			').'</script>');
         ob_start();
 
         $data = $info['blog_item'];
 
         echo "<div class='clearfix'>
 				<div class='btn-group pull-right'>
-				<a class='btn btn-default btn-sm' href='".$data['print_link']."'>".$locale['print']."</a>";
+				<a class='btn btn-default btn-sm' href='".$data['print_link']."'><i class='fa fa-print'></i> ".$locale['print']."</a>";
         if ($data['admin_link']) {
             $admin_actions = $data['admin_link'];
-            echo "<a class='btn btn-default btn-sm' href='".$admin_actions['edit']."'>".$locale['edit']."</a>\n";
-            echo "<a class='btn btn-default btn-sm' href='".$admin_actions['delete']."'>".$locale['delete']."</a>\n";
+            echo "<a class='btn btn-default btn-sm' href='".$admin_actions['edit']."'><i class='fa fa-pencil'></i> ".$locale['edit']."</a>\n";
+            echo "<a class='btn btn-danger btn-sm' href='".$admin_actions['delete']."'><i class='fa fa-trash'></i> ".$locale['delete']."</a>\n";
         }
         echo "</div>";
         echo "<div class='overflow-hide'>
@@ -97,18 +105,12 @@ if (!function_exists('display_blog_item')) {
             echo "<img class='img-responsive' src='".$data['blog_image_link']."' alt='".$data['blog_subject']."' style='padding:5px; max-height:".$blog_settings['blog_photo_h']."px; overflow:hidden;' />
             </a>";
         }
-        echo parse_textarea($data['blog_extended'], FALSE, FALSE);
+        echo $data['blog_extended'];
         echo "</div>\n";
-        if ($info['blog_nav']) {
-            echo "<div class='clearfix m-b-20'>\n<div class='pull-right'>\n".$info['blog_nav']."</div>\n</div>\n";
-        }
         echo "<div class='m-b-20 well'>".$data['blog_author_info']."</div>";
-        if ($data['blog_allow_comments']) {
-            echo "<hr /> ".showcomments("B", DB_BLOG, "blog_id", $_GET['readmore'], INFUSIONS."blog/blog.php?readmore=".$_GET['readmore'])."";
-        }
-        if ($data['blog_allow_ratings']) {
-            echo "<hr />  ".showratings("B", $_GET['readmore'], INFUSIONS."blog/blog.php?readmore=".$_GET['readmore'])."";
-        }
+
+        echo $data['blog_allow_comments'] ? "<hr/>".$data['blog_show_comments'] : '';
+        echo $data['blog_allow_ratings'] ? "<hr/>".$data['blog_show_ratings'] : '';
         $str = ob_get_contents();
         ob_end_clean();
 
@@ -119,7 +121,7 @@ if (!function_exists('display_blog_item')) {
 if (!function_exists('display_blog_index')) {
     function display_blog_index($info) {
         add_to_head("<link rel='stylesheet' href='".INFUSIONS."blog/templates/css/blog.css' type='text/css'>");
-        global $locale;
+        $locale = fusion_get_locale();
         ob_start();
         if (!empty($info['blog_item'])) {
             foreach ($info['blog_item'] as $blog_id => $data) {
@@ -147,8 +149,11 @@ if (!function_exists('display_blog_index')) {
 						<hr>
 					</div>
 				";
+
                 echo (isset($_GET['cat_id'])) ? "<!--sub_blog_cat_idx-->" : "<!--sub_blog_idx-->\n";
             }
+
+            echo !empty($info['blog_nav']) ? '<div class="m-t-5">'.$info['blog_nav'].'</div>' : '';
         } else {
             echo "<div class='well text-center'>".$locale['blog_3000']."</div>\n";
         }
@@ -161,19 +166,14 @@ if (!function_exists('display_blog_index')) {
 
 if (!function_exists('display_blog_menu')) {
     function display_blog_menu($info) {
-        global $locale;
+        $locale = fusion_get_locale();
         function find_cat_menu($info, $cat_id = 0, $level = 0) {
             $html = '';
             if (!empty($info[$cat_id])) {
-
                 foreach ($info[$cat_id] as $blog_cat_id => $cdata) {
-
                     $unCat_active = ($blog_cat_id == 0 && (isset($_GET['cat_id']) && ($_GET['cat_id'] == 0))) ? TRUE : FALSE;
-
-                    $active = ($blog_cat_id == $_GET['cat_id'] && $_GET['cat_id'] !== '') ? TRUE : FALSE;
-
-                    $html .= "<li ".($active || $unCat_active ? "class='active strong'" : '')." >".str_repeat('&nbsp;',
-                                                                                                              $level)." ".$cdata['blog_cat_link']."</li>\n";
+                    $active = ($_GET['cat_id'] !== NULL && $blog_cat_id == $_GET['cat_id']) ? TRUE : FALSE;
+                    $html .= "<li ".($active || $unCat_active ? "class='active strong'" : '')." >".str_repeat('&nbsp;', $level)." ".$cdata['blog_cat_link']."</li>\n";
                     if ($active && $blog_cat_id != 0) {
                         if (!empty($info[$blog_cat_id])) {
                             $html .= find_cat_menu($info, $blog_cat_id, $level++);
@@ -184,15 +184,9 @@ if (!function_exists('display_blog_menu')) {
 
             return $html;
         }
-
         ob_start();
-        echo "<ul class='m-b-40'>\n";
-        foreach ($info['blog_filter'] as $filter_key => $filter) {
-            echo "<li ".(isset($_GET['type']) && $_GET['type'] == $filter_key ? "class='active strong'" : '')." ><a href='".$filter['link']."'>".$filter['title']."</a></li>\n";
-        }
-        echo "</ul>\n";
         echo "<div class='text-bigger strong text-dark m-b-20 m-t-20'><i class='fa fa-list m-r-10'></i> ".$locale['blog_1003']."</div>\n";
-        echo "<ul class='m-b-40'>\n";
+        echo "<ul class='block spacer-sm'>\n";
         $blog_cat_menu = find_cat_menu($info['blog_categories']);
         if (!empty($blog_cat_menu)) {
             echo $blog_cat_menu;
@@ -201,7 +195,7 @@ if (!function_exists('display_blog_menu')) {
         }
         echo "</ul>\n";
         echo "<div class='text-bigger strong text-dark m-t-20 m-b-20'><i class='fa fa-calendar m-r-10'></i> ".$locale['blog_1004']."</div>\n";
-        echo "<ul class='m-b-40'>\n";
+        echo "<ul class='block spacer-sm'>\n";
         if (!empty($info['blog_archive'])) {
             $current_year = 0;
             foreach ($info['blog_archive'] as $year => $archive_data) {
@@ -222,7 +216,7 @@ if (!function_exists('display_blog_menu')) {
         }
         echo "</ul>\n";
         echo "<div class='text-bigger strong text-dark m-t-20 m-b-20'><i class='fa fa-users m-r-10'></i> ".$locale['blog_1005']."</div>\n";
-        echo "<ul class='m-b-40'>\n";
+        echo "<ul class='block spacer-sm'>\n";
         if (!empty($info['blog_author'])) {
             foreach ($info['blog_author'] as $author_id => $author_info) {
                 echo "<li ".($author_info['active'] ? "class='active strong'" : '').">

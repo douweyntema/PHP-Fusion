@@ -2,10 +2,10 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: user_location_include.php
-| Author: Digitanium
+| Author: PHP-Fusion Development Team
 +--------------------------------------------------------+
 | This program is released as free software under the
 | Affero GPL license. You can redistribute it and/or
@@ -26,7 +26,5 @@ if ($profile_method == "input") {
 
 //Display in profile
 } elseif ($profile_method == "display") {
-    if ($field_value) {
-        $user_fields = array('title' => $locale['uf_location'], 'value' => $field_value);
-    }
+    $user_fields = array('title' => $locale['uf_location'], 'value' => $field_value ?: "");
 }

@@ -2,7 +2,7 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: user_comments-stat_include.php
 | Author: PHP-Fusion Development Team
@@ -27,6 +27,6 @@ if ($profile_method == "input") {
 } elseif ($profile_method == "display") {
     $user_fields = array(
         'title' => $locale['uf_comments-stat'],
-        'value' => number_format(dbcount("(comment_id)", DB_COMMENTS, "comment_name='".$user_data['user_id']."'")).""
+        'value' => number_format(dbcount("(comment_id)", DB_COMMENTS, "comment_name='".intval($_GET['lookup'])."'")).""
     );
 }

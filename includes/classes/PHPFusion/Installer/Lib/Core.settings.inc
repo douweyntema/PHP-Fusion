@@ -1,4 +1,20 @@
 <?php
+/*-------------------------------------------------------+
+| PHP-Fusion Content Management System
+| Copyright (C) PHP-Fusion Inc
+| https://www.php-fusion.co.uk/
++--------------------------------------------------------+
+| Filename: Core.settings.inc
+| Author: PHP-Fusion Development Team
++--------------------------------------------------------+
+| This program is released as free software under the
+| Affero GPL license. You can redistribute it and/or
+| modify it under the terms of this license which you
+| can read by viewing the included agpl.txt or online
+| at www.gnu.org/licenses/agpl.html. Removal of this
+| copyright header is strictly prohibited without
+| written permission from the original author(s).
++--------------------------------------------------------*/
 
 // the enabled languages in step 1. take it out. put it behind.
 function get_table_rows($table_name, $localeset = 'English') {
@@ -81,19 +97,19 @@ function get_table_rows($table_name, $localeset = 'English') {
             ],
             [
                 'settings_name' => 'description',
-                'settings_value' => ''
+                'settings_value' => $locale['setup_1216']
             ],
             [
                 'settings_name' => 'keywords',
-                'settings_value' => ''
+                'settings_value' => 'PHP-Fusion, CMS, Portal, Open Source, AGPL, PHP, MySQL, HTML, CSS, JS'
             ],
             [
                 'settings_name' => 'footer',
                 'settings_value' => "<div style=\'text-align:center\'>Copyright &copy; ".@date("Y")."</div>"
             ],
             [
-                'settings_name' => 'opening_page',
-                'settings_value' => 'viewpage.php?page_id=1'
+                'settings_name'  => 'opening_page',
+                'settings_value' => 'home.php'
             ],
             [
                 'settings_name' => 'locale',
@@ -104,8 +120,8 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'settings_value' => 1
             ],
             [
-                'settings_name' => 'entypo',
-                'settings_value' => 1
+                'settings_name'  => 'entypo',
+                'settings_value' => 0
             ],
             [
                 'settings_name' => 'fontawesome',
@@ -145,6 +161,22 @@ function get_table_rows($table_name, $localeset = 'English') {
             ],
             [
                 'settings_name' => 'exclude_right',
+                'settings_value' => ''
+            ],
+            [
+                'settings_name' => 'exclude_user1',
+                'settings_value' => ''
+            ],
+            [
+                'settings_name' => 'exclude_user2',
+                'settings_value' => ''
+            ],
+            [
+                'settings_name' => 'exclude_user3',
+                'settings_value' => ''
+            ],
+            [
+                'settings_name' => 'exclude_user4',
                 'settings_value' => ''
             ],
             [
@@ -268,10 +300,6 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'settings_value' => 1
             ],
             [
-                'settings_name' => 'comments_jquery',
-                'settings_value' => 1
-            ],
-            [
                 'settings_name' => 'ratings_enabled',
                 'settings_value' => 1
             ],
@@ -309,7 +337,7 @@ function get_table_rows($table_name, $localeset = 'English') {
             ],
             [
                 'settings_name' => 'links_grouping',
-                'settings_value' => 8
+                'settings_value' => 0
             ],
             [
                 'settings_name' => 'comments_per_page',
@@ -324,16 +352,16 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'settings_value' => 1
             ],
             [
-                'settings_name' => 'avatar_width',
-                'settings_value' => 100
+                'settings_name'  => 'avatar_width',
+                'settings_value' => 500
             ],
             [
-                'settings_name' => 'avatar_height',
-                'settings_value' => 100
+                'settings_name'  => 'avatar_height',
+                'settings_value' => 500
             ],
             [
-                'settings_name' => 'avatar_filesize',
-                'settings_value' => 50000
+                'settings_name'  => 'avatar_filesize',
+                'settings_value' => 150000
             ],
             [
                 'settings_name' => 'avatar_ratio',
@@ -456,7 +484,7 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'settings_value' => 2
             ],
             [
-                'settings_name' => 'save_sent',
+                'settings_name' => 'pm_save_sent',
                 'settings_value' => 2
             ],
             [
@@ -740,6 +768,7 @@ function get_table_rows($table_name, $localeset = 'English') {
             ]
         ]
     ];
+    // if we're installing
     $table_settings['settings_theme'] = [
         'insert' => [
             [
@@ -819,48 +848,53 @@ function get_table_rows($table_name, $localeset = 'English') {
         'insert' => [
             [
                 'smiley_code' => ':)',
-                'smiley_image' => 'smile.gif',
+                'smiley_image' => 'smile.png',
                 'smiley_text' => $locale['setup_3620']
             ],
             [
                 'smiley_code' => ';)',
-                'smiley_image' => 'wink.gif',
+                'smiley_image' => 'wink.png',
                 'smiley_text' => $locale['setup_3621']
             ],
             [
                 'smiley_code' => ':(',
-                'smiley_image' => 'sad.gif',
+                'smiley_image' => 'sad.png',
                 'smiley_text' => $locale['setup_3622']
             ],
             [
                 'smiley_code' => ':|',
-                'smiley_image' => 'frown.gif',
+                'smiley_image' => 'frown.png',
                 'smiley_text' => $locale['setup_3623']
             ],
             [
                 'smiley_code' => ':o',
-                'smiley_image' => 'shock.gif',
+                'smiley_image' => 'shock.png',
                 'smiley_text' => $locale['setup_3624']
             ],
             [
                 'smiley_code' => ':P',
-                'smiley_image' => 'pfft.gif',
+                'smiley_image' => 'pfft.png',
                 'smiley_text' => $locale['setup_3625']
             ],
             [
                 'smiley_code' => 'B)',
-                'smiley_image' => 'cool.gif',
+                'smiley_image' => 'cool.png',
                 'smiley_text' => $locale['setup_3626']
             ],
             [
                 'smiley_code' => ':D',
-                'smiley_image' => 'grin.gif',
+                'smiley_image' => 'grin.png',
                 'smiley_text' => $locale['setup_3627']
             ],
             [
                 'smiley_code' => ':@',
-                'smiley_image' => 'angry.gif',
+                'smiley_image' => 'angry.png',
                 'smiley_text' => $locale['setup_3628']
+            ],
+            [
+                'smiley_code' => '(y)',
+                'smiley_image' => 'like.png',
+                'smiley_text' => $locale['setup_3629']
             ]
         ]
 
@@ -881,7 +915,7 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'panel_restriction' => 3
             ],
             [
-                'panel_name' => 'RSS',
+                'panel_name' => $locale['setup_3408'],
                 'panel_filename' => 'rss_feeds_panel',
                 'panel_content' => '',
                 'panel_side' => 1,
@@ -942,8 +976,8 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'field_cat_id' => 1,
                 'field_cat_name' => $locale['setup_3640'],
                 'field_parent' => 0,
-                'field_cat_db' => '',
-                'field_cat_index' => '',
+                'field_cat_db' => 'users',
+                'field_cat_index' => 'user_id',
                 'field_cat_class' => 'fa fa-user',
                 'field_cat_order' => 1
             ],
@@ -983,27 +1017,36 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'field_cat_index' => '',
                 'field_cat_class' => 'fa fa-user',
                 'field_cat_order' => 4
+            ],
+            [
+                'field_cat_id' => 6,
+                'field_cat_name' => $locale['setup_3645'],
+                'field_parent' => 1,
+                'field_cat_db' => '',
+                'field_cat_index' => '',
+                'field_cat_class' => 'fa fa-user',
+                'field_cat_order' => 5
             ]
         ]
     ];
     $table_settings['user_fields'] = [
         'insert' => [
             [
-                'field_name' => 'user_birthdate',
-                'field_title' => $locale['uf_birthdate'],
-                'field_cat' => 3,
-                'field_type' => 'file',
+                'field_name'     => 'user_birthdate',
+                'field_title'    => $locale['uf_birthdate'],
+                'field_cat'      => 3,
+                'field_type'     => 'file',
                 'field_required' => 0,
-                'field_order' => 2,
-                'field_default' => '1900-01-01',
-                'field_options' => '',
-                'field_error' => '',
-                'field_config' => ''
+                'field_order'    => 2,
+                'field_default'  => '1900-01-01',
+                'field_options'  => '',
+                'field_error'    => '',
+                'field_config'   => ''
             ],
             [
                 'field_name' => 'user_location',
                 'field_title' => $locale['uf_location'],
-                'field_cat' => 2,
+                'field_cat' => 3,
                 'field_type' => 'file',
                 'field_required' => 0,
                 'field_order' => 2,
@@ -1061,16 +1104,16 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'field_config' => ''
             ],
             [
-                'field_name' => 'user_web',
-                'field_title' => $locale['uf_web'],
-                'field_cat' => 2,
-                'field_type' => 'file',
+                'field_name'     => 'user_web',
+                'field_title'    => $locale['uf_web'],
+                'field_cat'      => 3,
+                'field_type'     => 'file',
                 'field_required' => 0,
-                'field_order' => 5,
-                'field_default' => '',
-                'field_options' => '',
-                'field_error' => '',
-                'field_config' => ''
+                'field_order'    => 3,
+                'field_default'  => '',
+                'field_options'  => '',
+                'field_error'    => '',
+                'field_config'   => ''
             ],
             [
                 'field_name' => 'user_timezone',
@@ -1113,26 +1156,28 @@ function get_table_rows($table_name, $localeset = 'English') {
     $table_settings['site_links'] = [
         'insert' => [
             [
-                'link_name' => $locale['setup_3300'],
-                'link_cat' => '0',
-                'link_icon' => '',
-                'link_url' => 'index.php',
+                'link_name'       => $locale['setup_3300'],
+                'link_cat'        => '0',
+                'link_icon'       => '',
+                'link_url'        => 'index.php',
                 'link_visibility' => '0',
-                'link_position' => '2',
-                'link_window' => '0',
-                'link_order' => '1',
-                'link_language' => $localeset,
+                'link_position'   => '2',
+                'link_status'     => '1',
+                'link_window'     => '0',
+                'link_order'      => '1',
+                'link_language'   => $localeset,
             ],
             [
-                'link_name' => $locale['setup_3305'],
-                'link_cat' => '0',
-                'link_icon' => '',
-                'link_url' => 'contact.php',
+                'link_name'       => $locale['setup_3305'],
+                'link_cat'        => '0',
+                'link_icon'       => '',
+                'link_url'        => 'contact.php',
                 'link_visibility' => '0',
-                'link_position' => '1',
-                'link_window' => '0',
-                'link_order' => '8',
-                'link_language' => $localeset,
+                'link_position'   => '3',
+                'link_status'     => '1',
+                'link_window'     => '0',
+                'link_order'      => '8',
+                'link_language'   => $localeset,
             ],
             [
                 'link_name' => $locale['setup_3309'],
@@ -1141,6 +1186,7 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'link_url' => 'search.php',
                 'link_visibility' => '0',
                 'link_position' => '1',
+                'link_status' => '1',
                 'link_window' => '0',
                 'link_order' => '10',
                 'link_language' => $localeset,
@@ -1150,8 +1196,9 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'link_cat' => '0',
                 'link_icon' => '',
                 'link_url' => 'submissions.php',
-                'link_visibility' => USER_LEVEL_ADMIN,
+                'link_visibility' => '-101',
                 'link_position' => '1',
+                'link_status' => '1',
                 'link_window' => '0',
                 'link_order' => '10',
                 'link_language' => $localeset,
@@ -1161,8 +1208,9 @@ function get_table_rows($table_name, $localeset = 'English') {
                 'link_cat' => '0',
                 'link_icon' => '',
                 'link_url' => '---',
-                'link_visibility' => USER_LEVEL_ADMIN,
+                'link_visibility' => '-101',
                 'link_position' => '1',
+                'link_status' => '1',
                 'link_window' => '0',
                 'link_order' => '11',
                 'link_language' => $localeset,

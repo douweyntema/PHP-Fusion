@@ -4,7 +4,7 @@
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
-| Filename: Moderator.php
+| Filename: mods.php
 | Author: Chan (Frederick MC Chan)
 +--------------------------------------------------------+
 | This program is released as free software under the
@@ -160,7 +160,7 @@ class Moderator {
                 $message = $locale['error-MP002'];
                 break;
             case '3':
-                $message = $locale['error-MP003'];
+                $message = $locale['forum_0307'];
                 break;
         }
         if ($message != "") {
@@ -201,10 +201,10 @@ class Moderator {
                 dbquery("UPDATE ".DB_FORUM_THREADS." SET thread_lastpost='".time()."', thread_lastpostid='".$data['post_id']."', thread_lastuser='".$data['post_author']."' WHERE thread_id='".intval($this->thread_id)."'");
                 dbquery("UPDATE ".DB_FORUMS." SET forum_lastpost='".time()."', forum_lastuser='".$data['post_author']."' WHERE forum_id='".$this->forum_id."'");
                 ob_start();
-                echo openmodal('renew', $locale['forum_0758'], array('class' => 'modal-center', 'static' => 1));
+                echo openmodal('renew', $locale['forum_0207'], array('class' => 'modal-center', 'static' => 1));
                 echo "<div style='text-align:center'><br />\n".$locale['forum_0759']."<br /><br />\n";
-                echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0702']."</a><br /><br />\n";
-                echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0703']."</a><br /><br /></div>\n";
+                echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0549']."</a><br /><br />\n";
+                echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0550']."</a><br /><br /></div>\n";
                 echo closemodal();
                 add_to_footer(ob_get_contents());
                 ob_end_clean();
@@ -221,10 +221,11 @@ class Moderator {
      * Modal pop up confirmation of thread being `removed`
      */
     private function mod_delete_thread() {
-        global $locale;
+        $locale = fusion_get_locale();
+
         if (iMOD) {
             ob_start();
-            echo openmodal('deletethread', $locale['forum_0700'], array('class' => 'modal-center'));
+            echo openmodal('deletethread', $locale['forum_0201'], array('class' => 'modal-center'));
             echo "<div class='text-center'><br />\n";
             if (!isset($_POST['deletethread'])) {
                 echo openform('delform', 'post',
@@ -248,10 +249,10 @@ class Moderator {
 
                 if ($response == TRUE) {
                     echo $locale['forum_0701']."<br /><br />\n";
-                    echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0702']."</a><br /><br />\n";
-                    echo "<a href='index.php'>".$locale['forum_0703']."</a><br /><br />\n";
+                    echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0549']."</a><br /><br />\n";
+                    echo "<a href='index.php'>".$locale['forum_0550']."</a><br /><br />\n";
                 } else {
-                    echo "Unable to remove thread because thread does not exist";
+                    echo $locale['forum_0705'];
                 }
             }
             echo "</div>\n";
@@ -379,11 +380,11 @@ class Moderator {
         if (iMOD) {
             dbquery("UPDATE ".DB_FORUM_THREADS." SET thread_locked='1' WHERE thread_id='".intval($this->thread_id)."' AND thread_hidden='0'");
             ob_start();
-            echo openmodal('lockthread', $locale['forum_0710']);
+            echo openmodal('lockthread', $locale['forum_0202']);
             echo "<div style='text-align:center'><br />\n";
             echo "<strong>".$locale['forum_0711']."</strong><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0702']."</a><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0703']."</a><br /><br />\n</div>\n";
+            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0549']."</a><br /><br />\n";
+            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0550']."</a><br /><br />\n</div>\n";
             echo closemodal();
             add_to_footer(ob_get_contents());
             ob_end_clean();
@@ -402,8 +403,8 @@ class Moderator {
             echo openmodal('lockthread', $locale['forum_0720'], array('class' => 'modal-center'));
             echo "<div style='text-align:center'><br />\n";
             echo "<strong>".$locale['forum_0721']."</strong><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0702']."</a><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0703']."</a><br /><br />\n</div>\n";
+            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0549']."</a><br /><br />\n";
+            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0550']."</a><br /><br />\n</div>\n";
             echo closemodal();
             add_to_footer(ob_get_contents());
             ob_end_clean();
@@ -419,11 +420,11 @@ class Moderator {
         if (iMOD) {
             $result = dbquery("UPDATE ".DB_FORUM_THREADS." SET thread_sticky='1' WHERE thread_id='".intval($this->thread_id)."' AND thread_hidden='0'");
             ob_start();
-            echo openmodal('lockthread', $locale['forum_0730'], array('class' => 'modal-center'));
+            echo openmodal('lockthread', $locale['forum_0204'], array('class' => 'modal-center'));
             echo "<div style='text-align:center'><br />\n";
             echo "<strong>".$locale['forum_0731']."</strong><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0702']."</a><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0703']."</a><br /><br />\n</div>\n";
+            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0549']."</a><br /><br />\n";
+            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0550']."</a><br /><br />\n</div>\n";
             echo closemodal();
             add_to_footer(ob_get_contents());
             ob_end_clean();
@@ -439,11 +440,11 @@ class Moderator {
         if (iMOD) {
             dbquery("UPDATE ".DB_FORUM_THREADS." SET thread_sticky='0' WHERE thread_id='".intval($this->thread_id)."' AND thread_hidden='0'");
             ob_start();
-            echo openmodal('lockthread', $locale['forum_0740'], array('class' => 'modal-center'));
+            echo openmodal('lockthread', $locale['forum_0205'], array('class' => 'modal-center'));
             echo "<div style='text-align:center'><br />\n";
             echo "<strong>".$locale['forum_0741']."</strong><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0702']."</a><br /><br />\n";
-            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0703']."</a><br /><br /></div>\n";
+            echo "<a href='".INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id."'>".$locale['forum_0549']."</a><br /><br />\n";
+            echo "<a href='".INFUSIONS."forum/index.php'>".$locale['forum_0550']."</a><br /><br /></div>\n";
             echo closemodal();
             add_to_footer(ob_get_contents());
             ob_end_clean();
@@ -458,7 +459,7 @@ class Moderator {
         if (iMOD) {
 
             ob_start();
-            echo openmodal('movethread', $locale['forum_0750'], array('class' => 'modal-lg'));
+            echo openmodal('movethread', $locale['forum_0206'], array('class' => 'modal-lg'));
 
             if (isset($_POST['move_thread'])) {
 
@@ -585,58 +586,51 @@ class Moderator {
     private function mod_delete_posts() {
 
         $locale = fusion_get_locale();
-
+        $del_posts = '';
         if (isset($_POST['delete_posts']) && iMOD) {
-
-            if (isset($_POST['delete_post']) && !empty($_POST['delete_post'])) { // the checkboxes
-
-                $del_posts = '';
-                $i = 0;
+            $post_items = form_sanitizer($_POST['delete_item_post'], '', 'delete_item_post');
+            $post_items = explode(',', $post_items);
+            $post_items = array_filter($post_items);
+            if (!empty($post_items)) { // the checkboxes
                 $thread_count = FALSE;
-                foreach ($_POST['delete_post'] as $del_post_id) {
+                $i = 0;
+                foreach ($post_items as $del_post_id) {
                     if (isnum($del_post_id)) {
                         $del_posts .= ($del_posts ? "," : "").$del_post_id;
                         $i++;
                     }
                 }
-
                 if (!empty($del_posts)) {
-
                     // Update User Posts
                     $calculate_post = "SELECT post_author, COUNT(post_id) as num_posts FROM ".DB_FORUM_POSTS." WHERE post_id IN (".$del_posts.") GROUP BY post_author";
                     $find_attachments = "SELECT attach_name FROM ".DB_FORUM_ATTACHMENTS." WHERE post_id IN (".$del_posts.")";
                     $delete_attachments = "DELETE FROM ".DB_FORUM_ATTACHMENTS." WHERE thread_id='".intval($this->thread_id)."' AND post_id IN(".$del_posts.")";
                     $delete_forum_posts = "DELETE FROM ".DB_FORUM_POSTS." WHERE thread_id='".intval($this->thread_id)."' AND post_id IN(".$del_posts.")";
                     $find_lastpost = "SELECT post_datestamp, post_author, post_id FROM ".DB_FORUM_POSTS." WHERE thread_id='".intval($this->thread_id)."' ORDER BY post_datestamp DESC LIMIT 1";
-
                     // also need to delete post_mood
-
-
                     $result = dbquery($calculate_post);
                     if (dbrows($result) > 0) {
                         while ($pdata = dbarray($result)) {
                             dbquery("UPDATE ".DB_USERS." SET user_posts=user_posts-".intval($pdata['num_posts'])." WHERE user_id='".intval($pdata['post_author'])."'");
                         }
                     }
-
                     // Delete attachments
                     $result = dbquery($find_attachments);
                     if (dbrows($result)) {
                         while ($adata = dbarray($result)) {
-                            @unlink(INFUSIONS."forum/attachments/".$adata['attach_name']);
+                            $file_path = INFUSIONS."forum/attachments/".$adata['attach_name'];
+                            if (file_exists($file_path) && !is_dir($file_path)) {
+                                @unlink($file_path);
+                            }
                         }
                     }
                     dbquery($delete_attachments);
                     dbquery($delete_forum_posts);
-
                     if (!dbcount("(post_id)", DB_FORUM_POSTS, "thread_id='".intval($this->thread_id)."'")) {
-
                         dbquery("DELETE FROM ".DB_FORUM_THREADS." WHERE thread_id='".intval($this->thread_id)."'");
-
                     } else {
                         // Find last post
                         $pdata = dbarray(dbquery($find_lastpost));
-
                         dbquery("
                         UPDATE ".DB_FORUM_THREADS." SET thread_lastpost='".$pdata['post_datestamp']."',
                         thread_lastpostid='".$pdata['post_id']."',
@@ -646,23 +640,17 @@ class Moderator {
                         ");
                         $thread_count = TRUE;
                     }
-
                     $delete_thread = $thread_count ? FALSE : TRUE;
-
                     self::refresh_forum($this->forum_id, $delete_thread);
-
                     addNotice('success', $locale['success-DP001']);
-
                     if ($thread_count === FALSE) { // no remaining thread
                         addNotice('success', $locale['success-DP002']);
                         redirect(INFUSIONS."forum/index.php?viewforum&amp;forum_id=".$this->forum_id."&amp;parent_id=".$this->parent_id);
                     }
-
                 } else {
                     addNotice('danger', $locale['error-DP001']);
                     redirect($this->form_action);
                 }
-
             } else {
                 addNotice('danger', $locale['error-DP001']);
                 redirect($this->form_action);
@@ -680,17 +668,18 @@ class Moderator {
         if (isset($_POST['move_posts']) && iMOD) {
             $remove_first_post = FALSE;
             $f_post_blo = FALSE;
-            if (isset($_POST['delete_post']) && !empty($_POST['delete_post'])) {
-
+            $post_items = form_sanitizer($_POST['delete_item_post'], '', 'delete_item_post');
+            $post_items = explode(',', $post_items);
+            $post_items = array_filter($post_items);
+            if (!empty($post_items)) {
                 $first_post = dbarray(dbquery("SELECT post_id FROM ".DB_FORUM_POSTS." WHERE thread_id='".intval($this->thread_id)."' ORDER BY post_datestamp ASC LIMIT 1"));
-
                 /**
                  * Scan for Posts
                  */
                 $move_posts = "";
                 $array_post = array();
                 $first_post_found = FALSE;
-                foreach ($_POST['delete_post'] as $move_post_id) {
+                foreach ($post_items as $move_post_id) {
                     if (isnum($move_post_id)) {
                         $move_posts .= ($move_posts ? "," : "").$move_post_id;
                         $array_post[] = $move_post_id;
@@ -715,7 +704,7 @@ class Moderator {
                         $post_count = dbcount("(post_id)", DB_FORUM_POSTS, "thread_id='".intval($pdata['thread_id'])."'");
 
                         ob_start();
-                        echo openmodal('forum0300', $locale['forum_0300'], array('class' => 'modal-md'));
+                        echo openmodal('forum0300', $locale['forum_0176'], array('class' => 'modal-md'));
 
                         if ($first_post_found) {
                             // there is a first post.
@@ -815,7 +804,7 @@ class Moderator {
                                     echo form_hidden("delete_post[]", "", $value, array("input_id" => "delete_post[$value]"));
                                 }
                                 echo form_hidden('move_posts', '', 1);
-                                echo form_button($locale['forum_0304'], $locale['forum_0208'], $locale['forum_0208'],
+                                echo form_button($locale['forum_0176'], $locale['forum_0208'], $locale['forum_0208'],
                                                  array('class' => 'btn-primary btn-sm'));
                             } else {
 
@@ -908,7 +897,7 @@ class Moderator {
                                 }
                             } else {
 
-                                addNotice('danger', $locale['error-MP003']);
+                                addNotice('danger', $locale['forum_0307']);
                                 redirect($this->form_action);
 
                             }
@@ -923,12 +912,12 @@ class Moderator {
                         redirect($this->form_action);
                     }
                 } else {
-                    addNotice('danger', $locale['error-MP003']);
+                    addNotice('danger', $locale['forum_0307']);
                     redirect($this->form_action);
                 }
 
             } else {
-                addNotice('danger', $locale['error-MP003']);
+                addNotice('danger', $locale['forum_0307']);
                 redirect($this->form_action);
             }
         }

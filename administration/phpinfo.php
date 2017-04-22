@@ -20,7 +20,7 @@ require_once "../maincore.php";
 pageAccess('PI');
 require_once THEMES."templates/admin_header.php";
 require_once LOCALE.LOCALESET."admin/phpinfo.php";
-add_breadcrumb(array('link' => ADMIN.'phpinfo.php'.$aidlink, 'title' => $locale['400']));
+\PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => ADMIN.'phpinfo.php'.fusion_get_aidlink(), 'title' => $locale['400']]);
 if (!isset ($_GET['page']) || !isnum($_GET['page'])) {
     $_GET['page'] = 1;
 }
@@ -80,7 +80,6 @@ if ($_GET['page'] == 1) {
                               'infusions/gallery/photos/' => db_exists(DB_PHOTO_ALBUMS) ? TRUE : FALSE,
                               'infusions/gallery/submissions/' => db_exists(DB_PHOTO_ALBUMS) ? TRUE : FALSE,
                               'infusions/forum/attachments/' => db_exists(DB_FORUMS) ? TRUE : FALSE,
-                              'ftp_upload/' => TRUE,
                               'infusions/downloads/files/' => db_exists(DB_DOWNLOADS) ? TRUE : FALSE,
                               'infusions/downloads/images/' => db_exists(DB_DOWNLOADS) ? TRUE : FALSE,
                               'infusions/downloads/submissions/' => db_exists(DB_DOWNLOADS) ? TRUE : FALSE,

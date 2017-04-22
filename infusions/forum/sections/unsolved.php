@@ -4,8 +4,8 @@
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
-| Filename: my_posts.php
-| Author: Chan (Frederick MC Chan)
+| Filename: forum/sections/unsolved.php
+| Author: PHP-Fusion Development Team
 +--------------------------------------------------------+
 | This program is released as free software under the
 | Affero GPL license. You can redistribute it and/or
@@ -103,11 +103,12 @@ if (dbrows($result) > 0) {
                 'file' => $threads['attach_files'] > 0 ? "<i class='".get_forumIcons('file')."' title='".$locale['forum_0312']."'></i>" : '',
                 'icon' => $icon,
             ),
-            "thread_starter" => $locale['forum_0006'].timer($threads['post_datestamp'])." ".$locale['by']." ".profile_link($author['user_id'],
+            "thread_starter" => $locale['forum_0006'].' '.timer($threads['post_datestamp'])." ".$locale['by']." ".profile_link($author['user_id'],
                                                                                                                            $author['user_name'],
                                                                                                                            $author['user_status'])."</span>",
             "thread_author" => $author,
             "thread_last" => array(
+                'user' => $author,
                 'avatar' => display_avatar($lastuser, '30px', '', '', ''),
                 'profile_link' => profile_link($lastuser['user_id'], $lastuser['user_name'], $lastuser['user_status']),
                 'time' => $threads['post_datestamp'],

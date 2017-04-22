@@ -1,7 +1,7 @@
 <?php
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
-| Copyright (C) 2002 - 2013 Nick Jones
+| Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: migrate.php
@@ -22,15 +22,15 @@ pageAccess('MI');
 require_once THEMES."templates/admin_header.php";
 
 if (isset($_POST['user_primary']) && !isnum($_POST['user_primary'])) {
-    die("Denied");
+    die("Access Denied");
 }
 if (isset($_POST['user_migrate']) && !isnum($_POST['user_migrate'])) {
-    die("Denied");
+    die("Access Denied");
 }
 
 include LOCALE.LOCALESET."admin/migrate.php";
 
-add_breadcrumb(array('link' => ADMIN.'migrate.php'.$aidlink, 'title' => $locale['100']));
+\PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => ADMIN.'migrate.php'.fusion_get_aidlink(), 'title' => $locale['100']]);
 
 $settings = fusion_get_settings();
 
@@ -131,7 +131,7 @@ function user_posts_migrate_console() {
         $data['0'] = $locale['124'];
     }
 
-    echo openform('inputform', 'post', "".FUSION_SELF.$aidlink."", array('max_tokens' => 1));
+    echo openform('inputform', 'post', FUSION_SELF.$aidlink);
     echo "<table style='width:100%' class='table table-striped'>\n";
     echo "<thead>\n";
     echo "<tr style='height:30px;'><th style='width:33%; text-align:left'>".$locale['125']."</th><th style='width:33%; text-align:left;'>".$locale['126']."</th><th class='text-left'>&nbsp;</th>\n</tr>\n";

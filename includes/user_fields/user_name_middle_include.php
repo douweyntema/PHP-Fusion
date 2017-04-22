@@ -2,7 +2,7 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: user_name_middle_include.php
 | Author: Chubatyj Vitalij (Rizado)
@@ -23,7 +23,7 @@ if ($profile_method == "input") {
     $options += array('inline' => TRUE, 'max_length' => 20,);
     $user_fields = form_text('user_name_middle', $locale['uf_name_middle'], $field_value, $options);
 } elseif ($profile_method == "display") {
-    if ($field_value) {
-        $user_fields = array('title' => $locale['uf_name_middle'], 'value' => $field_value);
-    }
+
+    $user_fields = array('title' => $locale['uf_name_middle'], 'value' => $field_value ?: "");
+
 }

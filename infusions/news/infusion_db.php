@@ -6,7 +6,6 @@
 +--------------------------------------------------------+
 | Filename: news/infusion_db.php
 | Author: PHP-Fusion Development Team
-| Version: 9.2 prototype
 +--------------------------------------------------------+
 | This program is released as free software under the
 | Affero GPL license. You can redistribute it and/or
@@ -16,6 +15,23 @@
 | copyright header is strictly prohibited without
 | written permission from the original author(s).
 +--------------------------------------------------------*/
+if (!defined("IN_FUSION")) {
+    die("Access Denied");
+}
+define("IMAGES_N", INFUSIONS."news/images/");
+define("IMAGES_N_T", INFUSIONS."news/images/thumbs/");
+define("IMAGES_NC", INFUSIONS."news/news_cats/");
+define("DB_NEWS", DB_PREFIX."news");
+define("DB_NEWS_CATS", DB_PREFIX."news_cats");
+define("DB_NEWS_IMAGES", DB_PREFIX."news_gallery");
+
+\PHPFusion\Admins::getInstance()->setAdminPageIcons("N", "<i class='admin-ico fa fa-fw fa-newspaper-o'></i>");
+\PHPFusion\Admins::getInstance()->setAdminPageIcons("NC", "<i class='admin-ico fa fa-fw fa-newspaper-o'></i>");
+\PHPFusion\Admins::getInstance()->setAdminPageIcons("S8", "<i class='admin-ico fa fa-fw fa-newspaper-o'></i>");
+\PHPFusion\Admins::getInstance()->setCommentType('N', fusion_get_locale('N', LOCALE.LOCALESET."admin/main.php"));
+\PHPFusion\Admins::getInstance()->setSubmitType('n', fusion_get_locale('N', LOCALE.LOCALESET."admin/main.php"));
+\PHPFusion\Admins::getInstance()->setSubmitLink('n', INFUSIONS."news/news_admin.php".fusion_get_aidlink()."&amp;section=submissions&amp;submit_id=%s");
+\PHPFusion\Admins::getInstance()->setLinkType('N', fusion_get_settings("siteurl")."infusions/news/news.php?readmore=%s");
 
 if (!defined("NEWS_LOCALE")) {
     if (file_exists(INFUSIONS."news/locale/".LOCALESET."news.php")) {

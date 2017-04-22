@@ -61,17 +61,17 @@ function showratings($rating_type, $rating_item_id, $rating_link) {
                                        $locale['r104']);
             }
             echo "<div class='text-center'>".$message."</div>\n";
-        } elseif (isset($d_rating['rating_vote'])) {
+        } elseif (!empty($d_rating['rating_vote'])) {
             echo "<div class='display-block'>\n";
             echo openform('removerating', 'post', $rating_link, array('class' => 'display-block text-center'));
             echo sprintf($locale['r105'], $ratings[$d_rating['rating_vote']], showdate("longdate", $d_rating['rating_datestamp']))."<br /><br />\n";
-            echo form_button('remove_rating', $locale['r102'], $locale['r102'], array('class' => 'btn-default', 'icon' => 'fa fa-times m-r-10'));
+            echo form_button('remove_rating', $locale['r102'], $locale['r102'], array('class' => 'btn-default m-b-10', 'icon' => 'fa fa-times m-r-10'));
             echo closeform();
             echo "</div>\n";
         } else {
             echo "<div class='display-block'>\n";
             echo openform('postrating', 'post', $rating_link, array('notice' => 0, 'class' => 'm-b-20 text-center'));
-            echo form_select('rating', $locale['r106'], '', array('options' => $ratings, 'width'=>'100%'));
+            echo form_select('rating', $locale['r106'], '', array('options' => $ratings, 'inner_width' => '200px', 'width' => '200px'));
             echo form_button('post_rating', $locale['r103'], $locale['r103'], array('class' => 'btn-primary btn-block'));
             echo closeform();
             echo "</div>\n";

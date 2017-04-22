@@ -17,6 +17,8 @@
 +--------------------------------------------------------*/
 namespace PHPFusion\Forums\Admin;
 
+use PHPFusion\BreadCrumbs;
+
 class ForumAdminView extends ForumAdminInterface {
 
     /**
@@ -26,39 +28,39 @@ class ForumAdminView extends ForumAdminInterface {
     private $forum_index = array();
     private $level = array();
     private $data = array(
-        'forum_id' => 0,
-        'forum_cat' => 0,
-        'forum_branch' => 0,
-        'forum_name' => '',
-        'forum_type' => '2',
-        'forum_answer_threshold' => 0,
-        'forum_lock' => 0,
-        'forum_order' => 0,
-        'forum_description' => '',
-        'forum_rules' => '',
-        'forum_mods' => '',
-        'forum_access' => USER_LEVEL_PUBLIC,
-        'forum_post' => USER_LEVEL_MEMBER,
-        'forum_reply' => USER_LEVEL_MEMBER,
-        'forum_allow_poll' => 0,
-        'forum_poll' => USER_LEVEL_MEMBER,
-        'forum_vote' => USER_LEVEL_MEMBER,
-        'forum_image' => '',
+        'forum_id'                 => 0,
+        'forum_cat'                => 0,
+        'forum_branch'             => 0,
+        'forum_name'               => '',
+        'forum_type'               => '2',
+        'forum_answer_threshold'   => 0,
+        'forum_lock'               => 0,
+        'forum_order'              => 0,
+        'forum_description'        => '',
+        'forum_rules'              => '',
+        'forum_mods'               => '',
+        'forum_access'             => USER_LEVEL_PUBLIC,
+        'forum_post'               => USER_LEVEL_MEMBER,
+        'forum_reply'              => USER_LEVEL_MEMBER,
+        'forum_allow_poll'         => 0,
+        'forum_poll'               => USER_LEVEL_MEMBER,
+        'forum_vote'               => USER_LEVEL_MEMBER,
+        'forum_image'              => '',
         'forum_allow_post_ratings' => 0,
-        'forum_post_ratings' => USER_LEVEL_MEMBER,
-        'forum_users' => 0,
-        'forum_allow_attach' => USER_LEVEL_MEMBER,
-        'forum_attach' => USER_LEVEL_MEMBER,
-        'forum_attach_download' => USER_LEVEL_MEMBER,
-        'forum_quick_edit' => 1,
-        'forum_laspostid' => 0,
-        'forum_postcount' => 0,
-        'forum_threadcount' => 0,
-        'forum_lastuser' => 0,
-        'forum_merge' => 0,
-        'forum_language' => LANGUAGE,
-        'forum_meta' => '',
-        'forum_alias' => ''
+        'forum_post_ratings'       => USER_LEVEL_MEMBER,
+        'forum_users'              => 0,
+        'forum_allow_attach'       => USER_LEVEL_MEMBER,
+        'forum_attach'             => USER_LEVEL_MEMBER,
+        'forum_attach_download'    => USER_LEVEL_MEMBER,
+        'forum_quick_edit'         => 1,
+        'forum_laspostid'          => 0,
+        'forum_postcount'          => 0,
+        'forum_threadcount'        => 0,
+        'forum_lastuser'           => 0,
+        'forum_merge'              => 0,
+        'forum_language'           => LANGUAGE,
+        'forum_meta'               => '',
+        'forum_alias'              => ''
     );
 
     public function __construct() {
@@ -120,13 +122,13 @@ class ForumAdminView extends ForumAdminInterface {
         function breadcrumb_arrays($index, $id) {
             global $aidlink;
             $crumb = array(
-                'link' => array(),
+                'link'  => array(),
                 'title' => array()
             );
             if (isset($index[get_parent($index, $id)])) {
                 $_name = dbarray(dbquery("SELECT forum_id, forum_name FROM ".DB_FORUMS." WHERE forum_id='".intval($id)."'"));
                 $crumb = array(
-                    'link' => array(FUSION_SELF.$aidlink."&amp;parent_id=".$_name['forum_id']),
+                    'link'  => array(FUSION_SELF.$aidlink."&amp;parent_id=".$_name['forum_id']),
                     'title' => array($_name['forum_name'])
                 );
                 if (isset($index[get_parent($index, $id)])) {
@@ -143,9 +145,9 @@ class ForumAdminView extends ForumAdminInterface {
 
         // then we make a infinity recursive function to loop/break it out.
         $crumb = breadcrumb_arrays($this->forum_index, $_GET['parent_id']);
-        add_breadcrumb(array('link' => FUSION_SELF.$aidlink, 'title' => self::$locale['forum_000c']));
+        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_SELF.$aidlink, 'title' => self::$locale['forum_root']]);
         for ($i = count($crumb['title']) - 1; $i >= 0; $i--) {
-            add_breadcrumb(array('link' => $crumb['link'][$i], 'title' => $crumb['title'][$i]));
+            \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => $crumb['link'][$i], 'title' => $crumb['title'][$i]]);
         }
 
         return $crumb;
@@ -181,16 +183,16 @@ class ForumAdminView extends ForumAdminInterface {
                 $this->data['forum_post'] = form_sanitizer($_POST['forum_post'], USER_LEVEL_MEMBER, 'forum_post');
                 $this->data['forum_reply'] = form_sanitizer($_POST['forum_reply'], USER_LEVEL_MEMBER, 'forum_reply');
                 $this->data['forum_post_ratings'] = form_sanitizer($_POST['forum_post_ratings'], USER_LEVEL_MEMBER,
-                                                                   'forum_post_ratings');
+                    'forum_post_ratings');
                 $this->data['forum_poll'] = form_sanitizer($_POST['forum_poll'], USER_LEVEL_MEMBER, 'forum_poll');
                 $this->data['forum_vote'] = form_sanitizer($_POST['forum_vote'], USER_LEVEL_MEMBER, 'forum_vote');
                 $this->data['forum_answer_threshold'] = form_sanitizer($_POST['forum_answer_threshold'], 0,
-                                                                       'forum_answer_threshold');
+                    'forum_answer_threshold');
                 $this->data['forum_attach'] = form_sanitizer($_POST['forum_attach'], USER_LEVEL_MEMBER, 'forum_attach');
                 $this->data['forum_attach_download'] = form_sanitizer($_POST['forum_attach_download'],
-                                                                      USER_LEVEL_PUBLIC, 'forum_attach_download');
+                    USER_LEVEL_PUBLIC, 'forum_attach_download');
                 $this->data['forum_mods'] = isset($_POST['forum_mods']) ? form_sanitizer($_POST['forum_mods'], '',
-                                                                                         'forum_mods') : "";
+                    'forum_mods') : "";
 
                 dbquery_insert(DB_FORUMS, $this->data, 'update');
 
@@ -205,40 +207,40 @@ class ForumAdminView extends ForumAdminInterface {
 
         if (isset($_POST['save_forum'])) {
             $this->data = array(
-                'forum_id' => form_sanitizer($_POST['forum_id'], 0, 'forum_id'),
-                'forum_name' => form_sanitizer($_POST['forum_name'], '', 'forum_name'),
-                'forum_description' => form_sanitizer($_POST['forum_description'], '', 'forum_description'),
-                'forum_cat' => form_sanitizer($_POST['forum_cat'], 0, 'forum_cat'),
-                'forum_type' => form_sanitizer($_POST['forum_type'], '', 'forum_type'),
-                'forum_language' => form_sanitizer($_POST['forum_language'], '', 'forum_language'),
-                'forum_alias' => form_sanitizer($_POST['forum_alias'], '', 'forum_alias'),
-                'forum_meta' => form_sanitizer($_POST['forum_meta'], '', 'forum_meta'),
-                'forum_rules' => form_sanitizer($_POST['forum_rules'], '', 'forum_rules'),
+                'forum_id'           => form_sanitizer($_POST['forum_id'], 0, 'forum_id'),
+                'forum_name'         => form_sanitizer($_POST['forum_name'], '', 'forum_name'),
+                'forum_description'  => form_sanitizer($_POST['forum_description'], '', 'forum_description'),
+                'forum_cat'          => form_sanitizer($_POST['forum_cat'], 0, 'forum_cat'),
+                'forum_type'         => form_sanitizer($_POST['forum_type'], '', 'forum_type'),
+                'forum_language'     => form_sanitizer($_POST['forum_language'], '', 'forum_language'),
+                'forum_alias'        => form_sanitizer($_POST['forum_alias'], '', 'forum_alias'),
+                'forum_meta'         => form_sanitizer($_POST['forum_meta'], '', 'forum_meta'),
+                'forum_rules'        => form_sanitizer($_POST['forum_rules'], '', 'forum_rules'),
                 'forum_image_enable' => isset($_POST['forum_image_enable']) ? 1 : 0,
-                'forum_merge' => isset($_POST['forum_merge']) ? 1 : 0,
+                'forum_merge'        => isset($_POST['forum_merge']) ? 1 : 0,
                 'forum_allow_attach' => isset($_POST['forum_allow_attach']) ? 1 : 0,
-                'forum_quick_edit' => isset($_POST['forum_quick_edit']) ? 1 : 0,
-                'forum_allow_poll' => isset($_POST['forum_allow_poll']) ? 1 : 0,
-                'forum_poll' => USER_LEVEL_MEMBER,
-                'forum_users' => isset($_POST['forum_users']) ? 1 : 0,
-                'forum_lock' => isset($_POST['forum_lock']) ? 1 : 0,
-                'forum_permissions' => isset($_POST['forum_permissions']) ? form_sanitizer($_POST['forum_permissions'],
-                                                                                           0, 'forum_permissions') : 0,
-                'forum_order' => isset($_POST['forum_order']) ? form_sanitizer($_POST['forum_order']) : '',
-                'forum_branch' => get_hkey(DB_FORUMS, 'forum_id', 'forum_cat', $this->data['forum_cat']),
-                'forum_image' => '',
-                'forum_mods' => "",
+                'forum_quick_edit'   => isset($_POST['forum_quick_edit']) ? 1 : 0,
+                'forum_allow_poll'   => isset($_POST['forum_allow_poll']) ? 1 : 0,
+                'forum_poll'         => USER_LEVEL_MEMBER,
+                'forum_users'        => isset($_POST['forum_users']) ? 1 : 0,
+                'forum_lock'         => isset($_POST['forum_lock']) ? 1 : 0,
+                'forum_permissions'  => isset($_POST['forum_permissions']) ? form_sanitizer($_POST['forum_permissions'],
+                    0, 'forum_permissions') : 0,
+                'forum_order'        => isset($_POST['forum_order']) ? form_sanitizer($_POST['forum_order']) : '',
+                'forum_branch'       => get_hkey(DB_FORUMS, 'forum_id', 'forum_cat', $this->data['forum_cat']),
+                'forum_image'        => '',
+                'forum_mods'         => "",
             );
             $this->data['forum_alias'] = $this->data['forum_alias'] ? str_replace(' ', '-',
-                                                                                  $this->data['forum_alias']) : '';
+                $this->data['forum_alias']) : '';
             // Checks for unique forum alias
             if ($this->data['forum_alias']) {
                 if ($this->data['forum_id']) {
                     $alias_check = dbcount("('alias_id')", DB_PERMALINK_ALIAS,
-                                           "alias_url='".$this->data['forum_alias']."' AND alias_item_id !='".$this->data['forum_id']."'");
+                        "alias_url='".$this->data['forum_alias']."' AND alias_item_id !='".$this->data['forum_id']."'");
                 } else {
                     $alias_check = dbcount("('alias_id')", DB_PERMALINK_ALIAS,
-                                           "alias_url='".$this->data['forum_alias']."'");
+                        "alias_url='".$this->data['forum_alias']."'");
                 }
                 if ($alias_check) {
 
@@ -268,8 +270,8 @@ class ForumAdminView extends ForumAdminInterface {
                 $type_opts = array('0' => BASEDIR, '1' => '');
                 // the url
                 $this->data['forum_image'] = $type_opts[intval($_POST['forum_image_header'])].form_sanitizer($_POST['forum_image_url'],
-                                                                                                             '',
-                                                                                                             'forum_image_url');
+                        '',
+                        'forum_image_url');
                 $upload = copy_file($this->data['forum_image'], FORUM."images/");
                 if ($upload['error'] == TRUE) {
 
@@ -281,25 +283,25 @@ class ForumAdminView extends ForumAdminInterface {
                 }
             } else {
                 $this->data['forum_image'] = isset($_POST['forum_image']) ? form_sanitizer($_POST['forum_image'], '',
-                                                                                           'forum_image') : "";
+                    'forum_image') : "";
             }
 
             if (!$this->data['forum_id']) {
                 $this->data += array(
-                    'forum_access' => USER_LEVEL_PUBLIC,
-                    'forum_post' => USER_LEVEL_MEMBER,
-                    'forum_reply' => USER_LEVEL_MEMBER,
+                    'forum_access'       => USER_LEVEL_PUBLIC,
+                    'forum_post'         => USER_LEVEL_MEMBER,
+                    'forum_reply'        => USER_LEVEL_MEMBER,
                     'forum_post_ratings' => USER_LEVEL_MEMBER,
-                    'forum_poll' => USER_LEVEL_MEMBER,
-                    'forum_vote' => USER_LEVEL_MEMBER,
-                    'forum_mods' => "",
+                    'forum_poll'         => USER_LEVEL_MEMBER,
+                    'forum_vote'         => USER_LEVEL_MEMBER,
+                    'forum_mods'         => "",
                 );
             }
 
             // Set last order
             if (!$this->data['forum_order']) {
                 $this->data['forum_order'] = dbresult(dbquery("SELECT MAX(forum_order) FROM ".DB_FORUMS." ".(multilang_table("FO") ? "WHERE forum_language='".LANGUAGE."' AND" : "WHERE")." forum_cat='".$this->data['forum_cat']."'"),
-                                                      0) + 1;
+                        0) + 1;
             }
 
             if (\defender::safe()) {
@@ -307,8 +309,8 @@ class ForumAdminView extends ForumAdminInterface {
                 if ($this->verify_forum($this->data['forum_id'])) {
 
                     $result = dbquery_order(DB_FORUMS, $this->data['forum_order'], 'forum_order',
-                                            $this->data['forum_id'], 'forum_id', $this->data['forum_cat'], 'forum_cat',
-                                            1, 'forum_language', 'update');
+                        $this->data['forum_id'], 'forum_id', $this->data['forum_cat'], 'forum_cat',
+                        1, 'forum_language', 'update');
 
                     if ($result) {
                         dbquery_insert(DB_FORUMS, $this->data, 'update');
@@ -323,7 +325,7 @@ class ForumAdminView extends ForumAdminInterface {
                     $new_forum_id = 0;
 
                     $result = dbquery_order(DB_FORUMS, $this->data['forum_order'], 'forum_order', FALSE, FALSE,
-                                            $this->data['forum_cat'], 'forum_cat', 1, 'forum_language', 'save');
+                        $this->data['forum_cat'], 'forum_cat', 1, 'forum_language', 'save');
 
                     if ($result) {
                         dbquery_insert(DB_FORUMS, $this->data, 'save');
@@ -378,8 +380,8 @@ class ForumAdminView extends ForumAdminInterface {
             dbquery("UPDATE ".DB_FORUMS." SET forum_order=forum_order-1 ".(multilang_table("FO") ? "WHERE forum_language='".LANGUAGE."' AND" : "WHERE")." forum_id='".intval($_GET['forum_id'])."'");
 
             addNotice('success',
-                      self::$locale['forum_notice_6']." ".sprintf(self::$locale['forum_notice_13'], $_GET['forum_id'],
-                                                                  $_GET['order']));
+                self::$locale['forum_notice_6']." ".sprintf(self::$locale['forum_notice_13'], $_GET['forum_id'],
+                    $_GET['order']));
 
             redirect(FUSION_SELF.$aidlink.$this->ext);
         }
@@ -399,7 +401,7 @@ class ForumAdminView extends ForumAdminInterface {
             }
             if ($result) {
                 addNotice('success', self::$locale['forum_notice_7']." ".sprintf(self::$locale['forum_notice_13'],
-                                                                                 $_GET['forum_id'], $_GET['order']));
+                        $_GET['forum_id'], $_GET['order']));
                 redirect(FUSION_SELF.$aidlink.$this->ext);
             }
         }
@@ -436,15 +438,15 @@ class ForumAdminView extends ForumAdminInterface {
                 if (isset($_POST['forum_remove'])) {
 
                     $action_data = array(
-                        'forum_id' => isset($_POST['forum_id']) ? form_sanitizer($_POST['forum_id'], 0, 'forum_id') : 0,
-                        'forum_branch' => isset($_POST['forum_branch']) ? form_sanitizer($_POST['forum_branch'], 0,
-                                                                                         'forum_branch') : 0,
-                        'threads_to_forum' => isset($_POST['move_threads']) ? form_sanitizer($_POST['move_threads'], 0,
-                                                                                             'move_threads') : '',
-                        'delete_threads' => isset($_POST['delete_threads']) ? 1 : 0,
+                        'forum_id'           => isset($_POST['forum_id']) ? form_sanitizer($_POST['forum_id'], 0, 'forum_id') : 0,
+                        'forum_branch'       => isset($_POST['forum_branch']) ? form_sanitizer($_POST['forum_branch'], 0,
+                            'forum_branch') : 0,
+                        'threads_to_forum'   => isset($_POST['move_threads']) ? form_sanitizer($_POST['move_threads'], 0,
+                            'move_threads') : '',
+                        'delete_threads'     => isset($_POST['delete_threads']) ? 1 : 0,
                         'subforums_to_forum' => isset($_POST['move_forums']) ? form_sanitizer($_POST['move_forums'], 0,
-                                                                                              'move_forums') : '',
-                        'delete_forums' => isset($_POST['delete_forums']) ? 1 : 0,
+                            'move_forums') : '',
+                        'delete_forums'      => isset($_POST['delete_forums']) ? 1 : 0,
                     );
 
                     if (self::verify_forum($action_data['forum_id'])) {
@@ -469,9 +471,9 @@ class ForumAdminView extends ForumAdminInterface {
                         // Subforum action
                         if (!$action_data['delete_forums'] && $action_data['subforums_to_forum']) {
                             dbquery("UPDATE ".DB_FORUMS." SET forum_cat='".$action_data['subforums_to_forum']."', forum_branch='".get_hkey(DB_FORUMS,
-                                                                                                                                           'forum_id',
-                                                                                                                                           'forum_cat',
-                                                                                                                                           $action_data['subforums_to_forum'])."'
+                                    'forum_id',
+                                    'forum_cat',
+                                    $action_data['subforums_to_forum'])."'
 				".(multilang_table("FO") ? "WHERE forum_language='".LANGUAGE."' AND" : "WHERE")." forum_cat='".$action_data['forum_id']."'");
                         } elseif (!$action_data['delete_forums']) {
                             \defender::stop();
@@ -523,11 +525,11 @@ class ForumAdminView extends ForumAdminInterface {
         echo "<span class='text-dark strong'>".self::$locale['forum_052']."</span><br/>\n";
         echo "</div><div class='col-xs-12 col-sm-7 col-md-7 col-lg-7'>\n";
         echo form_select_tree('move_threads', '', $_GET['forum_id'], array(
-            'width' => '100%',
-            'inline' => TRUE,
-            'disable_opts' => $_GET['forum_id'],
+            'width'         => '100%',
+            'inline'        => TRUE,
+            'disable_opts'  => $_GET['forum_id'],
             'hide_disabled' => 1,
-            'no_root' => 1
+            'no_root'       => 1
         ), DB_FORUMS, 'forum_name', 'forum_id', 'forum_cat', $_GET['forum_id']);
         echo form_checkbox('delete_threads', self::$locale['forum_053'], '');
         echo "</div>\n</div>\n";
@@ -536,11 +538,11 @@ class ForumAdminView extends ForumAdminInterface {
         echo "<span class='text-dark strong'>".self::$locale['forum_054']."</span><br/>\n"; // if you move, then need new hcat_key
         echo "</div><div class='col-xs-12 col-sm-7 col-md-7 col-lg-7'>\n";
         echo form_select_tree('move_forums', '', $_GET['forum_id'], array(
-            'width' => '100%',
-            'inline' => TRUE,
-            'disable_opts' => $_GET['forum_id'],
+            'width'         => '100%',
+            'inline'        => TRUE,
+            'disable_opts'  => $_GET['forum_id'],
             'hide_disabled' => 1,
-            'no_root' => 1
+            'no_root'       => 1
         ), DB_FORUMS, 'forum_name', 'forum_id', 'forum_cat', $_GET['forum_id']);
         echo form_checkbox('delete_forums', self::$locale['forum_055'], '');
         echo "</div>\n</div>\n";
@@ -549,7 +551,7 @@ class ForumAdminView extends ForumAdminInterface {
         echo form_hidden('forum_branch', '', $_GET['forum_branch']);
         echo form_button('forum_remove', self::$locale['forum_049'], 'forum_remove', array(
             'class' => 'btn-sm btn-danger m-r-10',
-            'icon' => 'fa fa-trash'
+            'icon'  => 'fa fa-trash'
         ));
         echo "<button type='button' class='btn btn-sm btn-default' data-dismiss='modal'>".self::$locale['close']."</button>\n";
         echo "</div>\n";
@@ -690,25 +692,25 @@ class ForumAdminView extends ForumAdminInterface {
     public function display_forum_admin() {
         global $aidlink;
 
-        opentable(self::$locale['forum_000c']);
+        opentable(self::$locale['forum_root']);
 
         $tab_title['title'][] = self::$locale['forum_admin_000'];
         $tab_title['id'][] = 'fm';
-        $tab_title['icon'][] = '';
+        $tab_title['icon'][] = 'fa fa-comment-o';
         $tab_title['title'][] = self::$locale['forum_admin_001'];
         $tab_title['id'][] = 'fr';
-        $tab_title['icon'][] = '';
+        $tab_title['icon'][] = 'fa fa-star';
         $tab_title['title'][] = self::$locale['forum_admin_002'];
         $tab_title['id'][] = 'ft';
-        $tab_title['icon'][] = '';
+        $tab_title['icon'][] = 'fa fa-tags';
         $tab_title['title'][] = self::$locale['forum_admin_004'];
         $tab_title['id'][] = 'fmd';
-        $tab_title['icon'][] = '';
+        $tab_title['icon'][] = 'fa fa-thumbs-up';
         $tab_title['title'][] = self::$locale['forum_admin_003'];
         $tab_title['id'][] = 'fs';
-        $tab_title['icon'][] = '';
+        $tab_title['icon'][] = 'fa fa-cogs';
 
-        echo opentab($tab_title, (isset($_GET['section']) ? $_GET['section'] : 'fm'), 'forum-admin-tabs', TRUE);
+        echo opentab($tab_title, (isset($_GET['section']) ? $_GET['section'] : 'fm'), 'forum-admin-tabs', TRUE, 'nav-tabs', 'section', ['action', 'ref', 'mood_id', 'forum_id']);
         if (isset($_GET['section'])) {
 
             switch ($_GET['section']) {
@@ -730,10 +732,10 @@ class ForumAdminView extends ForumAdminInterface {
 
         } else {
             pageAccess('F');
-            add_breadcrumb(array(
-                               'link' => INFUSIONS.'forum/admin/forums.php'.$aidlink,
-                               'title' => self::$locale['forum_admin_000']
-                           ));
+            BreadCrumbs::getInstance()->addBreadCrumb([
+                'link'  => FORUM.'admin/forums.php'.$aidlink,
+                'title' => self::$locale['forum_admin_000']
+            ]);
             $this->display_forum_index();
         }
         echo closetab();
@@ -746,8 +748,7 @@ class ForumAdminView extends ForumAdminInterface {
     public function display_forum_index() {
         $res = FALSE;
         if (isset($_POST['init_forum'])) {
-            $this->data['forum_name'] = self::check_validForumName(form_sanitizer($_POST['forum_name'], '',
-                                                                                  'forum_name'), 0);
+            $this->data['forum_name'] = self::check_validForumName(form_sanitizer($_POST['forum_name'], '', 'forum_name'), 0);
             if ($this->data['forum_name']) {
                 $this->data['forum_cat'] = isset($_GET['parent_id']) && isnum($_GET['parent_id']) ? $_GET['parent_id'] : 0;
                 $res = TRUE;
@@ -756,13 +757,9 @@ class ForumAdminView extends ForumAdminInterface {
         if ($res == TRUE or (isset($_POST['save_forum']) && !\defender::safe()) or
             isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['forum_id']) && isnum($_GET['forum_id'])
         ) {
-
             $this->display_forum_form();
-
         } elseif (isset($_GET['action']) && $_GET['action'] == 'p_edit' && isset($_GET['forum_id']) && isnum($_GET['forum_id'])) {
-
             self::display_forum_permissions_form();
-
         } else {
             self::display_forum_jumper();
             self::display_forum_list();
@@ -781,7 +778,7 @@ class ForumAdminView extends ForumAdminInterface {
         $forum_settings = $this->get_forum_settings();
         $language_opts = fusion_get_enabled_languages();
 
-        add_breadcrumb(array('link' => '', 'title' => self::$locale['forum_001']));
+        BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => self::$locale['forum_001']]);
         if (!isset($_GET['action']) && $_GET['parent_id']) {
             $data['forum_cat'] = $_GET['parent_id'];
         }
@@ -822,54 +819,56 @@ class ForumAdminView extends ForumAdminInterface {
         echo "<div class='row'>\n<div class='col-xs-12 col-sm-8 col-md-8 col-lg-8'>\n";
 
         echo form_text('forum_name', self::$locale['forum_006'], $this->data['forum_name'], array(
-                'required' => 1,
+                'required'   => 1,
                 'error_text' => self::$locale['forum_error_1']
             )).
             form_textarea(
                 'forum_description', self::$locale['forum_007'], $this->data['forum_description'], array(
-                'autosize' => TRUE,
-                'type' => 'bbcode',
+                'autosize'  => TRUE,
+                'type'      => 'bbcode',
                 'form_name' => 'inputform',
-                'preview' => TRUE
+                'preview'   => TRUE
             )).
             form_text('forum_alias', self::$locale['forum_011'], $this->data['forum_alias']);
-
+        echo form_select('forum_meta', self::$locale['forum_012'], $this->data['forum_meta'], array(
+            'tags'        => 1,
+            'multiple'    => 1,
+            'inner_width' => '100%',
+            'width'       => '100%'
+        ));
         echo "</div><div class='col-xs-12 col-sm-4 col-md-4 col-lg-4'>\n";
 
-        openside('');
-
+        echo "<div class='well'>\n";
         $self_id = $this->data['forum_id'] ? $this->data['forum_id'] : '';
 
         echo form_select_tree('forum_cat', self::$locale['forum_008'], $this->data['forum_cat'], array(
                 'add_parent_opts' => 1,
-                'disable_opts' => $self_id,
-                'hide_disabled' => 1
+                'disable_opts'    => $self_id,
+                'hide_disabled'   => 1
             ), DB_FORUMS, 'forum_name', 'forum_id', 'forum_cat', $self_id).
 
             form_select('forum_type', self::$locale['forum_009'], $this->data['forum_type'],
-                        array("options" => $type_opts)).
+                array("options" => $type_opts)).
 
             form_select('forum_language', self::$locale['forum_010'], $this->data['forum_language'],
-                        array("options" => $language_opts)).
+                array("options" => $language_opts)).
 
             form_text('forum_order', self::$locale['forum_043'], $this->data['forum_order'], array('number' => 1)).
 
             form_button('save_forum',
-                        $this->data['forum_id'] ? self::$locale['forum_000a'] : self::$locale['forum_000'],
-                        self::$locale['forum_000'], array('class' => 'btn btn-sm btn-success'));
-
-        closeside();
+                $this->data['forum_id'] ? self::$locale['forum_000a'] : self::$locale['forum_000'],
+                self::$locale['forum_000'], array('class' => 'btn btn-sm btn-success'));
+        echo "</div>\n";
         echo "</div>\n</div>\n";
 
         echo "<div class='row'>\n<div class='col-xs-12 col-sm-8 col-md-8 col-lg-8'>\n";
-
-        echo form_select('forum_meta', self::$locale['forum_012'], $this->data['forum_meta'], array(
-            'tags' => 1,
-            'multiple' => 1,
-            'inner_width' => '100%',
-            'width' => '100%'
+        echo form_textarea('forum_rules', self::$locale['forum_017'], $this->data['forum_rules'], array(
+            'autosize'  => TRUE,
+            'type'      => 'bbcode',
+            'form_name' => 'inputform'
         ));
         if ($this->data['forum_image'] && file_exists(FORUM."images/".$this->data['forum_image'])) {
+
             openside();
             echo "<div class='pull-left m-r-10'>\n";
             echo thumbnail(FORUM."images/".$this->data['forum_image'], '80px');
@@ -877,85 +876,58 @@ class ForumAdminView extends ForumAdminInterface {
             echo "<span class='strong'>".self::$locale['forum_013']."</span><br/>\n";
             $image_size = @getimagesize(FORUM."images/".$this->data['forum_image']);
             echo "<span class='text-smaller'>".sprintf(self::$locale['forum_027'], $image_size[0],
-                                                       $image_size[1])."</span><br/>";
+                    $image_size[1])."</span><br/>";
             echo form_hidden('forum_image', '', $this->data['forum_image']);
             echo form_button('remove_image', self::$locale['forum_028'], self::$locale['forum_028'], array(
                 'class' => 'btn-danger btn-sm m-t-10',
-                'icon' => 'fa fa-trash'
+                'icon'  => 'fa fa-trash'
             ));
             echo "</div>\n";
             closeside();
+
         } else {
-
-            $tab_title['title'][] = self::$locale['forum_013'];
-            $tab_title['id'][] = 'fir';
-            $tab_title['icon'][] = '';
-            $tab_title['title'][] = self::$locale['forum_014'];
-            $tab_title['id'][] = 'ful';
-            $tab_title['icon'][] = '';
-            $tab_active = tab_active($tab_title, 0);
-
-            echo opentab($tab_title, $tab_active, 'forum-image-tab', FALSE, "m-t-20 m-b-20");
-            // Upload Image
-            echo opentabbody($tab_title['title'][0], 'fir', $tab_active);
-
-            $fileOptions = array(
-                "upload_path" => $forum_image_path,
-                "thumbnail" => TRUE,
+            openside(self::$locale['forum_028a']);
+            echo "<div class='row spacer-xs'>\n";
+            echo "<div class='col-xs-12 col-sm-4' style='border-right:1px solid #ddd'>\n";
+            echo form_fileinput('forum_image', '', '', [
+                "upload_path"      => $forum_image_path,
+                "thumbnail"        => TRUE,
                 "thumbnail_folder" => $forum_image_path,
-                "type" => "image",
-                "delete_original" => TRUE,
-                "max_count" => $forum_settings['forum_attachmax'],
-                'template' => 'modern',
-                'ext_tip' => sprintf(self::$locale['forum_015'], parsebytesize($forum_settings['forum_attachmax'])),
-            );
-
-            echo "<div class='well m-t-10'>\n";
-            echo form_fileinput('forum_image', "", '', $fileOptions);
-            echo "</div>\n";
-
-            echo closetabbody();
-
-            // Upload image via Web Address
-            echo opentabbody($tab_title['title'][1], 'ful', $tab_active);
-
-            echo "<div class='well m-t-10 m-b-20'>".self::$locale['forum_016']."</strong></div>\n";
-
-            $header_opts = array(
-                '0' => 'Local Server',
-                '1' => 'URL',
-            );
+                "type"             => "image",
+                "delete_original"  => TRUE,
+                'inline'           => FALSE,
+                "max_count"        => $forum_settings['forum_attachmax'],
+                'template'         => 'thumbnail',
+                'ext_tip'          => sprintf(self::$locale['forum_015'], parsebytesize($forum_settings['forum_attachmax'])),
+            ]);
+            echo "</div><div class='col-xs-12 col-sm-8'>\n";
             echo form_select('forum_image_header', self::$locale['forum_056'], '', array(
-                'inline' => TRUE,
-                'options' => $header_opts,
+                'inline'  => FALSE,
+                'options' => array(
+                    '0' => 'Local Server',
+                    '1' => 'URL',
+                ),
             ));
             echo form_text('forum_image_url', self::$locale['forum_014'], '', array(
                 'placeholder' => 'images/forum/',
-                'inline' => TRUE
+                'inline'      => FALSE,
+                'ext_tip'     => self::$locale['forum_016']
             ));
-            echo closetabbody();
-            echo closetab();
+            echo "</div></div>\n";
+            closeside();
         }
-        echo form_textarea('forum_rules', self::$locale['forum_017'], $this->data['forum_rules'], array(
-            'autosize' => TRUE,
-            'bbcode' => TRUE,
-            'form_name' => 'input_form'
-        ));
         echo "</div><div class='col-xs-12 col-sm-4 col-md-4 col-lg-4'>\n";
-        openside('');
+        echo "<div class='well'>\n";
         // need to get parent category
-
         echo form_select_tree('forum_permissions', self::$locale['forum_025'], $this->data['forum_branch'],
-                              array('no_root' => TRUE, 'deactivate' => $this->data['forum_id'] ? TRUE : FALSE),
-                              DB_FORUMS, 'forum_name', 'forum_id', 'forum_cat');
-
+            array('no_root' => TRUE, 'deactivate' => $this->data['forum_id'] ? TRUE : FALSE),
+            DB_FORUMS, 'forum_name', 'forum_id', 'forum_cat');
         if ($this->data['forum_id']) {
             echo form_button('jp_forum', self::$locale['forum_029'], self::$locale['forum_029'],
-                             array('class' => 'btn-sm btn-default m-r-10'));
+                array('class' => 'btn-sm btn-default m-r-10'));
         }
-        closeside();
-
-        openside('');
+        echo "</div>\n";
+        echo "<div class='well'>\n";
         echo form_checkbox('forum_lock', self::$locale['forum_026'], $this->data['forum_lock'], array(
                 "reverse_label" => TRUE
             )).
@@ -976,12 +948,11 @@ class ForumAdminView extends ForumAdminInterface {
             )).
             form_hidden('forum_id', '', $this->data['forum_id']).
             form_hidden('forum_branch', '', $this->data['forum_branch']);
-
-        closeside();
+        echo "</div>\n";
         echo "</div>\n</div>\n";
         echo form_button('save_forum',
-                         $this->data['forum_id'] ? self::$locale['forum_000a'] : self::$locale['forum_000'],
-                         self::$locale['forum_000'], array('class' => 'btn-sm btn-success'));
+            $this->data['forum_id'] ? self::$locale['forum_000a'] : self::$locale['forum_000'],
+            self::$locale['forum_000'], array('class' => 'btn-sm btn-success'));
         echo closeform();
         closetable();
     }
@@ -994,7 +965,7 @@ class ForumAdminView extends ForumAdminInterface {
         $data = $this->data;
 
         $data += array(
-            'forum_id' => !empty($data['forum_id']) && isnum($data['forum_id']) ? $data['forum_id'] : 0,
+            'forum_id'   => !empty($data['forum_id']) && isnum($data['forum_id']) ? $data['forum_id'] : 0,
             'forum_type' => !empty($data['forum_type']) ? $data['forum_type'] : '', // redirect if not exist? no..
         );
 
@@ -1024,7 +995,7 @@ class ForumAdminView extends ForumAdminInterface {
         unset($options[0]); //  no public to moderate, unset
         unset($options[-101]); // no member group to moderate, unset.
 
-        add_breadcrumb(array('link' => '', 'title' => self::$locale['forum_030']));
+        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => self::$locale['forum_030']]);
         opentable(self::$locale['forum_030']);
 
         echo openform('permissionsForm', 'post', FUSION_REQUEST);
@@ -1032,7 +1003,7 @@ class ForumAdminView extends ForumAdminInterface {
         openside();
         echo "<span class='text-dark strong display-inline-block m-b-20'>".self::$locale['forum_desc_000']."</span><br/>\n";
         echo form_select('forum_access', self::$locale['forum_031'], $data['forum_access'], array(
-            'inline' => TRUE,
+            'inline'  => TRUE,
             'options' => $public_access_opts
         ));
         $optionArray = array("inline" => TRUE, "options" => $access_opts);
@@ -1049,89 +1020,34 @@ class ForumAdminView extends ForumAdminInterface {
         echo "<span class='text-dark strong display-inline-block m-b-20'>".self::$locale['forum_desc_004']."</span><br/>\n";
         echo form_select('forum_answer_threshold', self::$locale['forum_040'], $data['forum_answer_threshold'], array(
             'options' => $selection,
-            'inline' => TRUE
+            'inline'  => TRUE
         ));
         closeside();
         openside();
         echo "<span class='text-dark strong display-inline-block m-b-20'>".self::$locale['forum_desc_002']."</span><br/>\n";
         echo form_select('forum_attach', self::$locale['forum_034'], $data['forum_attach'], array(
             'options' => $access_opts,
-            'inline' => TRUE
+            'inline'  => TRUE
         ));
         echo form_select('forum_attach_download', self::$locale['forum_035'], $data['forum_attach_download'], array(
             'options' => $public_access_opts,
-            'inline' => TRUE
+            'inline'  => TRUE
         ));
         closeside();
         openside();
         echo form_hidden('forum_id', '', $data['forum_id']);
         echo form_select("forum_mods[]", self::$locale['forum_desc_003'], $data['forum_mods'], array(
-            "multiple" => TRUE,
-            "width" => "100%",
-            "options" => $options,
+            "multiple"  => TRUE,
+            "width"     => "100%",
+            "options"   => $options,
             "delimiter" => ".",
-            "inline" => TRUE
+            "inline"    => TRUE
         ));
-        /*
-        echo "<span class='text-dark strong display-inline-block m-b-20'>".self::$locale['forum_desc_003']."</span><br/>\n";
-        $mod_groups = getusergroups();
-        $mods1_user_id = array();
-        $mods1_user_name = array();
-        while (list($key, $mod_group) = each($mod_groups)) {
-            if ($mod_group['0'] != USER_LEVEL_PUBLIC && $mod_group['0'] != USER_LEVEL_MEMBER && $mod_group['0'] != USER_LEVEL_SUPER_ADMIN) {
-                if (!preg_match("(^{$mod_group['0']}$|^{$mod_group['0']}\.|\.{$mod_group['0']}\.|\.{$mod_group['0']}$)", $data['forum_mods'])) {
-                    $mods1_user_id[] = $mod_group['0'];
-                    $mods1_user_name[] = $mod_group['1'];
-                } else {
-                    $mods2_user_id[] = $mod_group['0'];
-                    $mods2_user_name[] = $mod_group['1'];
-                }
-            }
-        }
-        echo "<div class='row'>\n<div class='col-xs-12 col-sm-6 col-md-6 col-lg-6'>\n";
-        echo "<select multiple='multiple' size='10' name='modlist1' id='modlist1' class='form-control textbox m-r-10' onchange=\"addUser('modlist2','modlist1');\">\n";
-        for ($i = 0; $i < count($mods1_user_id); $i++) {
-            echo "<option value='".$mods1_user_id[$i]."'>".$mods1_user_name[$i]."</option>\n";
-        }
-        echo "</select>\n";
-        echo "</div>\n<div class='col-xs-12 col-sm-6 col-md-6 col-lg-6'>\n";
-        echo "<select multiple='multiple' size='10' name='modlist2' id='modlist2' class='form-control textbox' onchange=\"addUser('modlist1','modlist2');\">\n";
-        if (isset($mods2_user_id) && is_array($mods2_user_id)) {
-            for ($i = 0; $i < count($mods2_user_id); $i++) {
-                echo "<option value='".$mods2_user_id[$i]."'>".$mods2_user_name[$i]."</option>\n";
-            }
-        }
-        echo "</select>\n";
-        //echo form_text('forum_mods', '', $data['forum_mods']);
 
-        echo "</div>\n</div>\n";
-        */
         closeside();
         echo form_button('save_permission', self::$locale['forum_042'], self::$locale['forum_042'],
-                         array('class' => 'btn-primary'));
-        /*
-        add_to_jquery(" $('#save').bind('click', function() { saveMods(); }); ");
-        echo "<script type='text/javascript'>\n"."function addUser(toGroup,fromGroup) {\n";
-        echo "var listLength = document.getElementById(toGroup).length;\n";
-        echo "var selItem = document.getElementById(fromGroup).selectedIndex;\n";
-        echo "var selText = document.getElementById(fromGroup).options[selItem].text;\n";
-        echo "var selValue = document.getElementById(fromGroup).options[selItem].value;\n";
-        echo "var i; var newItem = true;\n";
-        echo "for (i = 0; i < listLength; i++) {\n";
-        echo "if (document.getElementById(toGroup).options[i].text == selText) {\n";
-        echo "newItem = false; break;\n}\n}\n"."if (newItem) {\n";
-        echo "document.getElementById(toGroup).options[listLength] = new Option(selText, selValue);\n";
-        echo "document.getElementById(fromGroup).options[selItem] = null;\n}\n}\n";
-        echo "function saveMods() {\n"."var strValues = \"\";\n";
-        echo "var boxLength = document.getElementById('modlist2').length;\n";
-        echo "var count = 0;\n"."	if (boxLength != 0) {\n"."for (i = 0; i < boxLength; i++) {\n";
-        echo "if (count == 0) {\n"."strValues = document.getElementById('modlist2').options[i].value;\n";
-        echo "} else {\n"."strValues = strValues + \".\" + document.getElementById('modlist2').options[i].value;\n";
-        echo "}\n"."count++;\n}\n}\n";
-        echo "if (strValues.length == 0) {\n"."document.forms['inputform'].submit();\n";
-        echo "} else {\n"."document.forms['inputform'].forum_mods.value = strValues;\n";
-        echo "document.forms['inputform'].submit();\n}\n}\n</script>\n";
-        */
+            array('class' => 'btn-primary'));
+
         closetable();
     }
 
@@ -1140,19 +1056,15 @@ class ForumAdminView extends ForumAdminInterface {
      */
     private function display_forum_jumper() {
         /* JS Menu Jumper */
-        global $aidlink;
-
         echo "<div class='pull-right m-t-10'>\n";
-        echo form_select_tree('forum_jump', '', $_GET['parent_id'], array(
-            'inline' => TRUE,
-            'class' => 'pull-right',
+        echo form_select_tree('forum_jump', self::$locale['forum_044'], $_GET['parent_id'], array(
+            'inline'       => FALSE,
             'parent_value' => self::$locale['forum_root']
         ), DB_FORUMS, 'forum_name', 'forum_id', 'forum_cat');
-        echo "<label for='forum_jump' class='text-dark strong pull-right m-r-10 m-t-3'>".self::$locale['forum_044']."</label>\n";
         echo "</div>\n";
         add_to_jquery("
 	    $('#forum_jump').change(function() {
-		location = '".FUSION_SELF.$aidlink."&parent_id='+$(this).val();
+		location = '".FUSION_SELF.fusion_get_aidlink()."&parent_id='+$(this).val();
         });
         ");
     }
@@ -1161,18 +1073,17 @@ class ForumAdminView extends ForumAdminInterface {
      * Forum Listing
      */
     private function display_forum_list() {
-        global $aidlink;
+        $aidlink = fusion_get_aidlink();
 
         $title = !empty($this->level['title']) ? sprintf(self::$locale['forum_000b'],
-                                                         $this->level['title'][0]) : self::$locale['forum_000c'];
+            $this->level['title'][0]) : self::$locale['forum_root'];
         add_to_title(" ".$title);
 
         $forum_settings = $this->get_forum_settings();
         $threads_per_page = $forum_settings['threads_per_page'];
         $max_rows = dbcount("('forum_id')", DB_FORUMS,
-                            (multilang_table("FO") ? "forum_language='".LANGUAGE."' AND" : '')." forum_cat='".$_GET['parent_id']."'"); // need max rows
+            (multilang_table("FO") ? "forum_language='".LANGUAGE."' AND" : '')." forum_cat='".$_GET['parent_id']."'"); // need max rows
         $_GET['rowstart'] = (isset($_GET['rowstart']) && isnum($_GET['rowstart']) && $_GET['rowstart'] <= $max_rows) ? intval($_GET['rowstart']) : 0;
-
 
         opentable($title);
 
@@ -1196,11 +1107,11 @@ class ForumAdminView extends ForumAdminInterface {
             );
 
             $ui_label = array(
-                "move_up" => $has_entypo ? "<i class='entypo up-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-arrow-up fa-lg m-r-10'></i>" : self::$locale['forum_046'],
-                "move_down" => $has_entypo ? "<i class='entypo down-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-arrow-down fa-lg m-r-10'></i>" : self::$locale['forum_045'],
-                "edit_permission" => $has_entypo ? "<i class='entypo key m-r-10'></i>" : $has_fa ? "<i class='fa fa-eye fa-lg m-r-10'></i>" : self::$locale['forum_047'],
-                "edit" => $has_entypo ? "<i class='entypo cog m-r-10'></i>" : $has_fa ? "<i class='fa fa-cog fa-lg m-r-10'></i>" : self::$locale['forum_048'],
-                "delete" => $has_entypo ? "<i class='entypo icancel m-r-10'></i>" : $has_fa ? "<i class='fa fa-trash-o fa-lg m-r-10'></i>" : self::$locale['forum_049'],
+                "move_up"         => $has_entypo ? "<i class='entypo up-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-angle-up fa-lg m-r-10'></i>" : self::$locale['forum_046'],
+                "move_down"       => $has_entypo ? "<i class='entypo down-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-angle-down fa-lg m-r-10'></i>" : self::$locale['forum_045'],
+                "edit_permission" => $has_entypo ? "<i class='entypo key m-r-10'></i>" : $has_fa ? "<i class='fa fa-eye fa-lg m-r-10'></i>" : self::$locale['forum_029'],
+                "edit"            => $has_entypo ? "<i class='entypo cog m-r-10'></i>" : $has_fa ? "<i class='fa fa-cog fa-lg m-r-10'></i>" : self::$locale['forum_002'],
+                "delete"          => $has_entypo ? "<i class='entypo icancel m-r-10'></i>" : $has_fa ? "<i class='fa fa-trash-o fa-lg m-r-10'></i>" : self::$locale['forum_049'],
             );
 
             $i = 1;
@@ -1214,19 +1125,18 @@ class ForumAdminView extends ForumAdminInterface {
                 echo "<div class='panel panel-default'>\n";
                 echo "<div class='panel-body'>\n";
                 echo "<div class='pull-left m-r-10'>\n";
-                echo "<i class='display-inline-block text-lighter ".$type_icon[$data['forum_type']]."'></i>\n";
+
+                if ($data['forum_image'] && file_exists(INFUSIONS."forum/images/".$data['forum_image'])) {
+                    echo thumbnail(INFUSIONS."forum/images/".$data['forum_image'], '50px');
+                } else {
+                    echo "<i class='display-inline-block text-lighter ".$type_icon[$data['forum_type']]."'></i>\n";
+                }
+
                 echo "</div>\n";
                 echo "<div class='overflow-hide'>\n";
                 echo "<div class='row'>\n";
                 echo "<div class='col-xs-6 col-sm-6 col-md-6 col-lg-6'>\n";
-                $html2 = '';
-                if ($data['forum_image'] && file_exists(INFUSIONS."forum/images/".$data['forum_image'])) {
-                    echo "<div class='pull-left m-r-10'>\n".thumbnail(INFUSIONS."forum/images/".$data['forum_image'],
-                                                                      '50px')."</div>\n";
-                    echo "<div class='overflow-hide'>\n";
-                    $html2 = "</div>\n";
-                }
-                echo "<span class='strong text-bigger'><a href='".FUSION_SELF.$aidlink."&amp;parent_id=".$data['forum_id']."&amp;branch=".$data['forum_branch']."'>".$data['forum_name']."</a></span><br/>".nl2br(parseubb($data['forum_description'])).$html2;
+                echo "<span class='strong text-bigger'><a href='".FUSION_SELF.$aidlink."&amp;parent_id=".$data['forum_id']."&amp;branch=".$data['forum_branch']."'>".$data['forum_name']."</a></span><br/>".nl2br(parseubb($data['forum_description']));
                 echo "</div>\n<div class='col-xs-6 col-sm-6 col-md-6 col-lg-6'>\n";
                 echo "<div class='pull-right'>\n";
                 $upLink = FUSION_SELF.$aidlink.$this->ext."&amp;action=mu&amp;order=$up&amp;forum_id=".$data['forum_id'];
@@ -1234,8 +1144,8 @@ class ForumAdminView extends ForumAdminInterface {
 
                 echo ($i == 1) ? '' : "<a title='".self::$locale['forum_046']."' href='".$upLink."'>".$ui_label['move_up']."</a>";
                 echo ($i == $rows) ? '' : "<a title='".self::$locale['forum_045']."' href='".$downLink."'>".$ui_label['move_down']."</a>";
-                echo "<a title='".self::$locale['forum_047']."' href='".FUSION_SELF.$aidlink."&amp;action=p_edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit_permission']."</a>"; // edit
-                echo "<a title='".self::$locale['forum_048']."' href='".FUSION_SELF.$aidlink."&amp;action=edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit']."</a>"; // edit
+                echo "<a title='".self::$locale['forum_029']."' href='".FUSION_SELF.$aidlink."&amp;action=p_edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit_permission']."</a>"; // edit
+                echo "<a title='".self::$locale['forum_002']."' href='".FUSION_SELF.$aidlink."&amp;action=edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit']."</a>"; // edit
                 echo "<a title='".self::$locale['forum_049']."' href='".FUSION_SELF.$aidlink."&amp;action=delete&amp;forum_id=".$data['forum_id']."&amp;forum_cat=".$data['forum_cat']."&amp;forum_branch=".$data['forum_branch'].$this->ext."' onclick=\"return confirm('".self::$locale['delete_notice']."');\">".$ui_label['delete']."</a>"; // delete
                 echo "</div>\n";
                 echo "<span class='text-dark text-smaller strong'>".self::$locale['forum_057']." ".number_format($data['forum_threadcount'])." / ".self::$locale['forum_059']." ".number_format($data['forum_postcount'])." </span>\n<br/>";
@@ -1265,12 +1175,12 @@ class ForumAdminView extends ForumAdminInterface {
         opentable(self::$locale['forum_001']);
         echo openform('forum_create_form', 'post', FUSION_REQUEST);
         echo form_text('forum_name', self::$locale['forum_006'], '', array(
-            'required' => 1,
-            'inline' => TRUE,
+            'required'    => 1,
+            'inline'      => TRUE,
             'placeholder' => self::$locale['forum_018']
         ));
         echo form_button('init_forum', self::$locale['forum_001'], 'init_forum',
-                         array('class' => 'btn btn-sm btn-primary'));
+            array('class' => 'btn btn-sm btn-primary'));
         echo closeform();
         closetable();
     }

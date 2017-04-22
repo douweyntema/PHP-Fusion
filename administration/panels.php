@@ -93,7 +93,7 @@ class fusion_panel_admin {
             default:
                 $this->formaction = FUSION_SELF.$aidlink."&amp;section=panelform";
         }
-        add_breadcrumb(array('link' => ADMIN.'panels.php'.$aidlink, 'title' => self::$locale['600']));
+        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => ADMIN.'panels.php'.$aidlink, 'title' => self::$locale['600']]);
         self::set_paneldb();
     }
 
@@ -113,7 +113,11 @@ class fusion_panel_admin {
             3 => self::$locale['425'],
             4 => self::$locale['422'],
             5 => self::$locale['426'],
-            6 => self::$locale['427']
+            6 => self::$locale['427'],
+            7 => self::$locale['428a'],
+            8 => self::$locale['428b'],
+            9 => self::$locale['428c'],
+            10 => self::$locale['428d']
         );
     }
 
@@ -213,9 +217,9 @@ class fusion_panel_admin {
                 $this->data['panel_type'] = "php";
                 $this->data['panel_content'] = isset($_POST['panel_content']) ? addslashes($_POST['panel_content']) : '';
                 if (!$this->data['panel_content']) {
-                    $this->data['panel_content'] = "opentable(\"name\");\n"."echo \"Content\";\n"."closetable();";
+                    $this->data['panel_content'] = "opentable(\"name\");\n"."echo \"".$locale['469a']."\";\n"."closetable();";
                     if ($this->data['panel_side'] == 1 || $this->data['panel_side'] == 4) {
-                        $this->data['panel_content'] = "openside(\"name\");\n"."echo \"Content\";\n"."closeside();";
+                        $this->data['panel_content'] = "openside(\"name\");\n"."echo \"".$locale['469a']."\";\n"."closeside();";
                     }
                 }
             } else {
@@ -298,7 +302,7 @@ class fusion_panel_admin {
         $tab_title['icon'][] = $edit ? "fa fa-pencil m-r-10" : 'fa fa-plus-square m-r-10';
         $tab_active = tab_active($tab_title, $edit ? 1 : 0, 'section');
 
-        echo opentab($tab_title, $tab_active, 'id', FUSION_SELF.$aidlink);
+        echo opentab($tab_title, $tab_active, 'id', TRUE);
 
         echo opentabbody($tab_title['title'][0], 'listpanel', $tab_active, 1);
         $this->panel_listing();
@@ -322,40 +326,40 @@ class fusion_panel_admin {
 
         add_to_head("<script type='text/javascript' src='".INCLUDES."jquery/jquery-ui.js'></script>");
         add_to_jquery("
-		$('.panels-list').sortable({
-				handle : '.handle',
-				placeholder: 'state-highlight',
-				connectWith: '.connected',
-				scroll: true,
-				axis: 'auto',
-				update: function () {
-					var ul = $(this),
-						order = ul.sortable('serialize'),
-						i = 0;
-					$('#info').load('panels_updater.php".$aidlink."&'+order);
-					ul.find('.num').each(function(i) {
-						$(this).text(i+1);
-					});
-					ul.find('li').removeClass('tbl2').removeClass('tbl1');
-					ul.find('li:odd').addClass('tbl2');
-					ul.find('li:even').addClass('tbl1');
-					window.setTimeout('closeDiv();',2500);
-				},
-				receive: function () {
-					var ul = $(this),
-						order = ul.sortable('serialize'),
-						pdata = ul.attr('data-side');
-						if (pdata == 1) { var psidetext = '".self::$locale['420']."'; }
-						if (pdata == 2) { var psidetext = '".self::$locale['421']."'; }
-						if (pdata == 3) { var psidetext = '".self::$locale['425']."'; }
-						if (pdata == 4) { var psidetext = '".self::$locale['422']."'; }
-					ul.find('.pside').each(function() {
-						$(this).text(psidetext);
-					});
-					$('#info').load('panels_updater.php".$aidlink."&panel_side='+pdata+'&'+order);
-				}
-			});
-		");
+        $('.panels-list').sortable({
+                handle : '.handle',
+                placeholder: 'state-highlight',
+                connectWith: '.connected',
+                scroll: true,
+                axis: 'auto',
+                update: function () {
+                    var ul = $(this),
+                        order = ul.sortable('serialize'),
+                        i = 0;
+                    $('#info').load('panels_updater.php".$aidlink."&'+order);
+                    ul.find('.num').each(function(i) {
+                        $(this).text(i+1);
+                    });
+                    ul.find('li').removeClass('tbl2').removeClass('tbl1');
+                    ul.find('li:odd').addClass('tbl2');
+                    ul.find('li:even').addClass('tbl1');
+                    window.setTimeout('closeDiv();',2500);
+                },
+                receive: function () {
+                    var ul = $(this),
+                        order = ul.sortable('serialize'),
+                        pdata = ul.attr('data-side');
+                        if (pdata == 1) { var psidetext = '".self::$locale['420']."'; }
+                        if (pdata == 2) { var psidetext = '".self::$locale['421']."'; }
+                        if (pdata == 3) { var psidetext = '".self::$locale['425']."'; }
+                        if (pdata == 4) { var psidetext = '".self::$locale['422']."'; }
+                    ul.find('.pside').each(function() {
+                        $(this).text(psidetext);
+                    });
+                    $('#info').load('panels_updater.php".$aidlink."&panel_side='+pdata+'&'+order);
+                }
+            });
+        ");
         echo "<div class='m-t-20'>\n";
         echo "<div id='info'></div>\n";
         echo "<div class='well text-center'>".self::$locale['410']."</div>\n";
@@ -372,6 +376,14 @@ class fusion_panel_admin {
         echo self::panel_reactor(4);
         echo "</div>\n<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>\n";
         echo self::panel_reactor(6);
+        echo "</div>\n<div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>\n";
+        echo self::panel_reactor(7);
+        echo "</div>\n<div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>\n";
+        echo self::panel_reactor(8);
+        echo "</div>\n<div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>\n";
+        echo self::panel_reactor(9);
+        echo "</div>\n<div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>\n";
+        echo self::panel_reactor(10);
         echo "</div>\n</div>\n";
         echo "</div>\n";
         //Unused Panels in the directory
@@ -386,7 +398,7 @@ class fusion_panel_admin {
             echo "<div style='float:left;'>".$panel."</div>\n";
             echo "<div style='float:right; width:250px;'>";
             echo "</div>\n";
-            echo "<div style='float:right; width:10%;'>File</div>\n";
+            echo "<div style='float:right; width:10%;'>".self::$locale['607']."</div>\n";
             echo "<div style='clear:both;'></div>\n";
         }
         echo "</div>\n</div>\n";
@@ -542,11 +554,11 @@ class fusion_panel_admin {
         closeside();
         openside('');
         add_to_jquery("
-		".(($this->data['panel_restriction'] == 3 || $this->data['panel_restriction'] == 2) ? "$('#panel_url_list-grp').hide();" : '')."
-		$('#panel_restriction').bind('change', function(e) {
-			if ($(this).val() == '3' || $(this).val() == '2') { $('#panel_url_list-grp').hide(); } else { $('#panel_url_list-grp').show(); }
-		});
-		");
+        ".(($this->data['panel_restriction'] == 3 || $this->data['panel_restriction'] == 2) ? "$('#panel_url_list-grp').hide();" : '')."
+        $('#panel_restriction').bind('change', function(e) {
+            if ($(this).val() == '3' || $(this).val() == '2') { $('#panel_url_list-grp').hide(); } else { $('#panel_url_list-grp').show(); }
+        });
+        ");
         echo form_select('panel_restriction', self::$locale['468'], $this->data['panel_restriction'], array(
             'options' => self::get_includeOpts(),
             'inline' => TRUE
@@ -557,20 +569,22 @@ class fusion_panel_admin {
             'options' => self::get_panel_url_list(),
             'inline' => TRUE,
             'tags' => TRUE,
+            'delimiter' => "\r\n",
             'multiple' => TRUE,
-            'width' => '100%'
+            'width' => '100%',
+            'inner_width' => '100%'
         ));
         echo "</div>\n";
         echo form_hidden('panel_display', '', $this->data['panel_display']);
         closeside();
         add_to_jquery("
-		".((!empty($this->data['panel_filename']) && $this->data['panel_filename'] !== "none") ? "$('#pgrp').hide();" : "$('#pgrp').show();")."
-		$('#panel_filename').bind('change', function(e) {
-		    var panel_val = $(this).val();
+        ".((!empty($this->data['panel_filename']) && $this->data['panel_filename'] !== "none") ? "$('#pgrp').hide();" : "$('#pgrp').show();")."
+        $('#panel_filename').bind('change', function(e) {
+            var panel_val = $(this).val();
 
-			if ($(this).val() !='none') { $('#pgrp').hide(); } else { $('#pgrp').show(); }
-		});
-		");
+            if ($(this).val() !='none') { $('#pgrp').hide(); } else { $('#pgrp').show(); }
+        });
+        ");
 
         echo "<div id='pgrp'>\n";
         echo form_textarea('panel_content', self::$locale['455'], $this->data['panel_content'], array(

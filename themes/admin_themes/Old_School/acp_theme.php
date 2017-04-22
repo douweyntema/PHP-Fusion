@@ -20,13 +20,14 @@ if (!defined("IN_FUSION")) {
 }
 
 require_once INCLUDES."theme_functions_include.php";
-require_once ADMIN."navigation.php";
 require_once THEMES."admin_themes/Old_School/includes/functions.php";
-
+\PHPFusion\Admins::getInstance()->setAdminBreadcrumbs();
 $settings['bootstrap'] = 1;
 
 function render_admin_login() {
-    global $locale, $aidlink, $userdata;
+    $locale = fusion_get_locale();
+    $aidlink = fusion_get_aidlink();
+    $userdata = fusion_get_userdata();
 
     echo "<div id='wrapper'>\n";
     echo "<div class='container' style='margin-top:100px;'>\n";
@@ -36,7 +37,7 @@ function render_admin_login() {
         echo "<img src='".IMAGES."php-fusion-icon.png' class='pf-logo position-absolute' alt='PHP-Fusion'/>";
         echo "<p class='fusion-version text-right mid-opacity text-smaller'>".$locale['version'].fusion_get_settings('version')."</p>";
         echo "<div class='row m-0'>\n<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>";
-    
+
         $form_action = FUSION_SELF.$aidlink == ADMIN."index.php".$aidlink ? FUSION_SELF.$aidlink."&amp;pagenum=0" : FUSION_SELF."?".FUSION_QUERY;
         // Get all notices
         $notices = getNotices();
@@ -83,7 +84,10 @@ function render_admin_login() {
 }
 
 function render_admin_panel() {
-    global $locale, $userdata, $defender, $pages, $aidlink, $admin;
+    $locale = fusion_get_locale();
+    $aidlink = fusion_get_aidlink();
+    $userdata = fusion_get_userdata();
+
 
     $languages = fusion_get_enabled_languages();
 
@@ -96,50 +100,54 @@ function render_admin_panel() {
     echo "<div id='admin-panel' class='clearfix in'>\n";
 
     // Top header section
-    echo "<section id='acp-header' class='pull-left affix clearfix' data-offset-top='0' data-offset-bottom='0'>\n";
+    echo "<section data-offset-top='0' data-offset-bottom='0'>\n";
+        echo '<nav id="acp-header" class="navbar navbar-default m-r-15 m-l-15">';
+            echo '<div class="container-fluid">';
+                echo '<div class="navbar-header">';
+                    echo '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">';
+                        echo '<span class="sr-only">Toggle navigation</span>';
+                        echo '<span class="icon-bar"></span>';
+                        echo '<span class="icon-bar"></span>';
+                        echo '<span class="icon-bar"></span>';
+                    echo '</button>';
+                echo '</div>';
+                echo '<div class="collapse navbar-collapse" id="main-menu">';
+                    echo '<ul class="nav navbar-nav">';
+                        echo "<li><a title='".$locale['ac00']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=0'>".$locale['ac00']."</a></li>\n";
+                        echo "<li><a title='".$locale['ac01']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=1'>".$locale['ac01']."</a></li>\n";
+                        echo "<li><a title='".$locale['ac02']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=2'>".$locale['ac02']."</a></li>\n";
+                        echo "<li><a title='".$locale['ac03']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=3'>".$locale['ac03']."</a></li>\n";
+                        echo "<li><a title='".$locale['ac04']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=4'>".$locale['ac04']."</a></li>\n";
+                        echo "<li><a title='".$locale['ac05']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=5'>".$locale['ac05']."</a></li>\n";
+                    echo '</ul>';
 
-    // Top content sections navigation
-    echo "<nav>\n";
-    echo "<ul class='top-left-menu pull-left m-l-15'>\n";
-    echo "<li><a title='".$locale['ac00']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=0'>".$locale['ac00']."</a></li>\n";
-    echo "<li><a title='".$locale['ac01']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=1'>".$locale['ac01']."</a></li>\n";
-    echo "<li><a title='".$locale['ac02']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=2'>".$locale['ac02']."</a></li>\n";
-    echo "<li><a title='".$locale['ac03']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=3'>".$locale['ac03']."</a></li>\n";
-    echo "<li><a title='".$locale['ac04']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=4'>".$locale['ac04']."</a></li>\n";
-    echo "<li><a title='".$locale['ac05']."' href='".ADMIN."index.php".$aidlink."&amp;pagenum=5'>".$locale['ac05']."</a></li>\n";
-    echo "</ul>\n";
-    echo "</nav>\n";
-
-    // Top navigation
-    echo "<nav>\n";
-
-    // Top right menu links
-    echo "<ul class='top-right-menu pull-right m-r-15'>\n";
-    echo "<li class='dropdown'>\n";
-    echo "<a class='dropdown-toggle pointer' data-toggle='dropdown'>".display_avatar($userdata, '25px', '', '',
-                                                                                     '')." ".$locale['logged']."<strong>".$userdata['user_name']."</strong> <span class='caret'></span>\n</a>\n";
-    echo "<ul class='dropdown-menu' role='menu'>\n";
-    echo "<li><a class='display-block' href='".BASEDIR."edit_profile.php'>".$locale['edit']." ".$locale['profile']."</a></li>\n";
-    echo "<li><a class='display-block' href='".BASEDIR."profile.php?lookup=".$userdata['user_id']."'>".$locale['view']." ".$locale['profile']."</a></li>\n";
-    echo "<li class='divider'> </li>\n";
-    echo "<li><a class='display-block' href='".FUSION_REQUEST."&amp;logout'>".$locale['admin-logout']."</a></li>\n";
-    echo "<li><a class='display-block' href='".BASEDIR."index.php?logout=yes'>".$locale['logout']."</a></li>\n";
-    echo "</ul>\n";
-    echo "</li>\n";
-    if (count($languages) > 1) {
-        echo "<li class='dropdown'><a class='dropdown-toggle pointer' data-toggle='dropdown' title='".$locale['282']."'><i class='fa fa-globe fa-lg fa-fw'></i> ".translate_lang_names(LANGUAGE)."<span class='caret'></span></a>\n";
-        echo "<ul class='dropdown-menu'>\n";
-        foreach ($languages as $language_folder => $language_name) {
-            echo "<li><a class='display-block' href='".clean_request("lang=".$language_folder, array("lang"),
-                                                                     FALSE)."'><img class='m-r-5' src='".BASEDIR."locale/$language_folder/$language_folder-s.png'> $language_name</a></li>\n";
-        }
-        echo "</ul>\n";
-        echo "</li>\n";
-    }
-    echo "</ul>\n"; // .top-right-menu
-    echo "</nav>\n";
+                    echo '<ul class="nav navbar-nav navbar-right">';
+                        echo "<li class='dropdown'>\n";
+                            echo "<a class='dropdown-toggle pointer' data-toggle='dropdown'>".display_avatar($userdata, '25px', '', '',
+                                                                                                             '')." ".$locale['logged']."<strong>".$userdata['user_name']."</strong> <span class='caret'></span>\n</a>\n";
+                            echo "<ul class='dropdown-menu' role='menu'>\n";
+                            echo "<li><a class='display-block' href='".BASEDIR."edit_profile.php'>".$locale['edit']." ".$locale['profile']."</a></li>\n";
+                            echo "<li><a class='display-block' href='".BASEDIR."profile.php?lookup=".$userdata['user_id']."'>".$locale['view']." ".$locale['profile']."</a></li>\n";
+                            echo "<li class='divider'> </li>\n";
+                            echo "<li><a class='display-block' href='".FUSION_REQUEST."&amp;logout'>".$locale['admin-logout']."</a></li>\n";
+                            echo "<li><a class='display-block' href='".BASEDIR."index.php?logout=yes'>".$locale['logout']."</a></li>\n";
+                            echo "</ul>\n";
+                            echo "</li>\n";
+                            if (count($languages) > 1) {
+                                echo "<li class='dropdown'><a class='dropdown-toggle pointer' data-toggle='dropdown' title='".$locale['282']."'><i class='fa fa-globe fa-lg fa-fw'></i> ".translate_lang_names(LANGUAGE)."<span class='caret'></span></a>\n";
+                                echo "<ul class='dropdown-menu'>\n";
+                                foreach ($languages as $language_folder => $language_name) {
+                                    echo "<li><a class='display-block' href='".clean_request("lang=".$language_folder, array("lang"),
+                                                                                             FALSE)."'><img class='m-r-5' src='".BASEDIR."locale/$language_folder/$language_folder-s.png'> $language_name</a></li>\n";
+                                }
+                                echo "</ul>\n";
+                            echo "</li>\n";
+                        }
+                    echo '</ul>';
+                echo '</div>'; // .navbar-collapse
+            echo '</div>'; // .container-fluid
+        echo '</nav>';
     echo "</section>\n";
-
 
     // Content section
     echo "<div class='content-wrapper display-block'>\n";
@@ -159,7 +167,7 @@ function render_admin_panel() {
     echo "</div>\n"; // #acp-content
 
     // Footer section
-    echo "<footer class='m-l-20 display-inline-block m-t-20 m-b-20'>\n";
+    echo "<footer class='display-inline-block m-t-20 m-b-20'>\n";
 
     // Copyright
     echo "Old_School Admin &copy; ".date("Y")." created by <a href='https://www.php-fusion.co.uk'><strong>PHP-Fusion Inc.</strong></a>\n";
@@ -180,13 +188,4 @@ function render_admin_panel() {
 
     // Wrappers
     echo "</div></div></div></div>\n";
-
-    add_to_footer("<script src='".THEMES."admin_themes/Old_School/includes/jquery.slimscroll.min.js'></script>");
-
-    add_to_jquery("
-        // Initialize slimscroll
-        $('#adl').slimScroll({
-        	height: null
-        });
-    ");
 }

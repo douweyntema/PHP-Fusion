@@ -1,5 +1,4 @@
-@import url(../../includes/fonts/Lato/font.css);
-
+@import url(../templates/global/default_home/default_home.css);
 a, abbr, acronym, address, applet, article, aside, audio, b, blockquote, big, body, center, canvas, caption, cite, code, command, datalist, dd, del, details, dfn, dl, dt, em, embed, fieldset, figcaption, figure, font, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, keygen, label, legend, meter, nav, object, output, p, pre, progress, q, s, samp, section, span, source, strike, sub, sup, table, tbody, tfoot, thead, th, tr, tdvideo, tt, u, var {
     background: transparent;
     border: 0 none;
@@ -9,7 +8,6 @@ a, abbr, acronym, address, applet, article, aside, audio, b, blockquote, big, bo
     outline: 0;
     vertical-align: top;
 }
-
 h5 {
     margin: 20px 0;
     font-weight: 600;
@@ -129,7 +127,7 @@ body {
     background: -ms-linear-gradient(top, #DBDBDB 0%, #DDD 100%); /* IE10+ */
     background: linear-gradient(to bottom, #DBDBDB 0%, #DDD 100%); /* W3C */
     color: #000;
-    font: 14px/20px "LatoWeb", "Helvetica Neue", Arial, Tahoma, Century gothic, sans-serif;
+    font: 14px/20px "Helvetica Neue", Arial, Tahoma, Century gothic, sans-serif;
 }
 
 @media (max-width: 767px) {
@@ -325,12 +323,19 @@ input[type=text]:focus {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
-.avatar-row {
+/*
+User Info Panel CSS
+ */
+.uip_avatar {
     float: left;
     display: inline;
     width: auto !important;
     margin-right: 10px;
     margin-bottom: 20px;
+}
+
+.uip_username {
+    margin: 10px 0;
 }
 
 .header-nav {
@@ -573,7 +578,7 @@ nav {
 #navigation-user ul {
     padding: 20px 0px 20px 18px;
     list-style-type: none;
-    background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.5);
+    background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.5) !important;
     margin: 0 -20px;
 }
 
@@ -655,7 +660,6 @@ nav {
 
 .block {
     padding: 5px 0px;
-    background: #FFF;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
@@ -968,7 +972,7 @@ ul.list li a:hover {
 }
 
 .textbox {
-    font-family: 'LatoWebSemibold', Helvetica, Arial, Verdana, sans-serif;
+    font-family: Helvetica, Arial, Verdana, sans-serif;
     color: rgb(0, 0, 0);
     border: 1px solid #CACACA;
     border-radius: 2px;
@@ -1463,8 +1467,9 @@ body .mceToolbar div {
 }
 
 .forum-subject {
-    font-family: "LatoWebBlack", Helvetica, Arial, Verdana, sans-serif;
+    font-family: Helvetica, Arial, Verdana, sans-serif;
     font-size: 16px;
+    font-weight: 600;
 }
 
 /** News Infusion Custom Template */
@@ -1648,4 +1653,8 @@ h4.news-title-info {
 .news-description-info {
     display: block;
     margin-top: 20px;
+}
+
+ol, ul {
+    list-style: none;
 }

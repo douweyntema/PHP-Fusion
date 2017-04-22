@@ -2,7 +2,7 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: news/classes/news/news_view.php
 | Author: PHP-Fusion Development Team
@@ -17,6 +17,8 @@
 +--------------------------------------------------------*/
 
 namespace PHPFusion\News;
+use PHPFusion\OpenGraph;
+use PHPFusion\OpenGraphNews;
 
 /**
  * Controller package for if/else
@@ -30,10 +32,12 @@ class NewsView extends News {
             // Item Result
             $info = $this->set_NewsItemInfo($_GET['readmore']);
             render_news_item($info);
+	        OpenGraphNews::ogNews($_GET['readmore']);
         } elseif (isset($_GET['cat_id']) && isnum($_GET['cat_id'])) {
             // Category Result
             $info = $this->set_NewsCatInfo($_GET['cat_id']);
             display_main_news($info);
+	        OpenGraphNews::ogNewsCat($_GET['cat_id']);
         } else {
             // All Results
             $info = $this->set_NewsInfo();

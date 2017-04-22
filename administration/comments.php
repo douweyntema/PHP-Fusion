@@ -19,7 +19,7 @@ require_once "../maincore.php";
 pageAccess('C');
 
 require_once THEMES."templates/admin_header.php";
-include LOCALE.LOCALESET."admin/comments.php";
+$locale = fusion_get_locale('', LOCALE.LOCALESET."admin/comments.php");
 
 if (!isset($_GET['ctype']) || !preg_check("/^[0-9A-Z]+$/i", $_GET['ctype'])) {
     redirect("../index.php");
@@ -29,7 +29,7 @@ if (!isset($_GET['comment_item_id']) || !isnum($_GET['comment_item_id'])) {
     redirect("../index.php");
 }
 
-add_breadcrumb(array('link' => ADMIN.'comments.php'.$aidlink, 'title' => $locale['401']));
+\PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link'=> ADMIN.'comments.php'.fusion_get_aidlink(), "title"=> $locale['401']]);
 
 if (isset($_POST['save_comment']) && (isset($_GET['comment_id']) && isnum($_GET['comment_id']))) {
     $comment_message = stripinput($_POST['comment_message']);
@@ -40,7 +40,7 @@ if (isset($_POST['save_comment']) && (isset($_GET['comment_id']) && isnum($_GET[
 
 if ((isset($_GET['action']) && $_GET['action'] == "delete") && (isset($_GET['comment_id']) && isnum($_GET['comment_id']))) {
     $result = dbquery("DELETE FROM ".DB_COMMENTS." WHERE comment_id='".$_GET['comment_id']."'");
-    addNotice('warning', $locale['411']);
+    addNotice('success', $locale['411']);
     redirect("comments.php".$aidlink."&ctype=".$_GET['ctype']."&comment_item_id=".$_GET['comment_item_id']);
 }
 
@@ -51,7 +51,7 @@ if ((isset($_GET['action']) && $_GET['action'] == "edit") && (isset($_GET['comme
         $data = dbarray($result);
         opentable($locale['400']);
         $form_action = FUSION_SELF.$aidlink."&amp;comment_id=".$_GET['comment_id']."&amp;ctype=".$_GET['ctype']."&amp;comment_item_id=".$_GET['comment_item_id'];
-        echo openform('settingsform', 'post', $form_action, array('max_tokens' => 1));
+        echo openform('settingsform', 'post', $form_action);
         echo form_textarea('comment_message', '', $data['comment_message'],
                            array('autosize' => TRUE, 'bbcode' => TRUE, 'preview' => TRUE, 'form_name' => 'settingsform'));
         echo form_button('save_comment', $locale['421'], $locale['421'], array('class' => 'btn-primary btn-sm'));

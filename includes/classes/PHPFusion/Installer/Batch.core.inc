@@ -1,5 +1,20 @@
 <?php
-
+/*-------------------------------------------------------+
+| PHP-Fusion Content Management System
+| Copyright (C) PHP-Fusion Inc
+| https://www.php-fusion.co.uk/
++--------------------------------------------------------+
+| Filename: Batch.core.inc
+| Author: PHP-Fusion Development Team
++--------------------------------------------------------+
+| This program is released as free software under the
+| Affero GPL license. You can redistribute it and/or
+| modify it under the terms of this license which you
+| can read by viewing the included agpl.txt or online
+| at www.gnu.org/licenses/agpl.html. Removal of this
+| copyright header is strictly prohibited without
+| written permission from the original author(s).
++--------------------------------------------------------*/
 namespace PHPFusion\Installer;
 
 /**
@@ -148,7 +163,7 @@ class Batch_Core extends Install_Core {
                         /*
                          * Existing Installation
                          */
-                        $this->check_existing_table();
+                        $this->check_existing_table(); //where is the one that runs upgrade?
 
                     } else {
                         /*
@@ -486,47 +501,6 @@ class Batch_Core extends Install_Core {
 
     public function ProgressHasError() {
         return (!empty($this->js['error'])) ? TRUE : FALSE;
-    }
-
-    /**
-     * Determine Progress bar steps
-     * @param $count
-     * @param $total
-     * @param $elapsed
-     * @param $description
-     * @param $callback
-     */
-    public function Progress($count = 0, $total, $elapsed, $description, $callback) {
-        $pcg = ($count / $total) * 100 ? ($count / $total) * 100 : 0;
-        $last_count = ($count - 1 / $total) * 100 ? ($count - 1 / $total) * 100 : 0;
-        $time = round($elapsed, 0);
-        $elapsed = $time > 0 ? $time : 100; // delay for animate
-        $this->js['error'] = FALSE;
-        $this->js['jquery'][$count] = strtr(self::PROGRESS,
-                                            [
-                                                '{%pcg%}' => $pcg,
-                                                '{%content%}' => $description,
-                                                '{%last_count%}' => $last_count,
-                                                '{%this_count%}' => $pcg,
-                                                '{%microtime%}' => $elapsed,
-                                                '{%progress_time%}' => $elapsed,
-                                            ]);
-        if ($callback) {
-
-            if (isset($this->js['jquery'][$count - 1])) {
-                $this->js['jquery'][$count] = strtr($this->js['jquery'][$count - 1], ['{%next%}' => $this->js['jquery'][$count]]);
-            }
-
-        } else {
-
-            // when fails
-            $this->js['error'] = TRUE;
-            // always push to last count
-            $last_count = key(end($this->js));
-            $this->js['jquery'][$count] = strtr($this->js['jquery'][$last_count],
-                                                ['{%next%}' => $this->js['jquery'][$count].self::TERMINATE_PROGRESS]);
-
-        }
     }
 
 }

@@ -37,6 +37,7 @@ $locale['theme_1033'] = "WARNING: All data will be lost if uninstall. Do you wis
 $locale['theme_1034'] = "Add New Preset";
 $locale['theme_1035'] = "No description available for this theme.";
 $locale['theme_1036'] = "Readme";
+$locale['theme_1037'] = "Select Theme Pack";
 
 $locale['theme_2001'] = "Base Fonts";
 $locale['theme_2002'] = "Theme Components";
@@ -145,3 +146,4 @@ $locale['theme_error_005'] = "The file failed to be verified. Please extract the
 $locale['theme_error_006'] = "Your server do not support ZipArchive. Please extract the zip and do a manual FTP upload";
 $locale['theme_error_007'] = "Theme cannot rebuild due to the following reason(s): - Variables were not set or form is has error";
 $locale['theme_error_008'] = "Compiler error. Theme was not updated.";
+$locale['theme_error_009'] = "File theme.php was not found.";

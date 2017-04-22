@@ -2,7 +2,7 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: user_geo_include.php
 | Author: Chan (Frederick MC Chan)
@@ -26,12 +26,10 @@ if ($profile_method == "input") {
 } elseif ($profile_method == "display") {
     if ($field_value) {
         $address = explode('|', $field_value);
-        $field_value = '';
-        foreach ($address as $value) {
-            $field_value .= "$value<br/>\n";
-        }
+        !empty($address[2]) ? $address[2] = translate_country_names($address[2]) : "";
+        $field_value = implode("<br>", $address);
     } else {
-        $field_value = fusion_get_locale('na');
+        $field_value = $locale['na'];
     }
     $user_fields = array('title' => $locale['uf_geo'], 'value' => $field_value);
 }

@@ -1,7 +1,25 @@
-/*------------------------------------------
- Flipbox written by CrappoMan
- simonpatterson@dsl.pipex.com
- ------------------------------------------*/
+/*-------------------------------------------------------+
+ | PHP-Fusion Content Management System
+ | Copyright (C) PHP-Fusion Inc
+ | https://www.php-fusion.co.uk/
+ +--------------------------------------------------------+
+ | Filename: jscript.js
+ | Author: PHP-Fusion Development Team
+ +--------------------------------------------------------+
+ | This program is released as free software under the
+ | Affero GPL license. You can redistribute it and/or
+ | modify it under the terms of this license which you
+ | can read by viewing the included agpl.txt or online
+ | at www.gnu.org/licenses/agpl.html. Removal of this
+ | copyright header is strictly prohibited without
+ | written permission from the original author(s).
+ +--------------------------------------------------------*/
+/**
+ * Flipbox
+ * Need documentation
+ * @param b
+ * by: CrappoMan (simonpatterson@dsl.pipex.com)
+ */
 function flipBox(b) {
     var a;
     if (document.images["b_" + b].src.indexOf("_on") == -1) {
@@ -30,15 +48,45 @@ function flipBox(b) {
         document.cookie = "fusion_box_" + b + "=" + escape(disply) + "; expires=" + expire
     }
 }
-
+/**
+ * Tool to scroll the window to a designated ID
+ * @param hash - ID only
+ */
 function scrollTo(hash) {
-    var hash = $('#' + hash);
-    if (hash.length) {
-        var scrollNav = hash.offset().top;
-        $(document.body).animate({'scrollTop': scrollNav - hash.outerHeight(true)}, 1250);
+    var hashDOM = $('#' + hash);
+    if (hashDOM.length) {
+        var scrollNav = hashDOM.offset().top;
+        $(document.body).animate({'scrollTop': scrollNav - hashDOM.outerHeight(true)}, 600);
     }
 }
+/**
+ * Tool to copy source element's width to target element.
+ * @param source - # or .class element to copy from
+ * @param target - # or .class element to copy to
+ */
+function copyWidth(source, target) {
+    var width = $(source).width();
+    $(target).width(width);
+}
+/**
+ * Jquery html_entities_decode
+ * @param encodedString
+ * @returns {*}
+ */
+function decodeEntities(encodedString) {
+    var textArea = document.createElement('textarea');
+    textArea.innerHTML = encodedString;
+    return textArea.value;
+}
 
+/**
+ * Need documentation
+ * @param f
+ * @param i
+ * @param a
+ * @param e
+ * @returns {boolean}
+ */
 function addText(f, i, a, e) {
     if (e == undefined) {
         e = "inputform"
@@ -70,7 +118,12 @@ function addText(f, i, a, e) {
         }
     }
 }
-
+/**
+ * Need documentation
+ * @param f
+ * @param h
+ * @param e
+ */
 function insertText(f, h, e) {
     if (e == undefined) {
         e = "inputform"
@@ -97,11 +150,24 @@ function insertText(f, h, e) {
         }
     }
 }
-
+/**
+ * Need documentation
+ * @param a
+ */
 function show_hide(a) {
     document.getElementById(a).style.display = document.getElementById(a).style.display == "none" ? "block" : "none"
 }
+/*
+Variations to show_hide, in the form of a sliding action
+ */
+function slide_hide(a) { $('#'+a).slideToggle(); }
 
+/**
+ * Need documentation
+ * @param c
+ * @param b
+ * @returns {*|string}
+ */
 function getStyle(c, b) {
     if (typeof c == "string") {
         var a = document.getElementById(c)
@@ -116,7 +182,7 @@ function getStyle(c, b) {
         }
     }
     return d
-};
+}
 /***********************************************
  * Drop Down/ Overlapping Content- � Dynamic Drive (www.dynamicdrive.com)
  * This notice must stay intact for legal use.
@@ -133,7 +199,13 @@ function getposOffset(a, d) {
     }
     return c
 }
-
+/**
+ * Need documentation
+ * @param e
+ * @param d
+ * @param a
+ * @returns {boolean}
+ */
 function overlay(e, d, a) {
     if (document.getElementById) {
         var c = document.getElementById(d);
@@ -147,12 +219,22 @@ function overlay(e, d, a) {
         return true
     }
 }
-
+/**
+ * Need documentation
+ * @param a
+ */
 function overlayclose(a) {
     document.getElementById(a).style.display = "none"
 }
 NewWindowPopUp = null;
-
+/**
+ * Need documentation
+ * @param d
+ * @param c
+ * @param a
+ * @param b
+ * @constructor
+ */
 function OpenWindow(d, c, a, b) {
     if (NewWindowPopUp != null) {
         NewWindowPopUp.close();
@@ -168,7 +250,10 @@ function OpenWindow(d, c, a, b) {
     NewWindowPopUp = window.open(d, "", "toolbar=no,menubar=no,location=no,personalbar=no,scrollbars=yes,status=no,directories=no,resizable=yes,height=" + a + ",width=" + c + ",top=" + wtop + ",left=" + wleft + "");
     NewWindowPopUp.focus()
 }
-
+/**
+ * Need documentation of usage and examples
+ * @returns {boolean}
+ */
 function resize_forum_imgs() {
     var f;
     var e;
@@ -235,6 +320,33 @@ function resize_forum_imgs() {
     return true
 }
 
+/**
+ * Check All Form Checkboxes with a Master Checkbox
+ * @param frmName - the master form element - $('#inputform');
+ * @param chkName - the checkboxes element that reacts to the master checkbox
+ * @param val - current state value of master checkbox
+ *
+ * Usage Example:
+ * $('#check_all').bind('change', function(e) {
+    val = $(this).is(':checked') ? 1 : 0;
+    setChecked('link_table', 'link_id[]', val);
+    });
+ *
+ */
+function setChecked(frmName,chkName,val) {
+    dml=document.forms[frmName];
+    len=dml.elements.length;
+    console.log(len);
+    for(i=0;i<len;i++){
+        if(dml.elements[i].name==chkName){
+            dml.elements[i].checked=val;
+        }
+    }
+}
+
+/**
+ * Run time execution
+ */
 function onload_events() {
     resize_forum_imgs()
 }

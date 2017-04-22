@@ -3,7 +3,7 @@
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
-+--------------------------------------------------------*
++--------------------------------------------------------+
 | Filename: Ratings/locale/English.php
 | Author: Frederick MC Chan (Chan)
 +--------------------------------------------------------+
@@ -15,8 +15,7 @@
 | copyright header is strictly prohibited without
 | written permission from the original author(s).
 +--------------------------------------------------------*/
-$locale['0100'] = "Ratings Widget";
-$locale['0101'] = "Core Ratings Plugin";
-$locale['0102'] = "Ratings Created";
-
-$locale['0104'] = "Unable to create Ratings";
+$locale['RTW_0100'] = "Ratings Widget";
+$locale['RTW_0101'] = "Core Ratings Plugin";
+$locale['RTW_0102'] = "Ratings Created";
+$locale['RTW_0104'] = "Unable to create Ratings";

@@ -4,7 +4,7 @@
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
-| Filename: news.php
+| Filename: custom_news.php
 | Author: Frederick MC Chan (Chan)
 +--------------------------------------------------------+
 | This program is released as free software under the
@@ -167,9 +167,9 @@ if (!function_exists('render_main_news')) {
         ?>
         <ul>
             <?php if (!empty($info['news_categories'])) :
-                foreach ($info['news_categories'] as $cat_id => $cat_data) :
-                    echo isset($_GET['cat_id']) && $_GET['cat_id'] == $cat_id ? '' : "<li>\n<a href='".INFUSIONS."news/news.php?cat_id=".$cat_id."'>".$cat_data['name']."</a>\n</li>\n";
-                endforeach;
+                foreach ($info['news_categories'][0] as $cat_id => $cat_data) {
+                    echo "<li>\n<a href='".INFUSIONS."news/news.php?cat_id=".$cat_id."'>".$cat_data['name']."</a>\n</li>\n";
+                }
                 echo "<li>\n<a href='".INFUSIONS."news/news.php?cat_id=0'>".$locale['news_0006']."</a>\n</li>\n";
             else:
                 echo "<li>\n<a href='".INFUSIONS."news/news.php?cat_id=0'>".$locale['news_0006']."</a>\n</li>\n";
@@ -269,10 +269,10 @@ if (!function_exists('render_news')) {
                     <span class="news-date m-r-10">
                         <i class="fa fa-calendar fa-fw"></i> <?php echo showdate("newsdate", $info['news_date']) ?>
                     </span>
-                    <?php if ($info['news_display_comments']) : ?>
+                    <?php if (fusion_get_settings('comments_enabled') && $info['news_display_comments']) : ?>
                         <span class="news-comments"><i class="fa fa-comment-o"></i> <?php echo $info['news_display_comments'] ?></span>
                     <?php endif; ?>
-                    <?php if ($info['news_display_ratings']) : ?>
+                    <?php if (fusion_get_settings('ratings_enabled') && $info['news_display_ratings']) : ?>
                         <span class="news-ratings"><i class="fa fa-star-o fa-fw"></i> <?php echo $info['news_display_ratings'] ?></span>
                     <?php endif; ?>
                     <span class="news-read">

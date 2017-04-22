@@ -15,54 +15,46 @@
 | copyright header is strictly prohibited without
 | written permission from the original author(s).
 +--------------------------------------------------------*/
-if (!defined("IN_FUSION")) {
-	die("Access Denied");
+if (!defined('IN_FUSION')) {
+    die('Access Denied');
 }
 
 define('MATERIAL', THEMES.'admin_themes/Material/');
-require_once INCLUDES."theme_functions_include.php";
-require_once ADMIN."navigation.php";
+require_once INCLUDES.'theme_functions_include.php';
+require_once MATERIAL.'theme_autoloader.php';
 
-spl_autoload_register(function() {
-	require_once MATERIAL.'classes/Dashboard.php';
-	require_once MATERIAL.'classes/Components.php';
-	require_once MATERIAL.'classes/Material.php';
-});
-
-Material::AddTo();
-
-function render_admin_login() {
-	Material::Login();
-}
+\PHPFusion\Admins::getInstance()->setAdminBreadcrumbs();
 
 function render_admin_panel() {
-	Material::AdminPanel();
+    new Material\AdminPanel();
 }
 
-function render_dashboard() {
-	Material::RenderDashboard();
-}
-
-function render_admin_icon() {
-	Material::AdminIcons();
+function render_admin_login() {
+    new Material\Login();
 }
 
 function render_admin_dashboard() {
-	Material::AdminDashboard();
+    Material\Dashboard::AdminDashboard();
 }
 
 function openside($title = FALSE, $class = NULL) {
-	Material::OpenSide($title, $class);
+    Material\Components::OpenSide($title, $class);
 }
 
 function closeside($title = FALSE) {
-	Material::CloseSide($title);
+    Material\Components::CloseSide($title);
 }
 
 function opentable($title, $class = NULL) {
-	Material::OpenTable($title, $class);
+    Material\Components::OpenTable($title, $class);
 }
 
 function closetable() {
-	Material::CloseTable();
+    Material\Components::CloseTable();
 }
+
+function replace_meta($output = '') {
+    return preg_replace("/<meta name='theme-color' content='#ffffff'>/i", '<meta name="theme-color" content="#243447"/>', $output);
+}
+
+add_handler('replace_meta');

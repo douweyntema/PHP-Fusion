@@ -20,7 +20,7 @@ if (!defined("IN_FUSION")) {
 }
 if (!function_exists("render_gallery")) {
     function render_gallery($info) {
-        global $locale;
+        $locale = fusion_get_locale();
         echo render_breadcrumbs();
         opentable($locale['400']);
         if (!empty($info['page_nav'])) {
@@ -29,21 +29,21 @@ if (!function_exists("render_gallery")) {
         if (isset($info['item'])) {
             function render_photoAlbum(array $info = array()) {
                 // add admin edit.
-                global $locale, $gallery_settings;
+                global $gallery_settings;
+                $locale = fusion_get_locale();
                 echo "<div class='panel panel-default'>\n";
                 echo "<div class='panel-heading'>\n";
-                echo "<a title='".$locale['430']."' href='".$info['album_link']['link']."'>\n<strong>".trim_text($info['album_link']['name'],
-                                                                                                                 18)."</strong>\n</a>\n";
+                echo "<a title='".$locale['430']."' href='".$info['album_link']['link']."'>\n<strong>".trim_text($info['album_link']['name'], 18)."</strong>\n</a>\n";
                 echo "</div>\n";
                 echo "<div class='overflow-hide' style='background: #ccc; height: ".($gallery_settings['thumb_h'] - 15)."px'>\n";
                 echo $info['image'];
                 echo "</div>\n";
                 echo "<div class='panel-body'>\n";
-                echo "<span class='album_count'>".$info['photo_rows']." ".($info['photo_rows'] > 1 ? $locale['462'] : $locale['461'])."</span>";
+                echo "<span class='album_count'>".format_word($info['photo_rows'], $locale['461'])."</span>";
                 echo "</div>\n";
                 echo "<div class='panel-footer'>\n";
                 echo "<abbr title='".$locale['464'].showdate("shortdate",
-                                                             $info['album_datestamp'])."'><i class='entypo calendar text-lighter'></i></abbr> ".timer($info['album_datestamp'])."";
+                        $info['album_datestamp'])."'><i class='fa fa-calendar text-lighter'></i></abbr> ".timer($info['album_datestamp'])."";
                 if (!empty($info['album_edit']) && !empty($info['album_delete'])) {
                     echo "</div>\n<div class='panel-footer'>\n";
                     echo "<a class='btn btn-default' href='".$info['album_edit']['link']."' title='".$info['album_edit']['name']."'><i class='fa fa-edit fa-lg'></i></a>\n";
@@ -68,10 +68,11 @@ if (!function_exists("render_gallery")) {
         closetable();
     }
 }
+
 /* Photo Category Page */
 if (!function_exists('render_photo_album')) {
     function render_photo_album($info) {
-        global $locale;
+        $locale = fusion_get_locale();
         echo render_breadcrumbs();
         opentable($locale['430']);
         echo "<!--pre_album_info-->\n";
@@ -94,7 +95,8 @@ if (!function_exists('render_photo_album')) {
         echo "<!--sub_album_info-->";
         $counter = 0;
         function render_photo_items(array $info = array()) {
-            global $locale, $gallery_settings;
+            global $gallery_settings;
+            $locale = fusion_get_locale();
             echo "<div class='panel panel-default'>\n";
             echo "<div class='overflow-hide' style='background: #ccc; height: ".($gallery_settings['thumb_h'] - 15)."px'>\n";
             echo $info['image'];
@@ -118,7 +120,7 @@ if (!function_exists('render_photo_album')) {
             echo "</div>\n";
             echo "<div class='panel-footer'>\n";
             echo "<abbr title='".$locale['464'].showdate("shortdate", $info['photo_datestamp'])."'>
-			<i class='entypo calendar text-lighter'></i></abbr> ".timer($info['photo_datestamp'])."";
+			<i class='fa fa-calendar text-lighter'></i></abbr> ".timer($info['photo_datestamp'])."";
             if (!empty($info['photo_edit']) && !empty($info['photo_delete'])) {
                 echo "</div>\n<div class='panel-footer'>\n";
                 echo "<a class='btn btn-default' href='".$info['photo_edit']['link']."' title='".$info['photo_edit']['name']."'><i class='fa fa-edit fa-lg'></i></a>\n";
@@ -145,9 +147,11 @@ if (!function_exists('render_photo_album')) {
         closetable();
     }
 }
+
 if (!function_exists('render_photo')) {
     function render_photo($info) {
-        global $locale, $userdata;
+        $locale = fusion_get_locale();
+        $userdata = fusion_get_userdata();
         opentable($locale['450']);
         echo render_breadcrumbs();
         echo "<!--pre_photo-->";
@@ -156,24 +160,22 @@ if (!function_exists('render_photo')) {
         echo "</a>\n";
         echo "<div class='clearfix'>\n";
         echo "<div class='btn-group pull-right m-t-20'>\n";
-        echo isset($info['nav']['first']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['first']['link']."' title='".$info['nav']['first']['name']."'><i class='entypo to-start'></i></a>\n" : '';
-        echo isset($info['nav']['prev']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['prev']['link']."' title='".$info['nav']['prev']['name']."'><i class='entypo left-dir'></i></a>\n" : '';
-        echo isset($info['nav']['next']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['next']['link']."' title='".$info['nav']['next']['name']."'><i class='entypo right-dir'></i></a>\n" : '';
-        echo isset($info['nav']['last']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['last']['link']."' title='".$info['nav']['last']['name']."'><i class='entypo to-end'></i></a>\n" : '';
+        echo isset($info['nav']['first']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['first']['link']."' title='".$info['nav']['first']['name']."'><i class='fa fa-angle-double-left'></i></a>\n" : '';
+        echo isset($info['nav']['prev']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['prev']['link']."' title='".$info['nav']['prev']['name']."'><i class='fa fa-angle-left'></i></a>\n" : '';
+        echo isset($info['nav']['next']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['next']['link']."' title='".$info['nav']['next']['name']."'><i class='fa fa-angle-right'></i></a>\n" : '';
+        echo isset($info['nav']['last']) ? "<a class='btn btn-default btn-sm' href='".$info['nav']['last']['link']."' title='".$info['nav']['last']['name']."'><i class='fa fa-angle-double-right'></i></a>\n" : '';
         echo "</div>\n";
         echo "<div class='overflow-hide m-b-20'>\n";
         echo "<h2 class='photo_title'>".$info['photo_title']."</span>\n</h2>\n";
         echo "</div>\n";
-
         if ($info['photo_description']) {
             echo "<span class='photo_description list-group-item'>".$info['photo_description']."</span>";
         }
-
         echo "<div class='list-group-item m-b-20'>\n";
         echo "<div class='row'>\n";
         echo "<div class='col-xs-12 col-sm-6 col-md-6 col-lg-6'>\n";
         echo "<strong>".$locale['434']."</strong>".profile_link($info['user_id'], $info['user_name'], $info['user_status'])."<br/>\n";
-        echo "<strong>".$locale['433']."</strong><abbr title='".showdate("shortdate", $info['photo_datestamp'])."'>".timer(time())."</abbr><br/>";
+        echo "<strong>".$locale['403']."</strong><abbr title='".showdate("shortdate", $info['photo_datestamp'])."'>".timer($info['photo_datestamp'])."</abbr><br/>";
         echo "<strong>".$locale['454']."</strong>".$info['photo_size'][0]." x ".$info['photo_size'][1]." ".$locale['455']."<br/>\n";
         echo "<strong>".$locale['456']."</strong>".$info['photo_byte'];
         echo "</div><div class='col-xs-12 col-sm-6 col-md-6 col-lg-6'>\n";
@@ -183,12 +185,8 @@ if (!function_exists('render_photo')) {
         echo "</div>\n</div>\n";
         echo "</div>\n</div>\n";
         echo "<!--sub_photo-->";
-        if ($info['photo_allow_comments']) {
-            showcomments("P", DB_PHOTOS, "photo_id", $_GET['photo_id'], INFUSIONS."gallery/gallery.php?photo_id=".$_GET['photo_id']);
-        }
-        if ($info['photo_allow_ratings']) {
-            showratings("P", $_GET['photo_id'], INFUSIONS."gallery/gallery.php?photo_id=".$_GET['photo_id']);
-        }
+        echo $info['photo_show_comments'];
+        echo $info['photo_show_ratings'];
         closetable();
     }
 }

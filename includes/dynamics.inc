@@ -2,12 +2,12 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Project File: Dynamics Field Inputs
 | Filename: dynamics.inc
 | Author: Frederick MC Chan (Chan)
-| Version : 9.0
+| Version: 9.0
 +--------------------------------------------------------+
 | This program is released as free software under the
 | Affero GPL license. You can redistribute it and/or
@@ -22,7 +22,7 @@
  * Class Dynamics
  * @package PHPFusion
  */
-class dynamics {
+class Dynamics {
 
     public function __construct() {
 
@@ -39,11 +39,19 @@ class dynamics {
         require_once DYNAMICS."includes/form_colorpicker.php";
         require_once DYNAMICS."includes/form_geomap.php";
         require_once DYNAMICS."includes/form_modal.php";
-        require_once DYNAMICS."includes/form_honeypot.php";
         require_once DYNAMICS."includes/form_checkbox.php";
         require_once DYNAMICS."includes/form_paragraph.php";
         require_once DYNAMICS."includes/form_document.php";
 
+        if (!defined("SELECT2")) {
+            define("SELECT2", TRUE);
+            \PHPFusion\OutputHandler::addToFooter("<script src='".fusion_get_settings('siteurl')."includes/dynamics/assets/select2/select2.min.js'></script>");
+            \PHPFusion\OutputHandler::addToHead("<link href='".DYNAMICS."assets/select2/select2.min.css' rel='stylesheet' />");
+            $select2_locale = fusion_get_locale("select2", LOCALE.LOCALESET."global.php");
+            $select2_locale_path = DYNAMICS."assets/select2/select2_locale_$select2_locale.js";
+            if (!empty($select2_locale) && file_exists($select2_locale_path)) {
+                \PHPFusion\OutputHandler::addToFooter("<script src='$select2_locale_path'></script>");
+            }
+        }
     }
-
 }

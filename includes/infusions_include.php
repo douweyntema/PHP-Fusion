@@ -2,11 +2,10 @@
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
-| http://www.php-fusion.co.uk/
+| https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Filename: infusions_include.php
-| Author: Hans Kristian Flaatten (Starefossen)
-| Co-Author: Robert Gaudyn (Wooya)
+| Author: PHP-Fusion Development Team
 +--------------------------------------------------------+
 | This program is released as free software under the
 | Affero GPL license. You can redistribute it and/or
@@ -33,9 +32,11 @@ if (!function_exists('random_filename')) {
 if (!function_exists('filename_exists')) {
     /**
      * Creates an unique filename if file already exists
-     * @param string $file path of file if basename is empty. Otherwise path of parent directory
-     * @param string $basename The name of file if $file is a directory. Otherwise leave it empty.
+     *
+     * @param string $file       path of file if basename is empty. Otherwise path of parent directory
+     * @param string $basename   The name of file if $file is a directory. Otherwise leave it empty.
      * @param string $dateFormat If you want date in directory path
+     *
      * @return string  New unique filepath
      * @options array -
      *                           $options['dateformat'] d,m,y, php date format constant
@@ -43,10 +44,10 @@ if (!function_exists('filename_exists')) {
      */
     function filename_exists($directory, $file = '', $options = FALSE) {
         $parts = pathinfo($directory.$file) + array(
-                'dirname' => '',
-                'basename' => '',
+                'dirname'   => '',
+                'basename'  => '',
                 'extension' => '',
-                'filename' => ''
+                'filename'  => ''
             );
         if ($parts['extension']) {
             //check if filename starts with dot
@@ -130,16 +131,15 @@ if (!function_exists('get_settings')) {
     }
 }
 
-
 if (!function_exists('send_pm')) {
     /**
      * Send PM to a user or group
      *
-     * @param        $to - Recepient Either group_id or user_id
-     * @param        $from - Sender's user id
-     * @param        $subject - Message subject
-     * @param        $message - Message body
-     * @param string $smileys - use smileys or not
+     * @param        $to       - Recepient Either group_id or user_id
+     * @param        $from     - Sender's user id
+     * @param        $subject  - Message subject
+     * @param        $message  - Message body
+     * @param string $smileys  - use smileys or not
      * @param bool   $to_group - set to true if sending to the entire user group's members
      */
     function send_pm($to, $from, $subject, $message, $smileys = "y", $to_group = FALSE) {
@@ -149,8 +149,10 @@ if (!function_exists('send_pm')) {
 
 // Upload file function
 if (!function_exists('upload_file')) {
+
     function upload_file($source_file, $target_file = "", $target_folder = DOWNLOADS, $valid_ext = ".zip,.rar,.tar,.bz2,.7z", $max_size = "15000", $query = "") {
         global $defender;
+
         if (is_uploaded_file($_FILES[$source_file]['tmp_name'])) {
 
             if (stristr($valid_ext, ',')) {
@@ -169,15 +171,15 @@ if (!function_exists('upload_file')) {
             $file_ext = strtolower(strrchr($file['name'], "."));
             $file_dest = $target_folder;
             $upload_file = array(
-                "source_file" => $source_file,
-                "source_size" => $file['size'],
-                "source_ext" => $file_ext,
-                "target_file" => $target_file.$file_ext,
+                "source_file"   => $source_file,
+                "source_size"   => $file['size'],
+                "source_ext"    => $file_ext,
+                "target_file"   => $target_file.$file_ext,
                 "target_folder" => $target_folder,
-                "valid_ext" => $valid_ext,
-                "max_size" => $max_size,
-                "query" => $query,
-                "error" => 0
+                "valid_ext"     => $valid_ext,
+                "max_size"      => $max_size,
+                "query"         => $query,
+                "error"         => 0
             );
             if ($file['size'] > $max_size) {
                 // Maximum file size exceeded
@@ -185,6 +187,8 @@ if (!function_exists('upload_file')) {
             } elseif (empty($valid_ext) || !in_array($file_ext, $valid_ext)) {
                 // Invalid file extension
                 $upload_file['error'] = 2;
+            } elseif (fusion_get_settings('mime_check') && \Defender\ImageValidation::mime_check($file['tmp_name'], $file_ext, $valid_ext) === FALSE) {
+                $upload_file['error'] = 4;
             } else {
                 $target_file = filename_exists($target_folder, $target_file.$file_ext);
                 $upload_file['target_file'] = $target_file;
@@ -211,10 +215,13 @@ if (!function_exists('upload_file')) {
 
 // Upload image function
 if (!function_exists('upload_image')) {
-    function upload_image($source_image, $target_name = "", $target_folder = IMAGES, $target_width = "1800", $target_height = "1600", $max_size = "150000", $delete_original = FALSE, $thumb1 = TRUE, $thumb2 = TRUE, $thumb1_ratio = 0, $thumb1_folder = IMAGES, $thumb1_suffix = "_t1", $thumb1_width = "100", $thumb1_height = "100", $thumb2_ratio = 0, $thumb2_folder = IMAGES, $thumb2_suffix = "_t2", $thumb2_width = "400", $thumb2_height = "300", $query = "") {
+
+    function upload_image($source_image, $target_name = "", $target_folder = IMAGES, $target_width = "1800", $target_height = "1600", $max_size = "150000", $delete_original = FALSE, $thumb1 = TRUE, $thumb2 = TRUE, $thumb1_ratio = 0, $thumb1_folder = IMAGES, $thumb1_suffix = "_t1", $thumb1_width = "100", $thumb1_height = "100", $thumb2_ratio = 0, $thumb2_folder = IMAGES, $thumb2_suffix = "_t2", $thumb2_width = "400", $thumb2_height = "300", $query = "", array $allowed_extensions = array('.jpg', '.jpeg', '.png', '.png', '.svg', '.gif', '.bmp')) {
+
         if (strlen($target_folder) > 0 && substr($target_folder, -1) !== '/') {
             $target_folder .= '/';
         }
+
         if (is_uploaded_file($_FILES[$source_image]['tmp_name'])) {
             $image = $_FILES[$source_image];
             if ($target_name != "" && !preg_match("/[^a-zA-Z0-9_-]/", $target_name)) {
@@ -224,21 +231,21 @@ if (!function_exists('upload_image')) {
             }
             $image_ext = strtolower(strrchr($image['name'], "."));
             // need to run file_exist. @ supress will not work anymore.
-            if (filesize($image['tmp_name']) > 10 && @getimagesize($image['tmp_name'])) {
+            if ($image['size']) {
                 $image_res = @getimagesize($image['tmp_name']);
                 $image_info = array(
-                    "image" => FALSE,
-                    "image_name" => $image_name.$image_ext,
-                    "image_ext" => $image_ext,
-                    "image_size" => $image['size'],
-                    "image_width" => $image_res[0],
-                    "image_height" => $image_res[1],
-                    "thumb1" => FALSE,
-                    "thumb1_name" => "",
-                    "thumb2" => FALSE,
-                    "thumb2_name" => "",
-                    "error" => 0,
-                    "query" => $query
+                    'image'        => FALSE,
+                    'image_name'   => $image_name.$image_ext,
+                    'image_ext'    => $image_ext,
+                    'image_size'   => $image['size'],
+                    'image_width'  => $image_res[0],
+                    'image_height' => $image_res[1],
+                    'thumb1'       => FALSE,
+                    'thumb1_name'  => '',
+                    'thumb2'       => FALSE,
+                    'thumb2_name'  => '',
+                    'error'        => 0,
+                    'query'        => $query
                 );
                 if ($image_ext == ".gif") {
                     $filetype = 1;
@@ -252,9 +259,12 @@ if (!function_exists('upload_image')) {
                 if ($image['size'] > $max_size) {
                     // Invalid file size
                     $image_info['error'] = 1;
-                } elseif (!$filetype || !verify_image($image['tmp_name'])) {
-                    // Unsupported image type
+                } elseif (!verify_image($image['tmp_name'])) {
+                    // Failed payload scan
                     $image_info['error'] = 2;
+                } elseif (fusion_get_settings('mime_check') && \Defender\ImageValidation::mime_check($image['tmp_name'], $image_ext, $allowed_extensions) === FALSE) {
+                    // Failed extension checks
+                    $image_info['error'] = 5;
                 } elseif ($image_res[0] > $target_width || $image_res[1] > $target_height) {
                     // Invalid image resolution
                     $image_info['error'] = 3;
@@ -281,7 +291,7 @@ if (!function_exists('upload_image')) {
                             if ($image_res[0] <= $thumb1_width && $image_res[1] <= $thumb1_height) {
                                 $noThumb = TRUE;
                                 $image_info['thumb1_name'] = $image_info['image_name'];
-                                $image_info['thumb1'] = TRUE;
+                                $image_info['thumb1'] = FALSE;
                             } else {
                                 if (!file_exists($thumb1_folder)) {
                                     mkdir($thumb1_folder, 0755, TRUE);
@@ -291,7 +301,7 @@ if (!function_exists('upload_image')) {
                                 $image_info['thumb1'] = TRUE;
                                 if ($thumb1_ratio == 0) {
                                     createthumbnail($filetype, $target_folder.$image_name_full, $thumb1_folder.$image_name_t1, $thumb1_width,
-                                                    $thumb1_height);
+                                        $thumb1_height);
                                 } else {
                                     createsquarethumbnail($filetype, $target_folder.$image_name_full, $thumb1_folder.$image_name_t1, $thumb1_width);
                                 }
@@ -301,7 +311,7 @@ if (!function_exists('upload_image')) {
                             if ($image_res[0] < $thumb2_width && $image_res[1] < $thumb2_height) {
                                 $noThumb = TRUE;
                                 $image_info['thumb2_name'] = $image_info['image_name'];
-                                $image_info['thumb2'] = TRUE;
+                                $image_info['thumb2'] = FALSE;
                             } else {
                                 if (!file_exists($thumb2_folder)) {
                                     mkdir($thumb2_folder, 0755, TRUE);
@@ -311,7 +321,7 @@ if (!function_exists('upload_image')) {
                                 $image_info['thumb2'] = TRUE;
                                 if ($thumb2_ratio == 0) {
                                     createthumbnail($filetype, $target_folder.$image_name_full, $thumb2_folder.$image_name_t2, $thumb2_width,
-                                                    $thumb2_height);
+                                        $thumb2_height);
                                 } else {
                                     createsquarethumbnail($filetype, $target_folder.$image_name_full, $thumb2_folder.$image_name_t2, $thumb2_width);
                                 }

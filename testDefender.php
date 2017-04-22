@@ -20,12 +20,139 @@
 
 // Email validation is not working
 // Password validation is not working
-
 require_once "maincore.php";
 require_once THEMES."templates/header.php";
 
-opentable("Testing Inputs with Defender");
+$language = [
+    'English' => 'Category One',
+    'Malay'   => 'Kategori Satu',
+    'Spanish' => 'Categoría Uno',
+    'Arabic'  => 'الفئة أون',
+    'Chinese' => '类别ONe',
+    'Danish'  => 'kategori ett',
+];
+$panel_name = serialize($language);
+print_p($panel_name);
+$panel_name = \PHPFusion\QuantumFields::parse_label($panel_name);
+print_p($panel_name);
 
+echo form_textarea("figure_accessories", 'Accessories', $data['figure_accessories'], [
+    "type"      => 'tinymce',
+    "tinymce"   => fusion_get_settings("tinymce_enabled") && iADMIN ? "advanced" : "simple",
+    "autosize"  => true,
+    "required"  => false,
+    "form_name" => "inputform"
+]);
+
+// Formfield "Description"
+echo form_textarea("figure_description", 'Description', $data['figure_description'], [
+    "type"      => 'tinymce',
+    "tinymce"   => fusion_get_settings("tinymce_enabled") && iADMIN ? "advanced" : "simple",
+    "autosize"  => true,
+    "required"  => false,
+    "form_name" => "inputform"
+]);
+
+
+$country = \PHPFusion\Geomap::getCountryResource();
+//print_p($country);
+foreach ($country as $object) {
+    print_p($object);
+    $currency = \PHPFusion\Geomap::get_Currency($object->currency[0]);
+    print_p($currency);
+}
+
+// Currency List
+$currency = \PHPFusion\Geomap::get_Currency();
+print_p($currency);
+
+
+opentable('MimeCheck');
+echo openform('post', 'post', BASEDIR.'testDefender.php', array('enctype'=>TRUE));
+if (isset($_POST['upload_file'])) {
+    $files = form_sanitizer($_FILES['files_input'], '', 'files_input');
+}
+echo form_fileinput('files_input[]', 'Insert Illegal Files', '', array('type'=>'files', 'max_count'=>3,         "max_byte" => 100000000000000000000500000,
+    'multiple'=>TRUE, 'template'=>'modern', 'upload_path'=>IMAGES.'test/'));
+echo form_button('upload_file', 'Start Upload', 'upload');
+echo closeform();
+closetable();
+
+
+opentable("Cross Site Request Forgery Test");
+$token = '';
+if (isset($_POST['refresh'])) {
+    // initiate hard reset
+    redirect(FUSION_SELF);
+}
+if (isset($_POST['test_token'])) {
+    $token = $_POST['fusion_token'];
+    if (\defender::safe()) {
+        addNotice("success", "Great, token is valid, and we saved your input and enter into our records");
+    }
+} else {
+    if ($token) {
+        addNotice("danger", "Token authentication failed");
+    }
+}
+echo openform('token_form', 'post', FUSION_SELF, ['class' => 'well']);
+
+if (\defender::safe()) {
+    echo(!$token ? "<h4>Step 1: A new token generated.</h4>" : "<h4>Step 2: Logged Token Test (Hacker copying your token)</h4>\n");
+    echo "<hr/>\n";
+    if ($token && \defender::safe()) {
+        echo form_text('fusion_token', 'Last Posted Fusion Token Value', $token);
+        echo form_text('spam_title', 'Title', 'Nike Air with Good Adidas Cushion');
+        echo form_textarea('spam', 'Spam Message', lorem_ipsum(400));
+    }
+    if (!$token) {
+        echo form_text('spam_title', 'Title', '');
+        echo form_textarea('spam_message', 'Description', '', ['bbcode' => TRUE, 'autosize' => TRUE]);
+    }
+
+    echo form_button('test_token', $token ? 'Hackathon it!' : 'Launch Test', '');
+    if ($token && \defender::safe()) {
+        echo "<div class='display-inline-block alert alert-warning m-l-15'>Or maybe even try F5 and see if it repost.</div>\n";
+    }
+} else {
+    echo "<div class='alert alert-danger'>Post Fails... well try F5 reload as well, just in case.</div>\n";
+    echo form_button('refresh', 'Reset Test', '');
+}
+echo closeform();
+closetable();
+
+opentable('Using the multilocale Quantum Fields');
+$weblink_value = '';
+if (isset($_POST['submit_translations'])) {
+    $weblink_value = form_sanitizer($_POST['weblink_description'], '', 'weblink_description', TRUE);
+    if (\defender::safe()) {
+        echo 'Your Value to be saved into SQL is...';
+        print_p($weblink_value);
+        echo 'so in order to display your text... automatically it is';
+        $value = \PHPFusion\QuantumFields::parse_label($weblink_value);
+
+        print_p('Current language to display is '.LANGUAGE);
+        echo $value;
+
+    }
+}
+echo openform('testQuantum', 'post', FUSION_REQUEST);
+echo \PHPFusion\QuantumFields::quantum_multilocale_fields(
+    'weblink_description', 'Weblink Description', $weblink_value,
+    [
+        'textarea' => 1, // text
+        'required' => true,
+        'class' => 'm-t-10',
+    ]
+);
+echo form_button('submit_translations', 'Submit', 'test');
+echo closeform();
+closetable();
+
+
+
+
+opentable("Testing Inputs with Defender");
 add_to_head('<style>.bootstrap-switch-container span, .bootstrap-switch-label {height:auto !important}</style>');
 
 // Test new Send PM to a user - uncomment to test
@@ -211,9 +338,9 @@ print_p($info);
 echo "<div class='well m-10'>But when callback with base64_decode and unserialize</div>\n";
 $info = unserialize(base64_decode($info));
 print_p($info);
-
 closetable();
 
+echo "<h3>fusion_get_user("; ?>$user_id<?php echo ")</h3>\n";
 $performance_test = 0;
 $user = fusion_get_user(1);
 $user = fusion_get_user(2);
@@ -228,7 +355,61 @@ print_p($user);
 print_p(fusion_get_user(3, "user_name"));
 print_p("Only $performance_test queries has been made so far. See above query count and the fetch");
 
+// Test the New Navbar - Create Multiple Sublinks
+$nav = \PHPFusion\SiteLinks::setSubLinks(
+    ['id'=>'FirstNav',
+     'navbar_class'=>'navbar-default',
+     'callback_data' => '',
+     'container' => TRUE,
+     'show_header' => "<a class='navbar-brand' href='".filter_input(INPUT_SERVER, 'REQUEST_URI')."'>First Nav</a>\n"
+    ]);
 
+// This is for Nav 1
+$pages = [
+    'wall' => 'Wall',
+    'profile' => 'Profile',
+    'notifications' => 'Notifications',
+    'messages' => 'Messages',
+    'friends' => 'Friends',
+    'following' => 'Following',
+    'followers' => 'Followers',
+    'groups' => 'Groups'
+];
+foreach($pages as $page_key => $page_name) {
+    $url = clean_request("ref=".$page_key, ['ref'], FALSE);
+    $nav->addMenuLink($page_key, $page_name, 0, $url);
+}
 
+$nav2 = \PHPFusion\SiteLinks::setSubLinks(
+    ['id'=>'SecondNav',
+     'navbar_class'=>'navbar-inverse light',
+     'callback_data' => '',
+     'container' => TRUE,
+     'show_header' => "<a class='navbar-brand' href='".filter_input(INPUT_SERVER, 'REQUEST_URI')."'>Second Nav</a>\n"
+    ]);
+$pages2 = [
+    'store' => 'Store Items',
+    'store_cart' => 'Store Cart',
+    'my_store' => 'My Store',
+    'your_store' => 'Your Store'
+];
+foreach($pages2 as $page_key => $page_name) {
+    $url = clean_request("ref=".$page_key, ['ref'], FALSE);
+    $nav2->addMenuLink($page_key, $page_name, 0, $url);
+}
+
+/*
+ * Test calling out different set of menus in a single file.
+ * Take note of the Instance Key
+ */
+echo "<h3>Navbar Test</h3>";
+echo \PHPFusion\SiteLinks::getInstance('FirstNav')->showSubLinks();
+echo \PHPFusion\SiteLinks::getInstance('SecondNav')->showSubLinks();
+
+$nav2->addMenuLink('alt', 'Last Minute Addition', 0, '#');
+echo $nav2->showSubLinks(); // $nav2 is equivalent to `\PHPFusion\SiteLinks::getInstance();` (Object) and so you can use arrow on it.
+
+$result = dbquery("SELECT settings_name FROM ".DB_SETTINGS);
+print_p(dbresult($result, 3));// outputs the third output
 
 require_once THEMES."templates/footer.php";

@@ -16,6 +16,9 @@
 | written permission from the original author(s).
 +--------------------------------------------------------*/
 namespace PHPFusion\Blog;
+
+use PHPFusion\Feedback\Comments;
+
 if (!defined("IN_FUSION")) {
     die("Access Denied");
 }
@@ -78,7 +81,7 @@ class Functions {
      */
     public static function get_blogCatsData() {
         $data = dbquery_tree_full(DB_BLOG_CATS, 'blog_cat_id', 'blog_cat_parent',
-                                  "".(multilang_table("BL") ? "WHERE blog_cat_language='".LANGUAGE."'" : '')."");
+            "".(multilang_table("BL") ? "WHERE blog_cat_language='".LANGUAGE."'" : '')."");
         foreach ($data as $index => $cat_data) {
             foreach ($cat_data as $blog_cat_id => $cat) {
                 $data[$index][$blog_cat_id]['blog_cat_link'] = "<a href='".INFUSIONS."blog/blog.php?cat_id=".$cat['blog_cat_id']."'>".$cat['blog_cat_name']."</a>";
@@ -165,5 +168,40 @@ class Functions {
         }
 
         return FALSE;
+    }
+
+    public static function get_blog_comments($data) {
+        $html = "";
+        if (fusion_get_settings('comments_enabled') && $data['blog_allow_comments']) {
+            $html = Comments::getInstance(
+                array(
+                    'comment_item_type'     => 'B',
+                    'comment_db'            => DB_BLOG,
+                    'comment_col'           => 'blog_id',
+                    'comment_item_id'       => $data['blog_id'],
+                    'clink'                 => INFUSIONS."blog/blog.php?readmore=".$data['blog_id'],
+                    'comment_count'         => TRUE,
+                    'comment_allow_subject' => FALSE,
+                    'comment_allow_reply'   => TRUE,
+                    'comment_allow_post'    => TRUE,
+                    'comment_once'          => FALSE,
+                    'comment_allow_ratings' => FALSE,
+                ), 'blog_comments'
+            )->showComments();
+        }
+
+        return (string)$html;
+    }
+
+    public static function get_blog_ratings($data) {
+        $html = "";
+        if (fusion_get_settings('ratings_enabled') && $data['blog_allow_ratings']) {
+            ob_start();
+            echo showratings("B", $data['blog_id'], BASEDIR."infusions/blog/blog.php?readmore=".$data['blog_id']);
+            $html = ob_get_contents();
+            ob_end_clean();
+        }
+
+        return (string)$html;
     }
 }

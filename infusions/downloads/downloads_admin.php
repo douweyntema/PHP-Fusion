@@ -19,22 +19,36 @@
 require_once "../../maincore.php";
 pageAccess('D');
 require_once THEMES."templates/admin_header.php";
+use \PHPFusion\BreadCrumbs;
 
-if (file_exists(INFUSIONS."downloads/locale/".LOCALESET."downloads_admin.php")) {
-    $locale = fusion_get_locale("", INFUSIONS."downloads/locale/".LOCALESET."downloads_admin.php");
-} else {
-    $locale = fusion_get_locale("", INFUSIONS."downloads/locale/English/downloads_admin.php");
-}
-if (file_exists(LOCALE.LOCALESET."admin/settings.php")) {
-    $locale = fusion_get_locale("", LOCALE.LOCALESET."admin/settings.php");
-} else {
-    $locale = fusion_get_locale("", LOCALE."English/admin/settings.php");
-}
+$downloads_locale = (file_exists(DOWNLOADS."locale/".LOCALESET."downloads_admin.php")) ? DOWNLOADS."locale/".LOCALESET."downloads_admin.php" : DOWNLOADS."locale/English/downloads_admin.php";
+$settings_locale = file_exists(LOCALE.LOCALESET."admin/settings.php") ? LOCALE.LOCALESET."admin/settings.php" : LOCALE."English/admin/settings.php";
+$locale = fusion_get_locale('', [$downloads_locale, $settings_locale]);
+$aidlink = fusion_get_aidlink();
 
 require_once INCLUDES."infusions_include.php";
-$dl_settings = get_settings("downloads");
-add_breadcrumb(array('link' => FUSION_SELF.$aidlink, 'title' => $locale['download_0001']));
 
+$dl_settings = get_settings("downloads");
+BreadCrumbs::getInstance()->addBreadCrumb(['link' => DOWNLOADS."downloads_admin.php".$aidlink, 'title' => $locale['download_0001']]);
+add_to_title($locale['download_0001']);
+if (!empty($_GET['section'])){
+	switch ($_GET['section']) {
+    	case "download_form":
+        	BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' =>$locale['download_0002']]);
+	        break;
+    	case "download_category":
+        	BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => $locale['download_0022']]);
+	        break;
+    	case "download_settings":
+        	BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => $locale['download_0006']]);
+	        break;
+    	case "submissions":
+        	BreadCrumbs::getInstance()->addBreadCrumb(["link" => FUSION_REQUEST, "title" => $locale['download_0049']]);
+	        break;
+    	default:
+        	break;
+	}
+}
 $allowed_section = array("downloads", "download_form", "download_settings", "download_category", "submissions");
 $_GET['section'] = isset($_GET['section']) && in_array($_GET['section'], $allowed_section) ? $_GET['section'] : 'downloads';
 $_GET['download_cat_id'] = isset($_GET['download_cat_id']) && isnum($_GET['download_cat_id']) ? $_GET['download_cat_id'] : 0;
@@ -44,49 +58,45 @@ $catEdit = isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['c
 // master template
 $master_tab_title['title'][] = $locale['download_0000'];
 $master_tab_title['id'][] = "downloads";
-$master_tab_title['icon'][] = "";
+$master_tab_title['icon'][] = "fa fa-cloud-download";
 
 $master_tab_title['title'][] = $edit ? $locale['download_0003'] : $locale['download_0002'];
 $master_tab_title['id'][] = "download_form";
-$master_tab_title['icon'][] = "";
+$master_tab_title['icon'][] = $edit ? "fa fa-pencil" : "fa fa-plus";
 
 $master_tab_title['title'][] = $catEdit ? $locale['download_0021'] : $locale['download_0022'];
 $master_tab_title['id'][] = "download_category";
-$master_tab_title['icon'][] = "";
+$master_tab_title['icon'][] = $catEdit ? "fa fa-pencil" : "fa fa-folder";
 
-$master_tab_title['title'][] = $locale['download_settings'];
-$master_tab_title['id'][] = "download_settings";
-$master_tab_title['icon'][] = "";
-
-$master_tab_title['title'][] = $locale['download_0049'];
+$master_tab_title['title'][] = $locale['download_0049']."&nbsp;<span class='badge'>".dbcount("(submit_id)", DB_SUBMISSIONS, "submit_type='d'")."</span>";
 $master_tab_title['id'][] = "submissions";
-$master_tab_title['icon'][] = "";
+$master_tab_title['icon'][] = "fa fa-inbox";
+
+$master_tab_title['title'][] = $locale['download_0006'];
+$master_tab_title['id'][] = "download_settings";
+$master_tab_title['icon'][] = "fa fa-cogs";
 
 opentable($locale['download_0001']);
 echo opentab($master_tab_title, $_GET['section'], "download_admin", TRUE);
 switch ($_GET['section']) {
-    case "download_category":
-        add_breadcrumb(array('link' => ADMIN."download_cats.php".$aidlink, 'title' => $locale['download_0001']));
-        include "admin/download_cats.php";
-        break;
-    case "download_settings":
-        add_breadcrumb(array('link' => '', 'title' => $locale['download_settings']));
-        include "admin/download_settings.php";
-        break;
-    case "submissions":
-        add_breadcrumb(array("link" => "", "title" => $locale['download_0049']));
-        include "admin/download_submissions.php";
-        break;
     case "download_form":
-        add_breadcrumb(array('link' => '', 'title' => $edit ? $locale['download_0003'] : $locale['download_0002']));
         if (dbcount("('download_cat_id')", DB_DOWNLOAD_CATS, "")) {
             include "admin/downloads.php";
         } else {
             echo "<div class='well text-center'>\n";
-            echo "".$locale['download_0251']."<br />\n".$locale['download_0252']."<br />\n";
+            echo $locale['download_0251']."<br />\n".$locale['download_0252']."<br />\n";
             echo "<a href='".INFUSIONS."downloads/downloads_admin.php".$aidlink."&amp;section=download_category'>".$locale['download_0253']."</a>".$locale['download_0254'];
             echo "</div>\n";
         }
+        break;
+    case "download_category":
+        include "admin/download_cats.php";
+        break;
+    case "download_settings":
+        include "admin/download_settings.php";
+        break;
+    case "submissions":
+        include "admin/download_submissions.php";
         break;
     default:
         download_listing();
@@ -142,15 +152,14 @@ function download_listing() {
     echo "<span class='pull-right m-t-10'>".sprintf($locale['download_0005'], $rows, $total_rows)."</span>\n";
 
     if (!empty($catOpts) > 0 && $total_rows > 0) {
-        echo "<div class='pull-left m-t-5 m-r-10'>".$locale['download_0010']."</div>\n";
-        echo "<div class='dropdown pull-left m-r-10' style='position:relative'>\n";
-        echo "<a class='dropdown-toggle btn btn-default btn-sm' style='width: 200px;' data-toggle='dropdown'>\n<strong>\n";
+        echo "<div class='dropdown'>\n";
+        echo "<a class='btn btn-default dropdown-toggle ' style='width: 200px;' data-toggle='dropdown'>\n";
         if (isset($_GET['filter_cid']) && isset($catOpts[$_GET['filter_cid']])) {
             echo $catOpts[$_GET['filter_cid']];
         } else {
             echo $locale['download_0011'];
         }
-        echo " <span class='caret'></span></strong>\n</a>\n";
+        echo " <span class='caret'></span></a>\n";
         echo "<ul class='dropdown-menu' style='max-height:180px; width:200px; overflow-y: auto'>\n";
         foreach ($catOpts as $catID => $catName) {
             $active = isset($_GET['filter_cid']) && $_GET['filter_cid'] == $catID ? TRUE : FALSE;
@@ -168,7 +177,7 @@ function download_listing() {
     }
     echo "</div>\n";
 
-    echo "<ul class='list-group m-10'>\n";
+    echo "<ul class='list-group spacer-xs block'>\n";
     if ($rows > 0) {
         while ($data2 = dbarray($result)) {
             $download_url = '';

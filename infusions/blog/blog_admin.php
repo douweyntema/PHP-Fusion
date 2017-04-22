@@ -19,22 +19,36 @@ require_once "../../maincore.php";
 pageAccess('BLOG');
 require_once THEMES."templates/admin_header.php";
 
-if (file_exists(INFUSIONS."blog/locale/".LOCALESET."blog_admin.php")) {
-    include INFUSIONS."blog/locale/".LOCALESET."blog_admin.php";
-} else {
-    include INFUSIONS."blog/locale/English/blog_admin.php";
-}
-
-if (file_exists(LOCALE.LOCALESET."admin/settings.php")) {
-    include LOCALE.LOCALESET."admin/settings.php";
-} else {
-    include LOCALE."English/admin/settings.php";
-}
+$locale = fusion_get_locale('', [
+                                LOCALE.LOCALESET."admin/settings.php",
+                                INFUSIONS."blog/locale/".LOCALESET."blog_admin.php"
+                            ]);
 
 require_once INFUSIONS."blog/classes/Functions.php";
 require_once INCLUDES."infusions_include.php";
 $blog_settings = get_settings("blog");
-add_breadcrumb(array('link' => INFUSIONS.'blog/blog_admin.php'.$aidlink, 'title' => $locale['blog_0405']));
+$aidlink = fusion_get_aidlink();
+ 
+\PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => INFUSIONS.'blog/blog_admin.php'.fusion_get_aidlink(), 'title' => $locale['blog_0405']]);
+add_to_title($locale['blog_0405']);
+if (!empty($_GET['section'])){
+	switch ($_GET['section']) {
+	    case "blog_form":
+	        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => $locale['blog_0401']]);
+	        break;
+	    case "blog_category":
+	        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => $locale['blog_0502']]);
+	        break;
+	    case "settings":
+	        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => $locale['blog_0406']]);
+	        break;
+	    case "submissions":
+	        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(["link" => FUSION_REQUEST, "title" => $locale['blog_0600']]);
+	        break;
+	    default:
+	}
+}
+
 if (isset($_POST['cancel'])) {
     redirect(FUSION_SELF.$aidlink);
 }
@@ -68,33 +82,31 @@ $_GET['section'] = isset($_GET['section']) && in_array($_GET['section'], $allowe
 $edit = (isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['blog_id']) && isnum($_GET['blog_id'])) ? TRUE : FALSE;
 $master_title['title'][] = $locale['blog_0400'];
 $master_title['id'][] = 'blog';
-$master_title['icon'] = '';
+$master_title['icon'][] = 'fa fa-graduation-cap';
 $master_title['title'][] = $edit ? $locale['blog_0402'] : $locale['blog_0401'];
 $master_title['id'][] = 'blog_form';
-$master_title['icon'] = '';
+$master_title['icon'][] = 'fa fa-plus';
 $master_title['title'][] = $locale['blog_0502'];
 $master_title['id'][] = 'blog_category';
-$master_title['icon'] = '';
+$master_title['icon'][] = 'fa fa-folder';
+$master_title['title'][] = $locale['blog_0600']."&nbsp;<span class='badge'>".dbcount("(submit_id)", DB_SUBMISSIONS, "submit_type='b'")."</span>";
+$master_title['id'][] = 'submissions';
+$master_title['icon'][] = 'fa fa-fw fa-inbox';
 $master_title['title'][] = $locale['blog_0406'];
 $master_title['id'][] = 'settings';
-$master_title['icon'] = '';
-$master_title['title'][] = $locale['blog_0600'];
-$master_title['id'][] = 'submissions';
-$master_title['icon'] = '';
+$master_title['icon'][] = 'fa fa-cogs';
 $tab_active = $_GET['section'];
 opentable($locale['blog_0405']);
-echo opentab($master_title, $tab_active, 'blog', 1);
+echo opentab($master_title, $tab_active, 'blog', TRUE);
 switch ($_GET['section']) {
+    case "blog_form":
+        include "admin/blog.php";
+        break;
     case "blog_category":
         include "admin/blog_cat.php";
         break;
     case "settings":
-        add_breadcrumb(array('link' => "", 'title' => $locale['blog_settings']));
         include "admin/blog_settings.php";
-        break;
-    case "blog_form":
-        add_breadcrumb(array('link' => '', 'title' => $edit ? $locale['blog_0402'] : $locale['blog_0401']));
-        include "admin/blog.php";
         break;
     case "submissions":
         include "admin/blog_submissions.php";
@@ -109,7 +121,8 @@ require_once THEMES."templates/footer.php";
  * Blog Listing HTML
  */
 function blog_listing() {
-    global $aidlink, $locale;
+    $locale = fusion_get_locale();
+    $aidlink = fusion_get_aidlink();
     // Remodel display results into straight view instead category container sorting.
     // consistently monitor sql results rendertime. -- Do not Surpass 0.15
     // all blog are uncategorized by default unless specified.
@@ -219,7 +232,8 @@ function blog_listing() {
             $blogText = strip_tags(parse_textarea($data2['blog_blog']));
             echo fusion_first_words($blogText, '50');
             echo "<div class='block m-t-10'><a href='".FUSION_SELF.$aidlink."&amp;action=edit&amp;section=blog_form&amp;blog_id=".$data2['blog_id']."'>".$locale['blog_0420']."</a> -\n";
-            echo "<a href='".FUSION_SELF.$aidlink."&amp;action=delete&amp;section=blog_form&amp;blog_id=".$data2['blog_id']."' onclick=\"return confirm('".$locale['blog_0451']."');\">".$locale['blog_0421']."</a>\n";
+            echo "<a href='".FUSION_SELF.$aidlink."&amp;action=delete&amp;section=blog_form&amp;blog_id=".$data2['blog_id']."' onclick=\"return confirm('".$locale['blog_0451']."');\">".$locale['blog_0421']."</a> -\n";
+            echo "<a target='_blank' href='".INFUSIONS."blog/blog.php?blog_id=".$data2['blog_id']."'>".$locale['view']."</a>\n";
             echo "</div>\n</div>\n";
             echo "</li>\n";
         }

@@ -186,9 +186,9 @@ class Admin extends ForumServer {
 
         // then we make a infinity recursive function to loop/break it out.
         $crumb = breadcrumb_arrays($this->forum_index, $_GET['parent_id']);
-        add_breadcrumb(array('link' => FUSION_SELF.$aidlink, 'title' => $locale['forum_000c']));
+        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_SELF.$aidlink, 'title' => $locale['forum_root']]);
         for ($i = count($crumb['title']) - 1; $i >= 0; $i--) {
-            add_breadcrumb(array('link' => $crumb['link'][$i], 'title' => $crumb['title'][$i]));
+            \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => $crumb['link'][$i], 'title' => $crumb['title'][$i]]);
         }
 
         return $crumb;
@@ -815,7 +815,7 @@ class Admin extends ForumServer {
         $forum_settings = get_settings('forum');
         $language_opts = fusion_get_enabled_languages();
 
-        add_breadcrumb(array('link' => '', 'title' => $locale['forum_001']));
+        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => $locale['forum_001']]);
         if (!isset($_GET['action']) && $_GET['parent_id']) {
             $data['forum_cat'] = $_GET['parent_id'];
         }
@@ -1015,7 +1015,7 @@ class Admin extends ForumServer {
             'forum_id' => !empty($data['forum_id']) && isnum($data['forum_id']) ? $data['forum_id'] : 0,
             'forum_type' => !empty($data['forum_type']) ? $data['forum_type'] : '', // redirect if not exist? no..
         );
-        add_breadcrumb(array('link' => '', 'title' => $locale['forum_030']));
+        \PHPFusion\BreadCrumbs::getInstance()->addBreadCrumb(['link' => FUSION_REQUEST, 'title' => $locale['forum_030']]);
         opentable($locale['forum_030']);
         $_access = getusergroups();
         $access_opts['0'] = $locale['531'];
@@ -1176,7 +1176,7 @@ class Admin extends ForumServer {
 
         $forum_settings = get_settings('forum');
 
-        $title = !empty($this->level['title']) ? sprintf($locale['forum_000b'], $this->level['title'][0]) : $locale['forum_000c'];
+        $title = !empty($this->level['title']) ? sprintf($locale['forum_000b'], $this->level['title'][0]) : $locale['forum_root'];
         add_to_title(" ".$title);
 
         opentable($title);
@@ -1209,11 +1209,11 @@ class Admin extends ForumServer {
             );
 
             $ui_label = array(
-                "move_up" => $has_entypo ? "<i class='entypo up-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-arrow-up fa-lg m-r-10'></i>" : $locale['forum_046'],
-                "move_down" => $has_entypo ? "<i class='entypo down-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-arrow-down fa-lg m-r-10'></i>" : $locale['forum_045'],
-                "edit_permission" => $has_entypo ? "<i class='entypo key m-r-10'></i>" : $has_fa ? "<i class='fa fa-eye fa-lg m-r-10'></i>" : $locale['forum_047'],
-                "edit" => $has_entypo ? "<i class='entypo cog m-r-10'></i>" : $has_fa ? "<i class='fa fa-cog fa-lg m-r-10'></i>" : $locale['forum_048'],
-                "delete" => $has_entypo ? "<i class='entypo icancel m-r-10'></i>" : $has_fa ? "<i class='fa fa-trash-o fa-lg m-r-10'></i>" : $locale['forum_049'],
+                "move_up"         => $has_entypo ? "<i class='entypo up-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-arrow-up fa-lg m-r-10'></i>" : $locale['forum_046'],
+                "move_down"       => $has_entypo ? "<i class='entypo down-bold m-r-10'></i>" : $has_fa ? "<i class='fa fa-arrow-down fa-lg m-r-10'></i>" : $locale['forum_045'],
+                "edit_permission" => $has_entypo ? "<i class='entypo key m-r-10'></i>" : $has_fa ? "<i class='fa fa-eye fa-lg m-r-10'></i>" : $locale['forum_029'],
+                "edit"            => $has_entypo ? "<i class='entypo cog m-r-10'></i>" : $has_fa ? "<i class='fa fa-cog fa-lg m-r-10'></i>" : $locale['forum_002'],
+                "delete"          => $has_entypo ? "<i class='entypo icancel m-r-10'></i>" : $has_fa ? "<i class='fa fa-trash-o fa-lg m-r-10'></i>" : $locale['forum_049'],
             );
 
             $i = 1;
@@ -1242,8 +1242,8 @@ class Admin extends ForumServer {
 
                 echo ($i == 1) ? '' : "<a title='".$locale['forum_046']."' href='".$upLink."'>".$ui_label['move_up']."</a>";
                 echo ($i == $rows) ? '' : "<a title='".$locale['forum_045']."' href='".$downLink."'>".$ui_label['move_down']."</a>";
-                echo "<a title='".$locale['forum_047']."' href='".FUSION_SELF.$aidlink."&amp;action=p_edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit_permission']."</a>"; // edit
-                echo "<a title='".$locale['forum_048']."' href='".FUSION_SELF.$aidlink."&amp;action=edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit']."</a>"; // edit
+                echo "<a title='".$locale['forum_029']."' href='".FUSION_SELF.$aidlink."&amp;action=p_edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit_permission']."</a>"; // edit
+                echo "<a title='".$locale['forum_002']."' href='".FUSION_SELF.$aidlink."&amp;action=edit&forum_id=".$data['forum_id']."&amp;parent_id=".$_GET['parent_id']."'>".$ui_label['edit']."</a>"; // edit
                 echo "<a title='".$locale['forum_049']."' href='".FUSION_SELF.$aidlink."&amp;action=delete&amp;forum_id=".$data['forum_id']."&amp;forum_cat=".$data['forum_cat']."&amp;forum_branch=".$data['forum_branch'].$this->ext."' onclick=\"return confirm('".$locale['delete_notice']."');\">".$ui_label['delete']."</a>"; // delete
                 echo "</div>\n";
                 echo "<span class='text-dark text-smaller strong'>".$locale['forum_057']." ".number_format($data['forum_threadcount'])." / ".$locale['forum_059']." ".number_format($data['forum_postcount'])." </span>\n<br/>";

@@ -1,10 +1,9 @@
 <?php
-
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
 | Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
-+--------------------------------------------------------*
++--------------------------------------------------------+
 | Filename: Panel/panel.php
 | Author: Frederick MC Chan (Chan)
 +--------------------------------------------------------+
@@ -18,6 +17,12 @@
 +--------------------------------------------------------*/
 
 class panelWidget extends \PHPFusion\Page\PageModel implements \PHPFusion\Page\WidgetInterface {
+
+    public function display_info($colData) {
+        $panelData = \defender::unserialize($colData['page_content']);
+
+        return fusion_get_locale('PW_0222', WIDGETS."panel/locale/".LANGUAGE.".php").": ".$panelData['panel_include'];
+    }
 
     public function display_widget($colData) {
         $panelData = \defender::unserialize($colData['page_content']);

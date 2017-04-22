@@ -1,7 +1,7 @@
 <?php
 /*-------------------------------------------------------+
 | PHP-Fusion Content Management System
-| Copyright (C) 2002 - 2016 PHP-Fusion Inc.
+| Copyright (C) PHP-Fusion Inc
 | https://www.php-fusion.co.uk/
 +--------------------------------------------------------+
 | Name: Septenary Theme
@@ -80,6 +80,7 @@ class SeptenaryTheme extends SeptenaryComponents {
             echo "</div>\n";
         }
         echo "<div class='".self::col_span()." main-content'>\n";
+        echo showbanners(1);
         // Get all notices, we also include notices that are meant to be displayed on all pages
         echo renderNotices(getNotices(array('all', FUSION_SELF)));
         echo $this->upper_html.U_CENTER;
@@ -87,6 +88,7 @@ class SeptenaryTheme extends SeptenaryComponents {
         echo $this->lower_html.L_CENTER;
         echo "</div>\n";
         echo (!empty(BL_CENTER) || $this->bottom_html) ? "<div class='bl-content'>".$this->bottom_html.BL_CENTER."</div>\n" : '';
+        echo showbanners(2);
         echo "</div>\n";
         $this->close_grid(1);
     }
