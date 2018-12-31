@@ -26,10 +26,10 @@ $locale['433'] = "[CONCEPT]";
 // Popup Error/Warning Messages
 $locale['450'] = "Geeft u a.u.b. een onderwerp op";
 $locale['451'] = "Dit artikel verwijderen?";
-$locale['452'] = "Er zijn nog geen artikelcategorieën aangemaakt";
-$locale['453'] = "U dient ten minste één categorie aan te maken voordat u artikelen kunt toevoegen";
+$locale['452'] = "Er zijn nog geen artikelcategorie&euml;n aangemaakt";
+$locale['453'] = "U dient ten minste &eacute;&eacute;n categorie aan te maken voordat u artikelen kunt toevoegen";
 $locale['454'] = "Klik hier";
-$locale['455'] = " om naar Artikel Categorieën te gaan";
+$locale['455'] = " om naar Artikel Categorie&euml;n te gaan";
 $locale['456'] = "%s zijn uitgeschakeld voor alle onderdelen.<br />Deze instelling is alleen van kracht wanneer ze weer ingeschakeld worden.";
 $locale['457'] = "Commentaren";
 $locale['458'] = "Beoordelingen";

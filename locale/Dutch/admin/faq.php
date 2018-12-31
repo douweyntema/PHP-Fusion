@@ -31,7 +31,7 @@ $locale['541'] = "Opties";
 $locale['542'] = "Wijzigen";
 $locale['543'] = "Verwijderen";
 $locale['544'] = "Er zijn nog geen FAQ&rsquo;s toegevoegd.";
-$locale['545'] = "Er zijn nog geen FAQ-categorieën aangemaakt.";
+$locale['545'] = "Er zijn nog geen FAQ-categorie&euml;n aangemaakt.";
 $locale['546'] = "Deze FAQ-categorie verwijderen?";
 $locale['547'] = "Deze FAQ verwijderen?";
 // Error Messages

@@ -3,7 +3,7 @@
 $locale['u040'] = "Datum van aanmelding";
 $locale['u041'] = "Laatste bezoek";
 $locale['u042'] = "Nooit bezocht";
-$locale['u043'] = "Stuur een privé bericht";
+$locale['u043'] = "Stuur een priv&eacute; bericht";
 $locale['u044'] = "Contactgegevens";
 $locale['u045'] = "Diverse gegevens";
 $locale['u046'] = "Opties";
@@ -142,7 +142,7 @@ $locale['u195'] = "Captcha code kan niet leeg worden gelaten.";
 // E-mail Change Confirmation
 $locale['u200'] = "Een controle e-mail is verzonden naar uw nieuwe e-mailadres (%s).";
 $locale['u201'] = "Uw E-mail adres zal worden gewijzigd wanneer u op de link in de mail klikt.";
-$locale['u202'] = "E-mail adres verifiëren - ".$settings['sitename'];
+$locale['u202'] = "E-mail adres verifi&euml;ren - ".$settings['sitename'];
 $locale['u203'] = "Hallo [USER_NAME],\n
 Iemand heeft dit dit E-mail adres op zijn account ingesteld op onze site.\n
 Als U echt wilt dat uw E-mail adres word gewijzigd in deze, klikt u dan op de volgende link:\n

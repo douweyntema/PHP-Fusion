@@ -2,7 +2,7 @@
 // Web Link Category titles
 $locale['400'] = "Weblinkcategorie";
 $locale['401'] = "Weblinkcategorie wijzigen";
-$locale['402'] = "Bestaande weblinkcategorieën";
+$locale['402'] = "Bestaande weblinkcategorie&euml;n";
 // Web Link Category messages
 $locale['410'] = "Weblinkcategorie toegevoegd";
 $locale['411'] = "Weblinkcategorie gewijzigd";
@@ -50,11 +50,11 @@ $locale['532'] = "Opties";
 $locale['533'] = "Wijzigen";
 $locale['534'] = "Verwijderen";
 $locale['535'] = "Er zijn nog geen weblinks aan deze categorie toegevoegd";
-$locale['536'] = "Nog geen weblinkcategorieën aangemaakt";
-$locale['537'] = "Er zijn nog geen weblinkcategorieën aangemaakt";
+$locale['536'] = "Nog geen weblinkcategorie&euml;n aangemaakt";
+$locale['537'] = "Er zijn nog geen weblinkcategorie&euml;n aangemaakt";
 $locale['538'] = "U dient tenminste een categorie aan te maken voordat u weblinks kunt toevoegen";
 $locale['539'] = "Klik hier";
-$locale['540'] = " om naar weblinkcategorieën te gaan";
+$locale['540'] = " om naar weblinkcategorie&euml;n te gaan";
 // Delete Web Link
 $locale['550'] = "Deze weblink verwijderen?";
 ?>

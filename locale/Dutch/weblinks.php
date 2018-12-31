@@ -5,6 +5,6 @@ $locale['410'] = "[NIEUW]";
 $locale['411'] = "Datum toegevoegd:";
 $locale['412'] = "Bezoeken:";
 // Downloads Notices
-$locale['430'] = "Er zijn nog geen weblinkcategorieën aangemaakt";
+$locale['430'] = "Er zijn nog geen weblinkcategorie&euml;n aangemaakt";
 $locale['431'] = "Er zijn nog geen weblinks aan deze Categorie toegevoegd.";
 ?>

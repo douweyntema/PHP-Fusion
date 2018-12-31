@@ -32,5 +32,5 @@ $locale['461'] = "Onderwerp";
 $locale['462'] = "Auteur";
 $locale['463'] = "Geplaatst";
 $locale['464'] = "Geen overeenkomsten gevonden. Probeer het nogmaals.";
-$locale['465'] = "Geef tenminste één woord op om naar te zoeken.";
+$locale['465'] = "Geef tenminste &eacute;&eacute;n woord op om naar te zoeken.";
 ?>

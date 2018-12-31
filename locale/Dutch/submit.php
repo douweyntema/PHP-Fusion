@@ -42,7 +42,7 @@ $locale['526'] = "Artikel bekijken";
 $locale['527'] = "Artikel inzenden";
 // Submit Error
 $locale['550'] = "Vult u het formulier a.u.b. volledig in.";
-$locale['551'] = "Er zijn nog geen categorieën aangemaakt.";
+$locale['551'] = "Er zijn nog geen categorie&euml;n aangemaakt.";
 $locale['552'] = "Er zijn geen albums gedefinieerd.";
 // Submit Photo
 $locale['570'] = "Foto inzenden";

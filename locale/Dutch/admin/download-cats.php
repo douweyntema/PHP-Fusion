@@ -2,7 +2,7 @@
 // Download Category titles
 $locale['400'] = "Downloadcategorie wijzigen";
 $locale['401'] = "Downloadcategorie toevoegen";
-$locale['402'] = "Bestaande downloadcategorieën";
+$locale['402'] = "Bestaande downloadcategorie&euml;n";
 // Download Category messages
 $locale['410'] = "Downloadcategorie toegevoegd";
 $locale['411'] = "Downloadcategorie gewijzigd";
@@ -26,7 +26,7 @@ $locale['441'] = "Toegang";
 $locale['442'] = "Opties";
 $locale['443'] = "Wijzigen";
 $locale['444'] = "Verwijderen";
-$locale['445'] = "Er zijn nog geen downloadcategorieën aangemaakt";
+$locale['445'] = "Er zijn nog geen downloadcategorie&euml;n aangemaakt";
 // Delete Download Category
 $locale['450'] = "Deze downloadcategorie verwijderen?";
 // Error Messages

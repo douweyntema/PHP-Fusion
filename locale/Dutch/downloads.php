@@ -24,7 +24,7 @@ $locale['428'] = "Info";
 $locale['429'] = "Download Statistieken";
 $locale['429a'] = "Niet Beschikbaar";
 // Downloads Notices
-$locale['430'] = "Er zijn nog geen downloadcategorieën aangemaakt";
+$locale['430'] = "Er zijn nog geen downloadcategorie&euml;n aangemaakt";
 $locale['431'] = "Er zijn nog geen downloads aan deze categorie toegevoegd";
 // Statistics
 $locale['440'] = "Gedownload:";

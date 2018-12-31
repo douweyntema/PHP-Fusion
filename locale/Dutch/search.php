@@ -2,7 +2,7 @@
 $locale['400'] = "Doorzoek ".$settings['siteusername'];
 $locale['401'] = "Zoek naar:";
 $locale['402'] = "Zoek";
-$locale['403'] = "zoek naar één van deze woorden";
+$locale['403'] = "zoek naar &eacute;&eacute;n van deze woorden";
 $locale['404'] = "resultaten dienen al deze woorden te bevatten";
 $locale['405'] = "Waar:";
 $locale['406'] = "Opties:";

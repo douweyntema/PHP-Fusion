@@ -8,7 +8,7 @@ $locale['403'] = "Rangensysteem uitgeschakeld";
 $locale['410'] = "Rang toegevoegd";
 $locale['411'] = "Rang gewijzigd";
 $locale['412'] = "Rang verwijderd";
-$locale['413'] = "Er kan slechts één rang worden toegewezen aan beheerders en moderatoren";
+$locale['413'] = "Er kan slechts &eacute;&eacute;n rang worden toegewezen aan beheerders en moderatoren";
 $locale['414'] = "Geef een Rank titel";
 // Forum Ranks form
 $locale['420'] = "Titel van rang:";

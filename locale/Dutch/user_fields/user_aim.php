@@ -1,5 +1,5 @@
 <?php
-$locale['uf_aim'] = "AIM ID";
-$locale['uf_aim_desc'] = "AOL Instant Messenger";
-$locale['uf_aim_error'] = "AIM ID kan niet leeg worden gelaten.";
+$locale['uf_aim'] = "Naam";
+$locale['uf_aim_desc'] = "Volledige naam";
+$locale['uf_aim_error'] = "Naam kan niet leeg worden gelaten.";
 ?>

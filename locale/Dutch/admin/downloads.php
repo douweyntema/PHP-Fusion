@@ -48,10 +48,10 @@ $locale['442'] = "Wijzigen";
 $locale['443'] = "Verwijderen";
 // No Downloads/Download Categories Defined
 $locale['450'] = "Er zijn nog geen downloads in deze categorie opgenomen";
-$locale['451'] = "Er zijn nog geen downloadcategorieën aangemaakt";
-$locale['452'] = "U dient tenminste één downloadcategorie aan te maken voordat u downloads kunt toevoegen";
+$locale['451'] = "Er zijn nog geen downloadcategorie&euml;n aangemaakt";
+$locale['452'] = "U dient tenminste &eacute;&eacute;n downloadcategorie aan te maken voordat u downloads kunt toevoegen";
 $locale['453'] = "Klik hier";
-$locale['454'] = " om naar Download Categorieën te gaan";
+$locale['454'] = " om naar Download Categorie&euml;n te gaan";
 // Popup Error/Warning Messages
 $locale['460'] = "Deze download verwijderen?";
 $locale['461'] = "%s zijn uitgeschakeld voor alle items.<br />Deze instelling is alleen van kracht wanneer ze weer ingeschakeld worden.";

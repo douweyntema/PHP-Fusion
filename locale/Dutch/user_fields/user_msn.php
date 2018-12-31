@@ -1,5 +1,5 @@
 <?php
-$locale['uf_msn'] = "MSN";
-$locale['uf_msn_desc'] = "MSN Messenger";
-$locale['uf_msn_error'] = "MSN kan niet leeg gelaten worden.";
+$locale['uf_msn'] = "Postcode";
+$locale['uf_msn_desc'] = "Postcode";
+$locale['uf_msn_error'] = "Postcode kan niet leeg gelaten worden.";
 ?>

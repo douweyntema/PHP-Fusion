@@ -2,7 +2,7 @@
 // Category titles
 $locale['400'] = "Artikelcategorie toevoegen";
 $locale['401'] = "Artikelcategorie wijzigen";
-$locale['402'] = "Bestaande artikelcategorieën";
+$locale['402'] = "Bestaande artikelcategorie&euml;n";
 // Category messages
 $locale['410'] = "Artikelcategorie toegevoegd";
 $locale['411'] = "Artikelcategorie gewijzigd";
@@ -26,7 +26,7 @@ $locale['441'] = "Toegang";
 $locale['442'] = "Opties";
 $locale['443'] = "Wijzigen";
 $locale['444'] = "Verwijderen";
-$locale['445'] = "Er zijn nog geen artikelcategorieën aangemaakt";
+$locale['445'] = "Er zijn nog geen artikelcategorie&euml;n aangemaakt";
 // Delete Article category
 $locale['450'] = "Deze artikelcategorie verwijderen?";
 // Error Messages

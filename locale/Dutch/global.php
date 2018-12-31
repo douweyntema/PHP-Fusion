@@ -10,8 +10,8 @@ Nederlandstalige support site: http://www.phpfusion-nederlands.info
 // Locale Settings
 // setlocale(LC_TIME, "nl","NL"); // Voor Windows Server
 setlocale(LC_TIME, "nl_NL"); // Voor Linux Server
-ini_set('default_charset', 'ISO-8859-1');
-$locale['charset'] = "ISO-8859-1";
+ini_set('default_charset', 'utf-8');
+$locale['charset'] = "utf-8";
 $locale['xml_lang'] = "nl";
 $locale['tinymce'] = "nl";
 $locale['phpmailer'] = "nl";
@@ -78,7 +78,7 @@ $locale['global_047'] = "Laatste bericht";
 $locale['global_048'] = "Forum";
 $locale['global_049'] = "Gepost";
 $locale['global_050'] = "Auteur";
-$locale['global_051'] = "Enquête";
+$locale['global_051'] = "Enqu&ecirc;te";
 $locale['global_052'] = "Verplaatst";
 $locale['global_053'] = "U heeft nog geen onderwerpen in het forum gestart.";
 $locale['global_054'] = "U heeft nog geen berichten in het forum geplaatst.";
@@ -154,19 +154,19 @@ $locale['UM098'] = "Berichten inbox:";
 $locale['UM099'] = "Berichten outbox:";
 $locale['UM100'] = "Berichten archief:";
 // Poll
-$locale['global_130'] = "Ledenenquête";
+$locale['global_130'] = "Ledenenqu&ecirc;te";
 $locale['global_131'] = "Stemmen";
 $locale['global_132'] = "U dient in te loggen om te stemmen.";
 $locale['global_133'] = "stem";
 $locale['global_134'] = "stemmen";
 $locale['global_135'] = "Stemmen: ";
 $locale['global_136'] = "Gestart: ";
-$locale['global_137'] = "Geëindigd: ";
-$locale['global_138'] = "Enquête-archief";
-$locale['global_139'] = "Kies een enquête uit de lijst om die te bekijken:";
+$locale['global_137'] = "Ge&euml;indigd: ";
+$locale['global_138'] = "Enqu&ecirc;te-archief";
+$locale['global_139'] = "Kies een enqu&ecirc;te uit de lijst om die te bekijken:";
 $locale['global_140'] = "Bekijken";
-$locale['global_141'] = "Enquête bekijken";
-$locale['global_142'] = "Er zijn nog geen enquêtes aangemaakt.";
+$locale['global_141'] = "Enqu&ecirc;te bekijken";
+$locale['global_142'] = "Er zijn nog geen enqu&ecirc;tes aangemaakt.";
 // Captcha
 $locale['global_150'] = "Validatie Code:";
 $locale['global_151'] = "Voer Validatie Code in:";

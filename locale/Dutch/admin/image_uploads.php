@@ -12,7 +12,7 @@ $locale['423'] = "Afbeeldingen bij artikelen";
 $locale['424'] = "Afbeeldingen bij nieuws";
 $locale['425'] = "U kunt alleen afbeeldingen in GIF-, JPG- of PNG-formaat uploaden";
 $locale['426'] = "Afbeelding ge-upload";
-$locale['427'] = "Afbeeldingen bij nieuwscategorieën";
+$locale['427'] = "Afbeeldingen bij nieuwscategorie&euml;n";
 // View Image
 $locale['440'] = "Afbeelding bekijken";
 $locale['441'] = "Onbekend bestandsformaat, afbeelding kan niet worden getoond.";

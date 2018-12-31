@@ -2,7 +2,7 @@
 // News Categories titles
 $locale['400'] = "Nieuwscategorie wijzigen";
 $locale['401'] = "Nieuwscategorie toevoegen";
-$locale['402'] = "Bestaande nieuwscategorieën";
+$locale['402'] = "Bestaande nieuwscategorie&euml;n";
 // News Categories messages
 $locale['420'] = "Nieuwscategorie toegevoegd";
 $locale['421'] = "Nieuwscategorie gewijzigd";
@@ -15,8 +15,8 @@ $locale['431'] = "Afbeelding bij categorie:";
 $locale['432'] = "Categorie opslaan";
 $locale['433'] = "Wijzigen";
 $locale['434'] = "Verwijderen";
-$locale['435'] = "Er zijn nog geen nieuwscategorieën aangemaakt";
-$locale['436'] = "Klik hier om afbeeldingen bij categorieën te uploaden";
+$locale['435'] = "Er zijn nog geen nieuwscategorie&euml;n aangemaakt";
+$locale['436'] = "Klik hier om afbeeldingen bij categorie&euml;n te uploaden";
 // Popup Error/Warning Messages
 $locale['450'] = "Deze nieuwscategorie verwijderen?";
 // Error Messages
