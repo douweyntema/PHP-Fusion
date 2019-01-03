@@ -265,6 +265,6 @@ $locale['global_ML100'] = "Taal:";
 $locale['global_ML101'] = "- Selecteer Taal -";
 $locale['global_ML102'] = "Site taal";
 
-$locale['flood'] = "U mag niet meer posten totdat de Flood periode voorbij is. Wacht a.u.b. %t";
+$locale['flood'] = "U mag niet meer posten totdat de flood periode voorbij is. Wacht a.u.b. %t";
 
 ?>
