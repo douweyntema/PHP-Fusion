@@ -56,8 +56,10 @@ if (isset($_POST['save_template'])) {
 		redirect(FUSION_SELF.$aidlink."&amp;status=su&amp;template_id=".$template_id);
 	}
 } elseif (isset($_POST['test_template'])) {
-	$template_id = form_sanitizer($_POST['template_id'], '', 'template_id');
-	$template_key = form_sanitizer($_POST['template_key'], '', 'template_key');
+	// Defender does not work with hidden input fields, so workaround below
+	$template_id = isset($_POST['template_id']) && isnum($_POST['template_id']) ? $_POST['template_id'] : 0;
+	// Defender does not work with hidden input fields, so workaround below
+	$template_key = isset($_POST['template_key']) ? stripinput($_POST['template_key']) : "";
 	$template_format = form_sanitizer($_POST['template_format'], '', 'template_format');
 	$template_subject = form_sanitizer($_POST['template_subject'], '', 'template_subject');
 	$template_content = form_sanitizer($_POST['template_content'], '', 'template_content');
@@ -83,14 +85,14 @@ if (isset($_POST['save_template'])) {
 }
 $result = dbquery("SELECT template_id, template_key, template_name, template_language FROM ".DB_EMAIL_TEMPLATES." ".(multilang_table("ET") ? "WHERE template_language='".LANGUAGE."'" : "")." ORDER BY template_id ASC");
 if (dbrows($result) != 0) {
-	$editlist = array();
-	if (dbrows($result) != 0) {
-		while ($data = dbarray($result)) {
-			$template[$data['template_id']] = $data['template_name'];
-		}
-	}
+    $editlist = [];
+    if (dbrows($result) != 0) {
+        while ($data = dbarray($result)) {
+            $template[$data['template_id']] = $data['template_name'];
+        }
+    }
 }
-$j= 1;
+$j = 1;
 foreach ($template as $id => $tname) {
 	$tab_title['title'][$j] = $tname;
 	$tab_title['id'][$j] = $j;
@@ -143,10 +145,10 @@ echo "<h4>".$locale['420'].$template_name."</h4>\n";
 echo "<table class='table table-responsive'>\n<tbody>\n";
 echo "<td class='tbl1'><label for='template_active'>".$locale['421']."</label></td>\n";
 echo "<td class='tbl1'>\n";
-$opts = array('1' => $locale['424'], // yes
-			  '0' => $locale['425'] // no
-);
-echo form_select('', 'template_active', 'template_active', $opts, $data['template_active'], array('placeholder' => $locale['choose']));
+$opts = ['1' => $locale['424'], // yes
+         '0' => $locale['425'] // no
+];
+echo form_select('', 'template_active', 'template_active', $opts, $data['template_active'], ['placeholder' => $locale['choose']]);
 echo "<div class='m-t-10'>\n";
 echo "<div id='active_info' ".$template_active_info." >".sprintf($locale['422'], $html_text)."</div>\n";
 echo "<div id='inactive_info' ".$template_inactive_info." >".$locale['423']."</div>\n";
@@ -155,8 +157,8 @@ echo "</td>\n";
 echo "</tr>\n<tr>\n";
 echo "<td class='tbl1' width='1%' style='vertical-align:top; white-space:nowrap;'><label for='template_format'>".$locale['426']."</label></td>\n";
 echo "<td class='tbl1'>\n";
-$opts = array('html' => $locale['418'], 'plain' => $locale['419']);
-echo form_select('', 'template_format', 'template_format', $opts, $data['template_format'], array('placeholder' => $locale['choose']));
+$opts = ['html' => $locale['418'], 'plain' => $locale['419']];
+echo form_select('', 'template_format', 'template_format', $opts, $data['template_format'], ['placeholder' => $locale['choose']]);
 echo "<div id='html_info' class='m-t-10 ".$html_active_info."' >".$locale['427']."</div>\n";
 echo "</td>\n";
 echo "</tr>\n<tr>\n";
@@ -202,8 +204,8 @@ if (multilang_table("ET")) {
 echo "<tr>\n";
 echo "<td class='tbl1' style='width:15%;vertical-align:top;'><label for='template_subject'>".$locale['434'].":</label>  <span class='required'>*</span></td>\n";
 echo "<td class='tbl1'>\n";
-echo form_textarea('', 'template_subject', 'template_subject', $template_subject, array('required' => 1,
-																						'error_text' => $locale['470']));
+echo form_textarea('', 'template_subject', 'template_subject', $template_subject, ['required'   => 1,
+                                                                                   'error_text' => $locale['470']]);
 echo "<div class='btn-group'>\n";
 echo "<button type='button' class='btn btn-sm btn-default button' value='[SITENAME]' onclick=\"insertText('template_subject', '[SITENAME]', 'emailtemplateform');\">SITENAME</button>\n";
 echo "<button type='button' class='btn btn-sm btn-default button' value='[SITEURL]' onclick=\"insertText('template_subject', '[SITEURL]', 'emailtemplateform');\">SITEURL</button>\n";
@@ -216,8 +218,8 @@ echo "</td>\n";
 echo "</tr>\n<tr>\n";
 echo "<td class='tbl1' style='width:15%;vertical-align:top;'><label for='template_content'>".$locale['435'].":</label> <span class='required'>*</span></td>\n";
 echo "<td class='tbl1'>\n";
-echo form_textarea('', 'template_content', 'template_content', $template_content, array('required' => 1,
-																						'error_text' => $locale['471']));
+echo form_textarea('', 'template_content', 'template_content', $template_content, ['required'   => 1,
+                                                                                   'error_text' => $locale['471']]);
 echo "<div class='btn-group'>\n";
 echo "<button type='button' class='btn btn-sm btn-default button' value='[SUBJECT]' onclick=\"insertText('template_content', '[SUBJECT]', 'emailtemplateform');\">SUBJECT</button>\n";
 echo "<button type='button' class='btn btn-sm btn-default button' value='[MESSAGE]' onclick=\"insertText('template_content', '[MESSAGE]', 'emailtemplateform');\">MESSAGE</button>\n";
@@ -235,21 +237,21 @@ echo "<button type='button' class='btn btn-sm btn-default button' value='SPAN'  
 echo display_html("emailtemplateform", "template_content", TRUE, TRUE);
 $folder = BASEDIR."images/";
 $image_files = makefilelist($folder, ".|..|index.php", TRUE);
-$opts = array();
+$opts = [];
 foreach ($image_files as $image) {
-	$opts[$image] = $image;
+    $opts[$image] = $image;
 }
-echo form_select('', 'insertimage', 'insertimage', $opts, '', array('placeholder' => $locale['469'],
-																	'allowclear' => 1));
+echo form_select('', 'insertimage', 'insertimage', $opts, '', ['placeholder' => $locale['469'],
+                                                               'allowclear'  => 1]);
 echo "</div>\n";
 echo "</td>\n";
 echo "</tr>\n<tr>\n";
 echo "<td colspan='2' style='text-align:center;'>\n";
 echo form_hidden('', 'template_id', 'template_id', $template_id);
 echo form_hidden('', 'template_key', 'template_key', $template_key);
-echo form_button($locale['437'], 'test_template', 'test_template', $locale['437'], array('class' => 'btn-primary m-r-10'));
-echo form_button($locale['439'], 'save_template', 'save_template', $locale['439'], array('class' => 'btn-primary m-r-10'));
-echo form_button($locale['440'], 'reset', 'reset', $locale['440'], array('class' => 'btn-primary'));
+echo form_button($locale['437'], 'test_template', 'test_template', $locale['437'], ['class' => 'btn-primary m-r-10']);
+echo form_button($locale['439'], 'save_template', 'save_template', $locale['439'], ['class' => 'btn-primary m-r-10']);
+echo form_button($locale['440'], 'reset', 'reset', $locale['440'], ['class' => 'btn-primary']);
 echo "</td>\n";
 echo "</tr>\n";
 echo "</table>\n";
@@ -325,4 +327,3 @@ add_to_jquery("
         });
     ");
 require_once THEMES."templates/footer.php";
-?>
