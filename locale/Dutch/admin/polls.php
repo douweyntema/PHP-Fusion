@@ -19,11 +19,11 @@ $locale['431'] = "Titel van enquête:";
 $locale['432'] = "Optie ";
 $locale['433'] = " Deze enquête sluiten";
 $locale['434'] = "Gestart: ";
-$locale['435'] = "Be&euml;indigd: ";
+$locale['435'] = "Beëindigd: ";
 $locale['436'] = "Optie toevoegen";
 $locale['437'] = "Enquête bekijken";
 $locale['438'] = "Enquête opslaan";
 $locale['439'] = "Niet gedefinieerd";
-locale['439a'] = "Geef a.u.b een titel voor de enquête";
+$locale['439a'] = "Geef a.u.b een titel voor de enquête";
 $locale['439b'] = "U dient ten minste 1 enquête optie op te geven";
 ?>
