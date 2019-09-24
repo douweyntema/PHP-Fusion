@@ -23,7 +23,7 @@ if (sizeof($enabled_languages) > 1) {
 	openside($locale['global_ML102']);
 	include_once INCLUDES."translate_include.php";
 	echo openform('lang_menu_form', 'lang_menu_form', 'post', FUSION_SELF);
-	echo form_select('', 'lang_menu', 'lang_menu', $language_opts, $settings['locale']);
+	echo form_select('', 'lang_menu', 'lang_menu', $language_opts, LANGUAGE);
 	echo closeform();
 	add_to_jquery("
 	function showflag(item){
