@@ -104,7 +104,7 @@ function handle_output($output) {
 // Jquery Output Handlers
 function push_jquery() {
 	global $fusion_jquery_tags;
-	if (count($fusion_jquery_tags) > 0 && is_array($fusion_jquery_tags)) {
+    if (is_array($fusion_jquery_tags)) {
 		$jquery_output = open_jquery();
 		foreach ($fusion_jquery_tags as $arr => $v) {
 			$jquery_output .= $v;
