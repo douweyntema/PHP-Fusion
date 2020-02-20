@@ -177,7 +177,7 @@ if (isset($_POST['save'])) {
 	$user_groups = getusergroups();
 	$access_opts = "";
 	$sel = "";
-	while (list($key, $user_group) = each($user_groups)) {
+    foreach ($user_groups as $key => $user_group) {
 		$access_opts[$user_group['0']] = $user_group['1'];
 		//$sel = ($page_access == $user_group['0'] ? " selected='selected'" : "");
 		//$access_opts .= "<option value='".$user_group['0']."'$sel>".$user_group['1']."</option>\n";

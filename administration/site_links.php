@@ -130,7 +130,7 @@ if ((isset($_GET['action']) && $_GET['action'] == "edit") && (isset($_GET['link_
 }
 $visibility_opts = array();
 $user_groups = getusergroups();
-while (list($key, $user_group) = each($user_groups)) {
+foreach ($user_groups as $key => $user_group) {
 	$visibility_opts[$user_group['0']] = $user_group['1'];
 }
 require_once INCLUDES."bbcode_include.php";

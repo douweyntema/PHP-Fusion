@@ -266,7 +266,7 @@ if (!isset($_GET['t']) || $_GET['t'] != "cat") {
 		}
 		$_access = getusergroups();
 		$access_opts['0'] = $locale['531'];
-		while (list($key, $option) = each($_access)) {
+        foreach ($_access as $key => $option) {
 			$access_opts[$option['0']] = $option['1'];
 		}
 		opentable($forum_title);
@@ -346,7 +346,7 @@ if (!isset($_GET['t']) || $_GET['t'] != "cat") {
 			$mod_groups = getusergroups();
 			$mods1_user_id = array();
 			$mods1_user_name = array();
-			while (list($key, $mod_group) = each($mod_groups)) {
+            foreach ($mod_groups as $key => $mod_group) {
 				if ($mod_group['0'] != "0" && $mod_group['0'] != "101" && $mod_group['0'] != "103") {
 					if (!preg_match("(^{$mod_group['0']}$|^{$mod_group['0']}\.|\.{$mod_group['0']}\.|\.{$mod_group['0']}$)", $data['forum_moderators'])) {
 						$mods1_user_id[] = $mod_group['0'];

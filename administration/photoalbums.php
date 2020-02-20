@@ -248,7 +248,7 @@ if (function_exists('gd_info')) {
 	}
 	$access_opts = array();
 	$user_groups = getusergroups();
-	while (list($key, $user_group) = each($user_groups)) {
+	foreach ($user_groups as $key => $user_group) {
 		$access_opts[$user_group['0']] = $user_group['1'];
 	}
 	echo openform('input_form', 'input_form', 'post', $formaction, array('downtime' => 0, 'enctype' => '1'));

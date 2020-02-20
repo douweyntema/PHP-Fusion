@@ -106,7 +106,7 @@ if ((isset($_GET['action']) && $_GET['action'] == "delete") && (isset($_GET['cat
 	}
 	$user_groups = getusergroups();
 	$access_opts = array();
-	while (list($key, $user_group) = each($user_groups)) {
+    foreach ($user_groups as $key => $user_group) {
 		$access_opts[$user_group['0']] = $user_group['1'];
 	}
 	opentable($openTable);
