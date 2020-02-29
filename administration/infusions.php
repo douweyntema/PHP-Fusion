@@ -32,12 +32,21 @@ $inf_developer = "";
 $inf_email = "";
 $inf_weburl = "";
 $inf_folder = "";
-$inf_newtable = "";
+
+$inf_newtable = [];
+$inf_insertdbrow = [];
+$inf_droptable = [];
+$inf_altertable = [];
+$inf_deldbrow = [];
+$inf_sitelink = [];
+
+/*$inf_newtable = "";
 $inf_insertdbrow = "";
 $inf_droptable = "";
 $inf_altertable = "";
 $inf_deldbrow = "";
-$inf_sitelink = "";
+$inf_sitelink = "";*/
+
 // changed from id defusing to folder defusing, because inf_folder is also unique.
 if (!isset($_POST['infuse']) && !isset($_POST['infusion']) && !isset($_GET['defuse'])) {
 	$temp = opendir(INFUSIONS);

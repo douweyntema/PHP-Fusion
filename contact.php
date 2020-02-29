@@ -26,7 +26,11 @@ if (isset($_POST['sendmessage'])) {
 	$subject = isset($_POST['subject']) ? substr(str_replace(array("\r", "\n", "@"), "", descript(stripslash(trim($_POST['subject'])))), 0, 50) : ""; // most unique in the entire CMS. keep.
 	$subject = form_sanitizer($subject, '', 'subject');
 	$message = form_sanitizer($_POST['message'], '', 'message');
-	$captcha_code = form_sanitizer($_POST['captcha_code'], '', 'captcha_code');
+	if (isset ($_POST['captcha_code'])) {
+		$captcha_code = form_sanitizer($_POST['captcha_code'], '', 'captcha_code');
+	} else {
+		$captcha_code="";
+	}
 	$_CAPTCHA_IS_VALID = FALSE;
 	include INCLUDES."captchas/".$settings['captcha']."/captcha_check.php"; // Dynamics need to develop Captcha. Before that, use method 2.
 	if ($_CAPTCHA_IS_VALID == FALSE) {

@@ -20,13 +20,18 @@ if (!defined("IN_FUSION")) {
 }
 function sendemail($toname, $toemail, $fromname, $fromemail, $subject, $message, $type = "plain", $cc = "", $bcc = "") {
 	global $settings, $locale;
-	require_once INCLUDES."class.phpmailer.php";
-	$mail = new PHPMailer();
-	if (file_exists(INCLUDES."language/phpmailer.lang-".$locale['phpmailer'].".php")) {
-		$mail->SetLanguage($locale['phpmailer'], INCLUDES."language/");
+	require_once CLASSES.'PHPMailer/PHPMailer.php';
+	require_once CLASSES.'PHPMailer/Exception.php';
+	require_once CLASSES.'PHPMailer/SMTP.php';
+
+	$mail = new PHPMailer\PHPMailer\PHPMailer();
+
+	if (file_exists(CLASSES."PHPMailer/language/phpmailer.lang-".$locale['phpmailer'].".php")) {
+		$mail->setLanguage($locale['phpmailer'], CLASSES."PHPMailer/language/");
 	} else {
-		$mail->SetLanguage("en", INCLUDES."language/");
+		$mail->setLanguage("en", CLASSES."PHPMailer/language/");
 	}
+
 	if (!$settings['smtp_host']) {
 		$mail->IsMAIL();
 	} else {

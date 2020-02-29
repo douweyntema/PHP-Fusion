@@ -18,6 +18,7 @@
 if (!defined("IN_FUSION")) {
 	die("Access Denied");
 }
-$__BBCODE__[] = array("description" => $locale['bb_ebay_description'], "value" => "ebay", "bbcode_start" => "[ebay]",
-					  "bbcode_end" => "[/ebay]", "usage" => "[ebay]".$locale['bb_ebay_usage']."[/ebay]");
+$__BBCODE__[] = array("description" => $locale['bb_ebay_description'], "value" => "center",
+    "bbcode_start" => "[center]", "bbcode_end" => "[/center]",
+    "usage" => "[center]".$locale['bb_ebay_usage']."[/center]");
 ?>
