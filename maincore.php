@@ -247,7 +247,7 @@ function get_available_languages_array($language_list = "") {
 }
 
 // If language change is initiated and if the selected language exists, allowed by site
-if (isset($_GET['lang']) && isset($_GET['lang']) != "" && preg_match("/^[\w-0-9a-zA-Z_]+$/", $_GET['lang']) && file_exists(LOCALE.$_GET['lang']."/global.php") && in_array($_GET['lang'], $enabled_languages)) {
+if (isset($_GET['lang']) && isset($_GET['lang']) != "" && preg_match("/^[\w\-0-9a-zA-Z_]+$/", $_GET['lang']) && file_exists(LOCALE.$_GET['lang']."/global.php") && in_array($_GET['lang'], $enabled_languages)) {
 	$lang = stripinput($_GET['lang']);
 	if (iMEMBER) {
 		$result = dbquery("UPDATE ".DB_USERS." SET user_language='".$lang."' WHERE user_id='".$userdata['user_id']."'");
