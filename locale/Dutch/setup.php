@@ -213,6 +213,7 @@ $locale['220'] = "Contact Informatie";
 $locale['221'] = "Diverse Informatie";
 $locale['222'] = "Opties";
 $locale['223'] = "Statistieken";
+$locale['224'] = "Privacy";
 // Welcome message
 $locale['230'] = "Welkom op uw site!";
 // Final message
