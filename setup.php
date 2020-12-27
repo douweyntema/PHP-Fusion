@@ -680,7 +680,7 @@ if (isset($_POST['step']) && $_POST['step'] == "4") {
 							if (!$result) {
 								$fail = TRUE;
 							}
-							
+
 							$result = dbquery("DROP TABLE IF EXISTS ".$db_prefix."messages_options");
 							$result = dbquery("CREATE TABLE ".$db_prefix."messages_options (
 							user_id MEDIUMINT(8) UNSIGNED NOT NULL DEFAULT '0',
@@ -743,6 +743,9 @@ if (isset($_POST['step']) && $_POST['step'] == "4") {
 							user_info TEXT NOT NULL,
 							KEY user_datestamp (user_datestamp)
 							) ENGINE=MYISAM;");
+							if (!$result) {
+								$fail = TRUE;
+							}
 							$result = dbquery("DROP TABLE IF EXISTS ".$db_prefix."email_verify");
 							$result = dbquery("CREATE TABLE ".$db_prefix."email_verify (
 							user_id MEDIUMINT(8) NOT NULL,
