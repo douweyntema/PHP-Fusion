@@ -677,6 +677,10 @@ if (isset($_POST['step']) && $_POST['step'] == "4") {
 							PRIMARY KEY (message_id),
 							KEY message_datestamp (message_datestamp)
 							) ENGINE=MYISAM;");
+							if (!$result) {
+								$fail = TRUE;
+							}
+							
 							$result = dbquery("DROP TABLE IF EXISTS ".$db_prefix."messages_options");
 							$result = dbquery("CREATE TABLE ".$db_prefix."messages_options (
 							user_id MEDIUMINT(8) UNSIGNED NOT NULL DEFAULT '0',
