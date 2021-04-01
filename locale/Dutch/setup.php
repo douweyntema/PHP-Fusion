@@ -3,7 +3,7 @@ $locale['title'] = "PHP-Fusion Core 7 Edition setup";
 $locale['sub-title'] = "PHP-Fusion Core 7 Edition setup";
 $locale['os_version'] = '7.03.00';
 $locale['xml_lang'] = "nl";
-$locale['charset'] = "iso-8859-1";
+$locale['charset'] = "utf-8";
 $locale['001'] = "Stap 1: Taal (locale)";
 $locale['002'] = "Stap 2: Testen bestands- en mappermissies";
 $locale['003'] = "Stap 3: Database-instellingen";
@@ -231,9 +231,9 @@ $locale['subheaderdate'] = "%B %d %Y %H:%M:%S";
 // Email Template Setup
 // Please do NOT translate the words between brackets [] !
 $locale['T001'] = "Email Sjablonen";
-$locale['T101'] = "Notificatie bij niew PB";
-$locale['T102'] = "U heeft een nieuw priv&eacute bericht ontvangen van [USER] op [SITENAME]";
-$locale['T103'] = "Hallo [RECEIVER],\r\nU heeft een nieuw priv&eacute bericht ontvangen met het onderwerp [SUBJECT] van [USER] op [SITENAME]. U kunt uw priv&eacute bericht lezen op [SITEURL]messages.php\r\n\r\nBericht: [MESSAGE]\r\n\r\nIndien u niet langer notificaties voor nieuwe priv&eacute berichten per e-mail wilt ontvangen kunt u dit uitschakelen via het <strong>Opties Paneel</strong> in uw priv&eacute berichten pagina..\r\n\r\Met vriendelijke groet,\r\n[SENDER].";
+$locale['T101'] = "Notificatie bij nieuw PB";
+$locale['T102'] = "U heeft een nieuw priv&eacute; bericht ontvangen van [USER] op [SITENAME]";
+$locale['T103'] = "Hallo [RECEIVER],\r\nU heeft een nieuw priv&eacute; bericht ontvangen met het onderwerp [SUBJECT] van [USER] op [SITENAME]. U kunt uw priv&eacute; bericht lezen op [SITEURL]messages.php\r\n\r\nBericht: [MESSAGE]\r\n\r\nIndien u niet langer notificaties voor nieuwe priv&eacute; berichten per e-mail wilt ontvangen kunt u dit uitschakelen via het <strong>Opties Paneel</strong> in uw priv&eacute; berichten pagina..\r\n\r\Met vriendelijke groet,\r\n[SENDER].";
 $locale['T201'] = "Notificatie bij nieuw forum posts";
 $locale['T202'] = "Notificatie van antwoord in forum - [SUBJECT]";
 $locale['T203'] = "Hallo [RECEIVER],\r\n\r\nEr is een antwoord geplaatst in het forumonderwerp \'[SUBJECT]\' welke u volgt op [SITENAME]. U kunt de onderstaande link gebruiken om het antwoord te bekijken:\r\n\r\n[THREAD_URL]\r\n\r\nIndien u het onderwerp niet langer wenst te volgen, dan kunt u op de link \'Volg dit onderwerp niet langer\' klikken. U vindt de link bovenaan in het betreffende onderwerp..\r\n\r\Met vriendelijke groet,\r\n[SENDER].";
